@@ -1,7 +1,7 @@
 @tool
 extends Node2D
 
-const GRASS_SHADER := preload("res://resources/shaders/grass_wind.gdshader")
+const GRASS_SHADER := preload("res://resources/shaders/grass_glow.gdshader")
 const PIXEL_SURFACE := preload("res://scripts/world/PixelSurface.gd")
 
 @export var cell_size: float = 15.0
@@ -92,6 +92,8 @@ func _get_tuft_rect(pos: Vector2, tex: Texture2D, tuft_scale: Vector2) -> Rect2:
 func _build_material() -> void:
 	_shared_material = ShaderMaterial.new()
 	_shared_material.shader = GRASS_SHADER
+	_shared_material.set_shader_parameter("emission_strength", 0.55)
+	_shared_material.set_shader_parameter("emission_color", Vector3(0.15, 0.78, 0.35))
 
 func _build_variant_textures() -> Array:
 	var arr: Array = []
