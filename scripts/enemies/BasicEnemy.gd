@@ -469,6 +469,14 @@ func _on_damaged(_amount: int) -> void:
 	body.scale = normal_body_scale * hit_pulse_scale
 	hit_flash_timer = hit_flash_duration
 	hit_pulse_timer = hit_flash_duration
+	var tilt_dir := -knockback_velocity.normalized() if knockback_velocity.length() > 1.0 else -facing_direction
+	body.rotation = tilt_dir.angle() * 0.12
+	var tween := create_tween()
+	tween.tween_property(body, "rotation", 0.0, 0.14)
+	if soul_accent_visual != null:
+		soul_accent_visual.modulate = Color(2.0, 2.0, 2.0, 1.0)
+		var accent_tween := create_tween()
+		accent_tween.tween_property(soul_accent_visual, "modulate", Color.WHITE, 0.18)
 
 func _on_died() -> void:
 	attack_release_timer = 0.0
@@ -497,6 +505,11 @@ func _on_died() -> void:
 	body.scale = normal_body_scale
 	modulate.a = 1.0
 
+func _build_accent_material() -> CanvasItemMaterial:
+	var mat := CanvasItemMaterial.new()
+	mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	return mat
+
 func _setup_skeleton_visuals() -> void:
 	body.texture = _build_skeleton_texture(visual_accent_color, faction == "zombie")
 	body.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -508,8 +521,11 @@ func _setup_skeleton_visuals() -> void:
 		soul_accent_visual.name = "SoulAccent"
 		add_child(soul_accent_visual)
 		move_child(soul_accent_visual, body.get_index() + 1)
-	soul_accent_visual.polygon = PackedVector2Array([Vector2(0, -15), Vector2(4, -9), Vector2(0, -5), Vector2(-4, -9)])
+	soul_accent_visual.polygon = PackedVector2Array([
+		Vector2(0, -18), Vector2(5, -10), Vector2(0, -4), Vector2(-5, -10)
+	])
 	soul_accent_visual.color = get_visual_accent_color()
+	soul_accent_visual.material = _build_accent_material()
 	soul_accent_visual.z_index = 3
 
 	bone_weapon_visual = get_node_or_null("BoneWeapon") as Polygon2D
