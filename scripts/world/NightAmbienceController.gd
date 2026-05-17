@@ -45,16 +45,34 @@ func _configure_environment() -> void:
 	env.glow_enabled = true
 	env.glow_intensity = 0.42
 	env.glow_bloom = 0.12
-	env.set_glow_level(0, 0.85)
-	env.set_glow_level(1, 0.95)
-	env.set_glow_level(2, 0.90)
+	env.glow_blend_mode = Environment.GLOW_BLEND_MODE_ADDITIVE
+	env.set_glow_level(0, 0.90)
+	env.set_glow_level(1, 0.98)
+	env.set_glow_level(2, 0.92)
 	night_environment.environment = env
 
 func _configure_overlay() -> void:
-	pass
+	night_overlay.color = overlay_color
+	night_overlay.material = null
 
 func _configure_vignette() -> void:
-	pass
+	vignette.modulate = Color.WHITE
+	vignette.texture = _build_vignette_texture(512, 512)
+	vignette.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	vignette.stretch_mode = TextureRect.STRETCH_SCALE
+
+func _build_vignette_texture(width: int, height: int) -> Texture2D:
+	var image := Image.create(width, height, false, Image.FORMAT_RGBA8)
+	var center := Vector2(width * 0.5, height * 0.5)
+	var max_radius := minf(width, height) * 0.5
+	for y in range(height):
+		for x in range(width):
+			var uv := Vector2(x, y)
+			var dist := center.distance_to(uv) / max_radius
+			var edge := clampf(pow(dist, 1.8), 0.0, 1.0)
+			var alpha := smoothstep(0.35, 1.0, edge) * 0.42
+			image.set_pixel(x, y, Color(vignette_color.r, vignette_color.g, vignette_color.b, alpha))
+	return ImageTexture.create_from_image(image)
 
 func _configure_fireflies() -> void:
 	pass
