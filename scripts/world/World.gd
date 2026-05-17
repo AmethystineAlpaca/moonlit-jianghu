@@ -2,6 +2,9 @@ extends Node2D
 
 signal combat_message_requested(message: String)
 
+const NIGHT_AMBIENCE_SCENE := preload("res://scenes/world/NightAmbienceController.tscn")
+const AMBIENT_MAGIC_SCENE := preload("res://scenes/world/AmbientMagicController.tscn")
+
 @export var enemy_scene: PackedScene
 @export var fast_enemy_scene: PackedScene
 @export var breakable_scene: PackedScene
@@ -53,7 +56,8 @@ func _ready() -> void:
 	spawn_timer = initial_spawn_interval
 	chest_spawn_timer = chest_spawn_interval
 	_try_spawn_enemy()
-	_setup_night_atmosphere()
+	_ensure_night_ambience()
+	_ensure_ambient_magic()
 	_add_obstacle_shadows()
 
 func _process(delta: float) -> void:
@@ -428,81 +432,19 @@ func _spawn_smash_mark(impact_position: Vector2) -> void:
 	add_child(smash_mark)
 	smash_mark.global_position = impact_position
 
-func _setup_night_atmosphere() -> void:
-	# Night canvas modulate — subtle cool-blue tint, keeps scene visible
-	var canvas_mod := CanvasModulate.new()
-	canvas_mod.name = "NightModulate"
-	canvas_mod.color = Color(0.80, 0.86, 0.96)
-	add_child(canvas_mod)
+func _ensure_ambient_magic() -> void:
+	if get_node_or_null("AmbientMagic") != null:
+		return
+	var ambience := AMBIENT_MAGIC_SCENE.instantiate() as Node2D
+	add_child(ambience)
 
-	# WorldEnvironment — glow only, BG_KEEP so the 2D scene background is unchanged
-	var env := Environment.new()
-	env.background_mode = Environment.BG_KEEP
-	env.glow_enabled = true
-	env.glow_intensity = 0.35
-	env.glow_bloom = 0.08
-	env.set_glow_level(0, 0.8)
-	env.set_glow_level(1, 0.8)
-	env.set_glow_level(2, 0.8)
-
-	var world_env := WorldEnvironment.new()
-	world_env.name = "NightEnvironment"
-	world_env.environment = env
-	add_child(world_env)
-
-	# Ambient spirit particles
-	var spirit_mat := ParticleProcessMaterial.new()
-	spirit_mat.direction = Vector3(0.0, -1.0, 0.0)
-	spirit_mat.spread = 28.0
-	spirit_mat.initial_velocity_min = 4.0
-	spirit_mat.initial_velocity_max = 10.0
-	spirit_mat.gravity = Vector3(0.0, -2.0, 0.0)
-	spirit_mat.scale_min = 0.6
-	spirit_mat.scale_max = 1.4
-	spirit_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
-	spirit_mat.emission_box_extents = Vector3(680.0, 440.0, 0.0)
-
-	var color_ramp := Gradient.new()
-	color_ramp.set_color(0, Color(0.5, 0.85, 1.0, 0.9))
-	color_ramp.set_color(1, Color(0.3, 0.6, 1.0, 0.0))
-	var ramp_tex := GradientTexture1D.new()
-	ramp_tex.gradient = color_ramp
-	spirit_mat.color_ramp = ramp_tex
-
-	var spirit_particles := GPUParticles2D.new()
-	spirit_particles.name = "SpiritParticles"
-	spirit_particles.amount = 72
-	spirit_particles.lifetime = 4.2
-	spirit_particles.explosiveness = 0.0
-	spirit_particles.randomness = 1.0
-	spirit_particles.local_coords = false
-	spirit_particles.emitting = true
-	spirit_particles.process_material = spirit_mat
-	spirit_particles.modulate = Color(0.55, 0.88, 1.0, 1.0)
-	spirit_particles.z_index = 10
-	add_child(spirit_particles)
-
-	# Directional moon light from upper-right
-	var moon_light := DirectionalLight2D.new()
-	moon_light.name = "MoonLight"
-	moon_light.color = Color(0.70, 0.80, 1.0)
-	moon_light.energy = 0.20
-	moon_light.rotation_degrees = -30.0
-	moon_light.max_distance = 2048
-	add_child(moon_light)
-
-	# Moon glow pool (large ellipse in upper-right corner)
-	var moon_glow := Polygon2D.new()
-	moon_glow.name = "MoonGlow"
-	moon_glow.position = Vector2(580.0, -380.0)
-	moon_glow.color = Color(0.65, 0.78, 1.0, 0.12)
-	moon_glow.z_index = -5
-	var moon_pts := PackedVector2Array()
-	for i in range(32):
-		var a := TAU * i / 32.0
-		moon_pts.append(Vector2(cos(a) * 280.0, sin(a) * 160.0))
-	moon_glow.polygon = moon_pts
-	add_child(moon_glow)
+func _ensure_night_ambience() -> void:
+	if get_node_or_null("NightAmbience") != null:
+		return
+	var ambience := NIGHT_AMBIENCE_SCENE.instantiate() as Node2D
+	add_child(ambience)
+	if ambience.has_method("apply_world_bounds"):
+		ambience.call("apply_world_bounds", map_half_size)
 
 func _add_obstacle_shadows() -> void:
 	var shadow_tex := _build_shadow_texture()
