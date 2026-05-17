@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/effects/SlashTrail.gd" id="1_trail"]
+
+[node name="SlashTrail" type="Node2D"]
+script = ExtResource("1_trail")
+
+[node name="Arc" type="Polygon2D" parent="."]
+z_index = 5
+color = Color(0.65, 0.95, 1.0, 0.72)
+polygon = PackedVector2Array(26.0, -45.03, 36.77, -36.77, 45.03, -26.0, 50.24, -13.47, 52.0, 0.0, 50.24, 13.47, 45.03, 26.0, 36.77, 36.77, 26.0, 45.03, 18.0, 31.18, 25.46, 25.46, 31.18, 18.0, 34.77, 9.32, 36.0, 0.0, 34.77, -9.32, 31.18, -18.0, 25.46, -25.46, 18.0, -31.18)

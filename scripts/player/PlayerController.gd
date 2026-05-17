@@ -55,6 +55,7 @@ signal active_skill_slots_changed(active_states: Array)
 @onready var sword: Node2D = get_node_or_null("Sword") as Node2D
 
 const HIT_SPARK_SCENE := preload("res://scenes/effects/HitSpark.tscn")
+const SLASH_TRAIL_SCENE := preload("res://scenes/effects/SlashTrail.tscn")
 const TRANSFORM_SKILL := preload("res://resources/skills/Transform.tres")
 const DIVINE_LIGHT_SKILL := preload("res://resources/skills/ProtectiveDivineLight.tres")
 const ATTACK_VARIANT_NORMAL := "normal"
@@ -214,6 +215,11 @@ func _try_melee_attack() -> void:
 	attack_visual_timer = 0.18
 	_set_stamina(current_stamina - attack_stamina_cost)
 	_show_attack_preview()
+	var world := get_tree().get_first_node_in_group("world")
+	var _is_slam := world != null and world.has_method("has_slam_charge") and world.has_slam_charge()
+	var _is_counter := counter_ready_timer > 0.0
+	var _has_momentum := current_input_direction != Vector2.ZERO and current_input_direction.dot(last_facing_direction) > 0.75
+	_spawn_slash_trail(_choose_attack_variant(_is_slam, _is_counter, _has_momentum, false))
 	_start_sword_swing(1.0)
 	velocity += last_facing_direction * melee_lunge_force
 
@@ -222,7 +228,6 @@ func _try_melee_attack() -> void:
 	var attack_damage := melee_damage
 	var attack_knockback := melee_knockback_force
 	var stagger_amount := normal_stagger_amount
-	var world := get_tree().get_first_node_in_group("world")
 	var is_impact_attack: bool = world != null and world.has_method("has_slam_charge") and world.has_slam_charge()
 	if is_impact_attack:
 		attack_knockback += 260.0
@@ -541,6 +546,13 @@ func _spawn_hit_spark(effect_position: Vector2, variant: String = ATTACK_VARIANT
 			_get_variant_spark_end_scale(variant),
 			0.18 if variant == ATTACK_VARIANT_NORMAL else 0.22
 		)
+
+func _spawn_slash_trail(variant: String) -> void:
+	var trail := SLASH_TRAIL_SCENE.instantiate() as Node2D
+	get_tree().current_scene.add_child(trail)
+	trail.global_position = global_position + last_facing_direction * melee_range
+	if trail.has_method("setup"):
+		trail.setup(last_facing_direction, variant, melee_range)
 
 func _apply_hit_pause() -> void:
 	get_tree().paused = true
