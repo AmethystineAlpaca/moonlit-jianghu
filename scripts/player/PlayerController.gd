@@ -62,6 +62,7 @@ const ATTACK_VARIANT_COUNTER := "counter"
 const ATTACK_VARIANT_BACK_HIT := "back_hit"
 const ATTACK_VARIANT_MOMENTUM := "momentum"
 const ATTACK_VARIANT_IMPACT := "impact"
+const GLOW_OUTLINE_SHADER := preload("res://resources/shaders/glow_outline.gdshader")
 
 var sword_visual: Sprite2D
 var sword_mount: Node2D
@@ -339,6 +340,12 @@ func _setup_xianxia_visuals() -> void:
 	body.texture = _build_player_texture()
 	body.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	body.centered = true
+	var outline_mat := ShaderMaterial.new()
+	outline_mat.shader = GLOW_OUTLINE_SHADER
+	outline_mat.set_shader_parameter("outline_color", Color(0.25, 0.88, 0.82, 0.85))
+	outline_mat.set_shader_parameter("outline_width", 1.2)
+	outline_mat.set_shader_parameter("glow_strength", 0.55)
+	body.material = outline_mat
 
 	sword_mount = sword
 	sword_visual = sword_mount as Sprite2D
@@ -358,6 +365,13 @@ func _setup_xianxia_visuals() -> void:
 		sword_mount.position = Vector2(13.0, 1.0)
 		sword_mount.rotation = -0.68
 		sword_mount.z_index = 2
+
+	var blade := sword_mount.get_node_or_null("Blade") as Polygon2D if sword_mount != null else null
+	if blade != null:
+		blade.color = Color(0.78, 0.94, 1.0, 1.0)
+	var guard_poly := sword_mount.get_node_or_null("Guard") as Polygon2D if sword_mount != null else null
+	if guard_poly != null:
+		guard_poly.color = Color(0.55, 0.82, 0.96, 1.0)
 
 	robe_sash_visual = get_node_or_null("RobeSash") as Polygon2D
 	if robe_sash_visual == null:
