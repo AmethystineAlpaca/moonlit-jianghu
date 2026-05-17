@@ -2,82 +2,110 @@ extends SceneTree
 
 const WORLD_SCENE := preload("res://scenes/world/World.tscn")
 const REQUIRED_ASSET_PATHS := [
-	"res://assets/xianxia/firefly_core.png",
-	"res://assets/xianxia/firefly_halo.png",
-	"res://assets/xianxia/crystal_sparkle.png",
-	"res://assets/xianxia/gleam_star.png",
-	"res://assets/xianxia/dot_variant_a.png",
-	"res://assets/xianxia/dot_variant_b.png",
-	"res://assets/xianxia/dot_variant_c.png",
+	"res://assets/xianxia/pixel_night_assets/firefly_dot.png",
+	"res://assets/xianxia/pixel_night_assets/sparkle_blue.png",
+	"res://assets/xianxia/pixel_night_assets/moonlight_patch.png",
+	"res://assets/xianxia/pixel_night_assets/light_circle.png",
 ]
 
 var failures := 0
 
 func _initialize() -> void:
-	_test_required_ambience_assets_exist()
-	await _test_world_creates_ambient_magic_controller()
-	await _test_ambient_controller_has_background_layers()
-	await _test_ambient_controller_spawns_hero_fireflies()
-	await _test_ambient_controller_has_sparse_sparkle_layer()
+	_test_required_night_assets_exist()
+	await _test_world_creates_night_ambience_controller()
+	await _test_controller_owns_expected_layer_groups()
+	await _test_screen_fx_stays_outside_hud_canvas_layer()
+	await _test_particle_and_patch_layers_are_populated()
+	await _test_world_keeps_glow_environment_under_night_ambience()
 	quit(failures)
 
-func _test_required_ambience_assets_exist() -> void:
+func _test_required_night_assets_exist() -> void:
 	for path in REQUIRED_ASSET_PATHS:
-		_assert_true(ResourceLoader.exists(path), "required ambience asset exists: %s" % path)
+		_assert_true(ResourceLoader.exists(path), "required night ambience asset exists: %s" % path)
 
-func _test_world_creates_ambient_magic_controller() -> void:
+func _test_world_creates_night_ambience_controller() -> void:
 	var world := WORLD_SCENE.instantiate()
 	root.add_child(world)
 	await process_frame
 
-	var controller := world.get_node_or_null("AmbientMagic")
-	_assert_true(controller != null, "world creates AmbientMagic controller")
-	if controller != null:
-		_assert_true(controller is Node2D, "AmbientMagic controller is Node2D-based")
+	var ambience := world.get_node_or_null("NightAmbience")
+	_assert_true(ambience is Node2D, "world creates NightAmbience controller")
 
 	world.free()
 
-func _test_ambient_controller_has_background_layers() -> void:
+func _test_controller_owns_expected_layer_groups() -> void:
 	var world := WORLD_SCENE.instantiate()
 	root.add_child(world)
 	await process_frame
 
-	var controller := world.get_node_or_null("AmbientMagic")
-	_assert_true(controller != null, "AmbientMagic controller exists for background layer test")
-	if controller != null:
-		for node_name in ["BackgroundDotsA", "BackgroundDotsB", "BackgroundDotsC", "HeroLayer", "SparkleLayer"]:
-			_assert_true(controller.get_node_or_null(node_name) != null, "AmbientMagic has child %s" % node_name)
+	var ambience := world.get_node_or_null("NightAmbience")
+	_assert_true(ambience != null, "NightAmbience exists for layer ownership test")
+	if ambience != null:
+		for path in [
+			"NightEnvironment",
+			"WorldEffects",
+			"WorldEffects/FireflyParticles",
+			"WorldEffects/SparkleParticles",
+			"WorldEffects/MoonlightPatches",
+			"ScreenFx",
+			"ScreenFx/NightOverlay",
+			"ScreenFx/Vignette",
+		]:
+			_assert_true(ambience.get_node_or_null(path) != null, "NightAmbience has %s" % path)
 
 	world.free()
 
-func _test_ambient_controller_spawns_hero_fireflies() -> void:
+func _test_screen_fx_stays_outside_hud_canvas_layer() -> void:
 	var world := WORLD_SCENE.instantiate()
 	root.add_child(world)
 	await process_frame
-	await process_frame
 
-	var controller := world.get_node_or_null("AmbientMagic")
-	var hero_layer: Node = controller.get_node_or_null("HeroLayer") if controller != null else null
-	_assert_true(hero_layer is Node2D, "HeroLayer exists")
-	if hero_layer is Node2D:
-		_assert_true(hero_layer.get_child_count() >= 10, "hero layer spawns a readable number of fireflies")
-		for child in hero_layer.get_children():
-			_assert_true(child.get_node_or_null("Core") is Sprite2D, "hero firefly has Core sprite")
-			_assert_true(child.get_node_or_null("Halo") is Sprite2D, "hero firefly has Halo sprite")
+	var hud := world.get_node_or_null("Hud")
+	var overlay := world.get_node_or_null("NightAmbience/ScreenFx/NightOverlay")
+	var vignette := world.get_node_or_null("NightAmbience/ScreenFx/Vignette")
+	_assert_true(hud is CanvasLayer, "HUD remains a CanvasLayer")
+	if hud != null:
+		if overlay != null:
+			_assert_true(not hud.is_ancestor_of(overlay), "NightOverlay is not parented under HUD")
+		if vignette != null:
+			_assert_true(not hud.is_ancestor_of(vignette), "Vignette is not parented under HUD")
 
 	world.free()
 
-func _test_ambient_controller_has_sparse_sparkle_layer() -> void:
+func _test_particle_and_patch_layers_are_populated() -> void:
+	var world := WORLD_SCENE.instantiate()
+	root.add_child(world)
+	await process_frame
+	await process_frame
+
+	var fireflies := world.get_node_or_null("NightAmbience/WorldEffects/FireflyParticles") as GPUParticles2D
+	var sparkles := world.get_node_or_null("NightAmbience/WorldEffects/SparkleParticles") as GPUParticles2D
+	var patches := world.get_node_or_null("NightAmbience/WorldEffects/MoonlightPatches") as Node2D
+	_assert_true(fireflies != null, "firefly layer exists")
+	_assert_true(sparkles != null, "sparkle layer exists")
+	_assert_true(patches != null, "moonlight patch layer exists")
+	if fireflies != null:
+		_assert_true(fireflies.amount >= 40, "firefly layer is visibly populated")
+		_assert_true(fireflies.emitting, "firefly layer emits in night state")
+	if sparkles != null:
+		_assert_true(sparkles.amount >= 12, "sparkle layer is visibly populated")
+		_assert_true(sparkles.amount < fireflies.amount, "sparkle layer stays sparser than fireflies")
+	if patches != null:
+		_assert_true(patches.get_child_count() >= 3, "moonlight patches create visible breakup")
+		_assert_true(patches.get_child_count() <= 6, "moonlight patches stay sparse")
+
+	world.free()
+
+func _test_world_keeps_glow_environment_under_night_ambience() -> void:
 	var world := WORLD_SCENE.instantiate()
 	root.add_child(world)
 	await process_frame
 
-	var controller := world.get_node_or_null("AmbientMagic")
-	var sparkle_layer: Node = controller.get_node_or_null("SparkleLayer") if controller != null else null
-	_assert_true(sparkle_layer is Node2D, "SparkleLayer exists")
-	if sparkle_layer is Node2D:
-		_assert_true(sparkle_layer.get_child_count() >= 4, "sparkle layer contains sparse accent nodes")
-		_assert_true(sparkle_layer.get_child_count() <= 20, "sparkle layer stays sparse")
+	var world_env := world.get_node_or_null("NightAmbience/NightEnvironment") as WorldEnvironment
+	_assert_true(world_env != null, "NightEnvironment exists")
+	if world_env != null and world_env.environment != null:
+		_assert_true(world_env.environment.glow_enabled, "night environment enables glow")
+		_assert_true(world_env.environment.glow_intensity >= 0.35, "night glow intensity is meaningful")
 
 	world.free()
 
