@@ -75,10 +75,79 @@ func _build_vignette_texture(width: int, height: int) -> Texture2D:
 	return ImageTexture.create_from_image(image)
 
 func _configure_fireflies() -> void:
-	pass
+	var material := ParticleProcessMaterial.new()
+	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	material.emission_box_extents = Vector3(world_half_size.x, world_half_size.y, 0.0)
+	material.direction = Vector3(0.0, -1.0, 0.0)
+	material.spread = 32.0
+	material.initial_velocity_min = 4.0
+	material.initial_velocity_max = 11.0
+	material.gravity = Vector3.ZERO
+	material.scale_min = 0.55
+	material.scale_max = 1.15
+	var ramp := Gradient.new()
+	ramp.colors = PackedColorArray(
+		[
+			Color(0.95, 0.92, 0.42, 0.0),
+			Color(0.92, 0.96, 0.48, 0.95),
+			Color(0.62, 0.88, 0.42, 0.0),
+		]
+	)
+	var ramp_texture := GradientTexture1D.new()
+	ramp_texture.gradient = ramp
+	material.color_ramp = ramp_texture
+
+	firefly_particles.texture = FIREFLY_TEXTURE
+	firefly_particles.amount = firefly_amount
+	firefly_particles.lifetime = 6.0
+	firefly_particles.randomness = 0.9
+	firefly_particles.process_material = material
+	firefly_particles.local_coords = false
+	firefly_particles.emitting = true
+	firefly_particles.modulate = Color(1.0, 0.98, 0.72, 0.95)
 
 func _configure_sparkles() -> void:
-	pass
+	var material := ParticleProcessMaterial.new()
+	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	material.emission_box_extents = Vector3(world_half_size.x * 0.92, world_half_size.y * 0.88, 0.0)
+	material.direction = Vector3(0.0, -1.0, 0.0)
+	material.spread = 10.0
+	material.initial_velocity_min = 1.0
+	material.initial_velocity_max = 4.0
+	material.gravity = Vector3(0.0, -1.0, 0.0)
+	material.scale_min = 0.45
+	material.scale_max = 0.90
+	var ramp := Gradient.new()
+	ramp.colors = PackedColorArray(
+		[
+			Color(0.58, 0.88, 1.0, 0.0),
+			Color(0.66, 0.94, 1.0, 0.85),
+			Color(0.82, 0.97, 1.0, 0.0),
+		]
+	)
+	var ramp_texture := GradientTexture1D.new()
+	ramp_texture.gradient = ramp
+	material.color_ramp = ramp_texture
+
+	sparkle_particles.texture = SPARKLE_TEXTURE
+	sparkle_particles.amount = sparkle_amount
+	sparkle_particles.lifetime = 1.8
+	sparkle_particles.randomness = 1.0
+	sparkle_particles.process_material = material
+	sparkle_particles.local_coords = false
+	sparkle_particles.emitting = true
+	sparkle_particles.modulate = Color(0.78, 0.94, 1.0, 0.90)
 
 func _rebuild_moonlight_patches() -> void:
-	pass
+	for child in moonlight_patches.get_children():
+		child.queue_free()
+
+	for index in range(moonlight_patch_positions.size()):
+		var patch := Sprite2D.new()
+		patch.name = "MoonlightPatch%s" % [index + 1]
+		patch.texture = MOONLIGHT_PATCH_TEXTURE
+		patch.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		patch.position = moonlight_patch_positions[index]
+		patch.modulate = Color(0.66, 0.84, 1.0, 0.18)
+		patch.scale = Vector2(0.95, 0.95) + Vector2.ONE * (0.08 * float(index % 2))
+		moonlight_patches.add_child(patch)
