@@ -441,9 +441,9 @@ func _setup_night_atmosphere() -> void:
 	env.glow_enabled = true
 	env.glow_intensity = 0.4
 	env.glow_bloom = 0.1
-	env.set_glow_level(0, true)
-	env.set_glow_level(1, true)
-	env.set_glow_level(2, true)
+	env.set_glow_level(0, 0.8)
+	env.set_glow_level(1, 0.8)
+	env.set_glow_level(2, 0.8)
 
 	var world_env := WorldEnvironment.new()
 	world_env.name = "NightEnvironment"
