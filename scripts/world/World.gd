@@ -53,6 +53,7 @@ func _ready() -> void:
 	spawn_timer = initial_spawn_interval
 	chest_spawn_timer = chest_spawn_interval
 	_try_spawn_enemy()
+	_setup_night_atmosphere()
 
 func _process(delta: float) -> void:
 	elapsed_time += delta
@@ -425,6 +426,29 @@ func _spawn_smash_mark(impact_position: Vector2) -> void:
 	var smash_mark := smash_mark_scene.instantiate() as Node2D
 	add_child(smash_mark)
 	smash_mark.global_position = impact_position
+
+func _setup_night_atmosphere() -> void:
+	# Night canvas modulate (blue-dark tint)
+	var canvas_mod := CanvasModulate.new()
+	canvas_mod.name = "NightModulate"
+	canvas_mod.color = Color(0.55, 0.62, 0.78)
+	add_child(canvas_mod)
+
+	# WorldEnvironment with glow
+	var env := Environment.new()
+	env.background_mode = Environment.BG_COLOR
+	env.background_color = Color(0.02, 0.03, 0.06)
+	env.glow_enabled = true
+	env.glow_intensity = 0.4
+	env.glow_bloom = 0.1
+	env.set_glow_level(0, true)
+	env.set_glow_level(1, true)
+	env.set_glow_level(2, true)
+
+	var world_env := WorldEnvironment.new()
+	world_env.name = "NightEnvironment"
+	world_env.environment = env
+	add_child(world_env)
 
 func _add_slam_charge() -> void:
 	slam_charge += 1
