@@ -17,9 +17,8 @@ func _test_player_attack_effects_work_without_current_scene() -> void:
 	await process_frame
 
 	player.call("_try_melee_attack")
-	await process_frame
-
 	_assert_true(root.find_child("SlashTrail", true, false) != null, "player attack spawns slash trail without current_scene")
+	await process_frame
 	player.free()
 
 func _test_player_afterimage_does_not_use_invalid_interval_callback_chain() -> void:
