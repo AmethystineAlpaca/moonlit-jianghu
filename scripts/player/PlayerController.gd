@@ -92,6 +92,9 @@ var is_exhausted: bool = false
 var is_defeated: bool = false
 var normal_body_scale: Vector2 = Vector2.ONE
 var visual_time: float = 0.0
+var _afterimage_timer: float = 0.0
+var _afterimage_interval_move: float = 0.07
+var _afterimage_interval_dash: float = 0.035
 
 func _ready() -> void:
 	_setup_xianxia_visuals()
@@ -426,6 +429,16 @@ func _update_xianxia_animation(_delta: float) -> void:
 		return
 
 	var moving := current_input_direction != Vector2.ZERO
+	var is_dashing := dash_timer > 0.0
+	if is_dashing or moving:
+		var interval := _afterimage_interval_dash if is_dashing else _afterimage_interval_move
+		_afterimage_timer -= _delta
+		if _afterimage_timer <= 0.0:
+			_afterimage_timer = interval
+			var alpha := 0.55 if is_dashing else 0.30
+			_spawn_afterimage(alpha)
+	else:
+		_afterimage_timer = 0.0
 	var walk_bob := sin(visual_time * 12.0) * 1.6 if moving else sin(visual_time * 3.0) * 0.45
 	body.position = Vector2(0.0, walk_bob)
 	if robe_sash_visual != null:
@@ -444,6 +457,21 @@ func _update_xianxia_animation(_delta: float) -> void:
 	else:
 		sword_mount.position = Vector2(13.0, 1.0 + walk_bob * 0.45)
 		sword_mount.modulate = Color.WHITE
+
+func _spawn_afterimage(alpha: float) -> void:
+	var ghost := Sprite2D.new()
+	ghost.texture = body.texture
+	ghost.scale = body.scale
+	ghost.rotation = body.rotation
+	ghost.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	ghost.modulate = Color(0.55, 0.88, 1.0, alpha)
+	ghost.z_index = body.z_index - 1
+	get_parent().add_child(ghost)
+	ghost.global_position = body.global_position
+	ghost.global_rotation = body.global_rotation
+	var tween := ghost.create_tween()
+	tween.tween_property(ghost, "modulate:a", 0.0, 0.12 if dash_timer <= 0.0 else 0.08)
+	tween.tween_callback(ghost.queue_free)
 
 func _fill_rect(image: Image, rect: Rect2i, fill: Color) -> void:
 	for y in range(rect.position.y, rect.end.y):
