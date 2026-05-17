@@ -216,9 +216,9 @@ func _try_melee_attack() -> void:
 	_set_stamina(current_stamina - attack_stamina_cost)
 	_show_attack_preview()
 	var world := get_tree().get_first_node_in_group("world")
-	var _is_slam := world != null and world.has_method("has_slam_charge") and world.has_slam_charge()
-	var _is_counter := counter_ready_timer > 0.0
-	var _has_momentum := current_input_direction != Vector2.ZERO and current_input_direction.dot(last_facing_direction) > 0.75
+	var _is_slam: bool = world != null and world.has_method("has_slam_charge") and world.has_slam_charge()
+	var _is_counter: bool = counter_ready_timer > 0.0
+	var _has_momentum: bool = current_input_direction != Vector2.ZERO and current_input_direction.dot(last_facing_direction) > 0.75
 	_spawn_slash_trail(_choose_attack_variant(_is_slam, _is_counter, _has_momentum, false))
 	_start_sword_swing(1.0)
 	velocity += last_facing_direction * melee_lunge_force
