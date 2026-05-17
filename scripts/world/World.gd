@@ -54,6 +54,7 @@ func _ready() -> void:
 	chest_spawn_timer = chest_spawn_interval
 	_try_spawn_enemy()
 	_setup_night_atmosphere()
+	_add_obstacle_shadows()
 
 func _process(delta: float) -> void:
 	elapsed_time += delta
@@ -503,6 +504,59 @@ func _setup_night_atmosphere() -> void:
 		moon_pts.append(Vector2(cos(a) * 280.0, sin(a) * 160.0))
 	moon_glow.polygon = moon_pts
 	add_child(moon_glow)
+
+func _add_obstacle_shadows() -> void:
+	var shadow_tex := _build_shadow_texture()
+	for group_name in [&"Buildings", &"Landmarks", &"Trees", &"Breakables"]:
+		var group_node := get_node_or_null(group_name) as Node2D
+		if group_node == null:
+			continue
+		for child in group_node.get_children():
+			if child is Node2D:
+				_attach_shadow(child as Node2D, shadow_tex)
+
+func _attach_shadow(obstacle: Node2D, shadow_tex: Texture2D) -> void:
+	if obstacle.get_node_or_null("ShadowEllipse") != null:
+		return
+	var size := _get_obstacle_footprint(obstacle)
+	if size == Vector2.ZERO:
+		return
+	var shadow := Sprite2D.new()
+	shadow.name = "ShadowEllipse"
+	shadow.texture = shadow_tex
+	shadow.scale = Vector2(size.x / 64.0, size.y / 32.0)
+	shadow.position = Vector2(0.0, size.y * 0.45)
+	shadow.z_index = -1
+	shadow.modulate = Color(0.0, 0.0, 0.0, 0.45)
+	obstacle.add_child(shadow)
+
+func _get_obstacle_footprint(n: Node2D) -> Vector2:
+	if "size" in n:
+		var s = n.size
+		if s is Vector2 and s != Vector2.ZERO:
+			return s * Vector2(1.0, 0.5)
+	var col := n.get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if col != null and col.shape is RectangleShape2D:
+		return (col.shape as RectangleShape2D).size * Vector2(1.0, 0.45)
+	if col != null and col.shape is CircleShape2D:
+		var r := (col.shape as CircleShape2D).radius
+		return Vector2(r * 2.2, r * 0.9)
+	return Vector2.ZERO
+
+func _build_shadow_texture() -> Texture2D:
+	var img := Image.create(64, 32, false, Image.FORMAT_RGBA8)
+	var center := Vector2(32.0, 16.0)
+	var rx := 30.0
+	var ry := 14.0
+	for y in range(32):
+		for x in range(64):
+			var dx := (x - center.x) / rx
+			var dy := (y - center.y) / ry
+			var dist := sqrt(dx * dx + dy * dy)
+			var alpha := clampf(1.0 - dist, 0.0, 1.0)
+			alpha = pow(alpha, 1.6)
+			img.set_pixel(x, y, Color(0.0, 0.0, 0.0, alpha))
+	return ImageTexture.create_from_image(img)
 
 func _add_slam_charge() -> void:
 	slam_charge += 1
