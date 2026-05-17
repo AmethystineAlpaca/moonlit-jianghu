@@ -450,6 +450,38 @@ func _setup_night_atmosphere() -> void:
 	world_env.environment = env
 	add_child(world_env)
 
+	# Ambient spirit particles
+	var spirit_mat := ParticleProcessMaterial.new()
+	spirit_mat.direction = Vector3(0.0, -1.0, 0.0)
+	spirit_mat.spread = 28.0
+	spirit_mat.initial_velocity_min = 4.0
+	spirit_mat.initial_velocity_max = 10.0
+	spirit_mat.gravity = Vector3(0.0, -2.0, 0.0)
+	spirit_mat.scale_min = 0.6
+	spirit_mat.scale_max = 1.4
+	spirit_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	spirit_mat.emission_box_extents = Vector3(680.0, 440.0, 0.0)
+
+	var color_ramp := Gradient.new()
+	color_ramp.set_color(0, Color(0.5, 0.85, 1.0, 0.9))
+	color_ramp.set_color(1, Color(0.3, 0.6, 1.0, 0.0))
+	var ramp_tex := GradientTexture1D.new()
+	ramp_tex.gradient = color_ramp
+	spirit_mat.color_ramp = ramp_tex
+
+	var spirit_particles := GPUParticles2D.new()
+	spirit_particles.name = "SpiritParticles"
+	spirit_particles.amount = 72
+	spirit_particles.lifetime = 4.2
+	spirit_particles.explosiveness = 0.0
+	spirit_particles.randomness = 1.0
+	spirit_particles.local_coords = false
+	spirit_particles.emitting = true
+	spirit_particles.process_material = spirit_mat
+	spirit_particles.modulate = Color(0.55, 0.88, 1.0, 1.0)
+	spirit_particles.z_index = 10
+	add_child(spirit_particles)
+
 func _add_slam_charge() -> void:
 	slam_charge += 1
 	if slam_charge >= slam_charge_required:
