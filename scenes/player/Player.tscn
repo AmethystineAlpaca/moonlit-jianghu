@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/PlayerController.gd" id="1_controller"]
 [ext_resource type="Script" path="res://scripts/components/HealthComponent.gd" id="2_health"]
 [ext_resource type="Script" path="res://scripts/skills/SkillCaster.gd" id="3_skill_caster"]
+[ext_resource type="Texture2D" path="res://assets/xianxia/pixel_night_assets/light_circle.png" id="4_night_light"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
 radius = 12.0
@@ -50,6 +51,16 @@ texture = SubResource("GradientTexture2D_player")
 color = Color(0.93, 0.97, 1, 1)
 polygon = PackedVector2Array(0, 17, -5, 6, 5, 6)
 
+[node name="PlayerLight" type="PointLight2D" parent="."]
+position = Vector2(0, -2)
+texture = ExtResource("4_night_light")
+texture_scale = 0.85
+color = Color(0.74, 0.88, 1, 1)
+energy = 0.42
+blend_mode = 1
+range_item_cull_mask = 1
+shadow_enabled = false
+
 [node name="Sword" type="Node2D" parent="."]
 position = Vector2(0, 0)
 
@@ -67,6 +78,16 @@ polygon = PackedVector2Array(-7, -1, 7, -1, 7, 2, -7, 2)
 position = Vector2(0, 10)
 color = Color(0.32, 0.18, 0.08, 1)
 polygon = PackedVector2Array(-2, -5, 2, -5, 2, 7, -2, 7)
+
+[node name="WeaponLight" type="PointLight2D" parent="Sword"]
+position = Vector2(0, 20)
+texture = ExtResource("4_night_light")
+texture_scale = 0.45
+color = Color(0.68, 0.92, 1, 1)
+energy = 0.68
+blend_mode = 1
+range_item_cull_mask = 1
+shadow_enabled = false
 
 [node name="AttackPreview" type="Node2D" parent="."]
 visible = false
