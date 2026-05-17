@@ -206,8 +206,10 @@ func _assign_faction_groups() -> void:
 func _apply_faction_visuals() -> void:
 	if faction == "zombie":
 		body.modulate = Color(0.78, 1.0, 0.72, 1.0)
+		_ensure_zombie_halo()
 	else:
 		body.modulate = Color.WHITE
+		_remove_zombie_halo()
 	if soul_accent_visual != null:
 		soul_accent_visual.color = get_visual_accent_color()
 	if bone_weapon_visual != null:
@@ -501,7 +503,7 @@ func _on_died() -> void:
 	hp_bar.visible = false
 	body.texture = _build_skeleton_corpse_texture(visual_accent_color)
 	body.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	body.modulate = Color.WHITE
+	body.modulate = Color(0.62, 0.60, 0.58, 1.0)
 	body.scale = normal_body_scale
 	modulate.a = 1.0
 
@@ -599,6 +601,32 @@ func _update_skeleton_animation(_delta: float) -> void:
 	if bone_weapon_visual != null:
 		bone_weapon_visual.position = Vector2(0.0, bob * 0.5)
 		bone_weapon_visual.rotation = facing_direction.angle() * 0.18 + (0.55 if is_winding_up else 0.0) - (0.85 if attack_snap_timer > 0.0 else 0.0)
+	var halo := get_node_or_null("ZombieHalo") as Polygon2D
+	if halo != null:
+		halo.scale = Vector2.ONE * (1.0 + sin(visual_time * 5.5) * 0.12)
+		halo.modulate.a = 0.85 + sin(visual_time * 5.5) * 0.15
+
+func _ensure_zombie_halo() -> void:
+	if get_node_or_null("ZombieHalo") != null:
+		return
+	var halo := Polygon2D.new()
+	halo.name = "ZombieHalo"
+	var pts := PackedVector2Array()
+	for i in range(24):
+		var a := TAU * i / 24.0
+		pts.append(Vector2(cos(a) * 18.0, sin(a) * 12.0))
+	halo.polygon = pts
+	halo.color = Color(0.22, 1.0, 0.38, 0.28)
+	halo.z_index = -1
+	var mat := CanvasItemMaterial.new()
+	mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	halo.material = mat
+	add_child(halo)
+
+func _remove_zombie_halo() -> void:
+	var halo := get_node_or_null("ZombieHalo")
+	if halo != null:
+		halo.queue_free()
 
 func _fill_rect(image: Image, rect: Rect2i, fill: Color) -> void:
 	for y in range(rect.position.y, rect.end.y):
