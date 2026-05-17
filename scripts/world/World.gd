@@ -429,19 +429,18 @@ func _spawn_smash_mark(impact_position: Vector2) -> void:
 	smash_mark.global_position = impact_position
 
 func _setup_night_atmosphere() -> void:
-	# Night canvas modulate (blue-dark tint)
+	# Night canvas modulate — subtle cool-blue tint, keeps scene visible
 	var canvas_mod := CanvasModulate.new()
 	canvas_mod.name = "NightModulate"
-	canvas_mod.color = Color(0.55, 0.62, 0.78)
+	canvas_mod.color = Color(0.80, 0.86, 0.96)
 	add_child(canvas_mod)
 
-	# WorldEnvironment with glow
+	# WorldEnvironment — glow only, BG_KEEP so the 2D scene background is unchanged
 	var env := Environment.new()
-	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color(0.02, 0.03, 0.06)
+	env.background_mode = Environment.BG_KEEP
 	env.glow_enabled = true
-	env.glow_intensity = 0.4
-	env.glow_bloom = 0.1
+	env.glow_intensity = 0.35
+	env.glow_bloom = 0.08
 	env.set_glow_level(0, 0.8)
 	env.set_glow_level(1, 0.8)
 	env.set_glow_level(2, 0.8)
@@ -507,7 +506,7 @@ func _setup_night_atmosphere() -> void:
 
 func _add_obstacle_shadows() -> void:
 	var shadow_tex := _build_shadow_texture()
-	for group_name in [&"Buildings", &"Landmarks", &"Trees", &"Breakables"]:
+	for group_name in ["Buildings", "Landmarks", "Trees", "Breakables"]:
 		var group_node := get_node_or_null(group_name) as Node2D
 		if group_node == null:
 			continue
