@@ -471,12 +471,12 @@ func _spawn_afterimage(alpha: float) -> void:
 	ghost.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	ghost.modulate = Color(0.55, 0.88, 1.0, alpha)
 	ghost.z_index = body.z_index - 1
-	get_parent().add_child(ghost)
 	ghost.global_position = body.global_position
 	ghost.global_rotation = body.global_rotation
-	var tween := ghost.create_tween()
-	tween.tween_property(ghost, "modulate:a", 0.0, 0.12 if dash_timer <= 0.0 else 0.08)
-	tween.tween_callback(ghost.queue_free)
+	get_parent().call_deferred("add_child", ghost)
+	var fade_time := 0.12 if dash_timer <= 0.0 else 0.08
+	get_tree().create_tween().tween_property(ghost, "modulate:a", 0.0, fade_time).set_delay(0.02)
+	get_tree().create_tween().tween_interval(fade_time + 0.03).tween_callback(ghost.queue_free)
 
 func _fill_rect(image: Image, rect: Rect2i, fill: Color) -> void:
 	for y in range(rect.position.y, rect.end.y):
