@@ -1,0 +1,11 @@
+{"type":"server-started","port":64556,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:64556","screen_dir":"/Users/ming/gaame/.superpowers/brainstorm/40649-1779000378/content","state_dir":"/Users/ming/gaame/.superpowers/brainstorm/40649-1779000378/state"}
+{"type":"screen-added","file":"/Users/ming/gaame/.superpowers/brainstorm/40649-1779000378/content/visual-direction.html"}
+{"type":"screen-added","file":"/Users/ming/gaame/.superpowers/brainstorm/40649-1779000378/content/priority-area.html"}
+{"source":"user-event","type":"click","text":"打中了……\n      \n    \n    \n      B · 打击瞬间特效\n      击中火花、刀光残影、屏幕震动、打击停顿、伤害数字\n      现状：有基础火花，但爆裂感和通透感不足","choice":"b","id":null,"timestamp":1779000818869}
+{"source":"user-event","type":"click","text":"A · 角色外观与动作\n      玩家和骷髅敌人的像素造型、装备细节、走路/攻击动画\n      现状：形状偏简单，缺乏细节和生命感","choice":"a","id":null,"timestamp":1779000819651}
+{"source":"user-event","type":"click","text":"技能 A\n        技能 B\n      \n    \n    \n      C · 技能与法术特效\n      变身光柱、护体神光、剑气波、粒子爆炸等大技能演出\n      现状：技能效果存在但视觉表现力偏弱","choice":"c","id":null,"timestamp":1779000820117}
+{"source":"user-event","type":"click","text":"D · 环境与地图氛围\n      草地风效、光影投射、破坏特效、场景纵深感\n      现状：草地shader已有，但整体场景偏平","choice":"d","id":null,"timestamp":1779000820633}
+{"source":"user-event","type":"click","text":"打中了……\n      \n    \n    \n      B · 打击瞬间特效\n      击中火花、刀光残影、屏幕震动、打击停顿、伤害数字\n      现状：有基础火花，但爆裂感和通透感不足","choice":"b","id":null,"timestamp":1779000826785}
+{"type":"screen-added","file":"/Users/ming/gaame/.superpowers/brainstorm/40649-1779000378/content/env-mood.html"}
+{"type":"screen-added","file":"/Users/ming/gaame/.superpowers/brainstorm/40649-1779000378/content/env-detail.html"}
+{"type":"screen-added","file":"/Users/ming/gaame/.superpowers/brainstorm/40649-1779000378/content/waiting-1.html"}

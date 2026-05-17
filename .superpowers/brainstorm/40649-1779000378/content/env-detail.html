@@ -1,0 +1,233 @@
+<h2>月夜仙境 · 具体效果层级</h2>
+<p class="subtitle">这些效果哪些是"必须有"，哪些是"加分项"？帮我定优先级</p>
+
+<style>
+.effect-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+.effect-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 2px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+  background: #0e0e14;
+  transition: border-color 0.2s;
+}
+.effect-row:hover { border-color: #555; }
+.effect-row.selected { border-color: #6ef; background: #0a1520; }
+.effect-preview {
+  width: 80px;
+  height: 56px;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+  background: #060810;
+}
+.effect-text { flex: 1; }
+.effect-name { font-size: 13px; font-weight: bold; color: #ddd; margin-bottom: 4px; }
+.effect-desc { font-size: 11px; color: #888; line-height: 1.5; }
+.effect-cost { font-size: 10px; margin-top: 4px; }
+
+/* Preview animations */
+/* 1. Grass glow */
+.gp-container { width: 100%; height: 100%; position: relative; background: #030610; }
+.gp-blade {
+  position: absolute;
+  bottom: 0;
+  width: 2px;
+  border-radius: 1px 1px 0 0;
+  transform-origin: bottom;
+  animation: gp-sway 2.5s ease-in-out infinite;
+}
+@keyframes gp-sway { 0%,100%{transform:rotate(-4deg)} 50%{transform:rotate(4deg)} }
+
+/* 2. Ground rune */
+.gr-container { width: 100%; height: 100%; position: relative; background: #030610; display:flex; align-items:center; justify-content:center; }
+.gr-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(80,180,255,0.5);
+}
+.gr-dot {
+  position: absolute;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: rgba(100,200,255,0.8);
+  box-shadow: 0 0 4px rgba(100,200,255,0.8);
+}
+
+/* 3. Ambient particles */
+.ap-container { width: 100%; height: 100%; position: relative; background: #030610; overflow: hidden; }
+.ap-particle {
+  position: absolute;
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  animation: ap-float linear infinite;
+}
+@keyframes ap-float {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 0.6; }
+  100% { transform: translateY(-50px) translateX(var(--drift, 10px)); opacity: 0; }
+}
+
+/* 4. Moon light beam */
+.ml-container { width: 100%; height: 100%; position: relative; background: linear-gradient(to bottom, #040d1e, #020508); overflow: hidden; }
+.ml-moon {
+  position: absolute;
+  top: 4px; right: 8px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #e8f0ff, #b0c8ff);
+  box-shadow: 0 0 10px rgba(180,210,255,0.8);
+}
+.ml-beam {
+  position: absolute;
+  top: 0; right: 10px;
+  width: 25px; height: 56px;
+  background: linear-gradient(to bottom, rgba(150,190,255,0.15), transparent);
+  transform: rotate(-5deg);
+  transform-origin: top center;
+}
+.ml-ground-glow {
+  position: absolute;
+  bottom: 0; left: 10px; right: 10px;
+  height: 8px;
+  background: radial-gradient(ellipse, rgba(100,160,255,0.2) 0%, transparent 70%);
+}
+
+/* 5. Shadow / depth */
+.sd-container { width: 100%; height: 100%; position: relative; background: #030610; }
+.sd-obstacle {
+  position: absolute;
+  bottom: 12px; left: 20px;
+  width: 16px; height: 22px;
+  background: #1a3a20;
+  border-radius: 2px;
+}
+.sd-shadow {
+  position: absolute;
+  bottom: 8px; left: 14px;
+  width: 24px; height: 6px;
+  background: rgba(0,0,0,0.7);
+  border-radius: 50%;
+  transform: scaleX(1.5);
+  filter: blur(1px);
+}
+.sd-obstacle2 {
+  position: absolute;
+  bottom: 10px; right: 15px;
+  width: 12px; height: 18px;
+  background: #152d18;
+  border-radius: 2px;
+}
+.sd-shadow2 {
+  position: absolute;
+  bottom: 6px; right: 10px;
+  width: 18px; height: 5px;
+  background: rgba(0,0,0,0.6);
+  border-radius: 50%;
+  transform: scaleX(1.4);
+  filter: blur(1px);
+}
+</style>
+
+<div class="effect-list" data-multiselect>
+
+  <div class="effect-row option" data-choice="grass" onclick="toggleSelect(this)">
+    <div class="effect-preview">
+      <div class="gp-container">
+        <div class="gp-blade" style="left:8px;height:38px;background:linear-gradient(to top,#0d2a18,rgba(40,180,80,0.5));animation-delay:0s;box-shadow:0 0 4px rgba(40,180,80,0.4)"></div>
+        <div class="gp-blade" style="left:15px;height:30px;background:linear-gradient(to top,#0a2214,#1a5028);animation-delay:0.4s"></div>
+        <div class="gp-blade" style="left:22px;height:42px;background:linear-gradient(to top,#0d2a18,rgba(40,180,80,0.5));animation-delay:0.2s;box-shadow:0 0 5px rgba(40,180,80,0.3)"></div>
+        <div class="gp-blade" style="left:30px;height:34px;background:linear-gradient(to top,#0a2214,#1a5028);animation-delay:0.7s"></div>
+        <div class="gp-blade" style="left:38px;height:40px;background:linear-gradient(to top,#0d2a18,rgba(40,180,80,0.5));animation-delay:0.1s;box-shadow:0 0 4px rgba(40,180,80,0.3)"></div>
+        <div class="gp-blade" style="left:48px;height:28px;background:linear-gradient(to top,#0a2214,rgba(30,160,70,0.4));animation-delay:0.5s"></div>
+        <div class="gp-blade" style="left:56px;height:36px;background:linear-gradient(to top,#0d2a18,rgba(40,180,80,0.5));animation-delay:0.9s;box-shadow:0 0 5px rgba(40,180,80,0.4)"></div>
+        <div class="gp-blade" style="left:64px;height:32px;background:linear-gradient(to top,#0a2214,#1a5028);animation-delay:0.3s"></div>
+        <div class="gp-blade" style="left:72px;height:38px;background:linear-gradient(to top,#0d2a18,rgba(40,180,80,0.5));animation-delay:0.6s;box-shadow:0 0 4px rgba(40,180,80,0.3)"></div>
+      </div>
+    </div>
+    <div class="effect-text">
+      <div class="effect-name">草叶荧绿冷光 + 风吹动画</div>
+      <div class="effect-desc">草尖自发冷绿光，随风摆动。已有 grass_wind.gdshader，在此基础上加辉光参数</div>
+      <div class="effect-cost" style="color:#6ef">实现难度：低 · 改已有 shader 即可</div>
+    </div>
+  </div>
+
+  <div class="effect-row option" data-choice="rune" onclick="toggleSelect(this)">
+    <div class="effect-preview">
+      <div class="gr-container">
+        <div class="gr-ring" style="width:50px;height:50px;animation:gr-spin 6s linear infinite"></div>
+        <div class="gr-ring" style="width:32px;height:32px;animation:gr-spin 4s linear infinite reverse;border-color:rgba(100,220,255,0.3)"></div>
+        <div class="gr-dot" style="top:14px;left:28px"></div>
+        <div class="gr-dot" style="top:35px;left:10px"></div>
+        <div class="gr-dot" style="top:35px;left:46px"></div>
+      </div>
+      <style>@keyframes gr-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}</style>
+    </div>
+    <div class="effect-text">
+      <div class="effect-name">地面法阵光纹</div>
+      <div class="effect-desc">地面随机出现旋转法阵，淡入淡出。增加"灵气充盈"的仙境感</div>
+      <div class="effect-cost" style="color:#af8">实现难度：中 · 新建 shader 或程序生成</div>
+    </div>
+  </div>
+
+  <div class="effect-row option" data-choice="particles" onclick="toggleSelect(this)">
+    <div class="effect-preview">
+      <div class="ap-container">
+        <div class="ap-particle" style="background:#7ef;box-shadow:0 0 3px #7ef;bottom:5px;left:10px;animation-duration:3s;animation-delay:0s;--drift:8px"></div>
+        <div class="ap-particle" style="background:#aef;box-shadow:0 0 3px #aef;bottom:5px;left:25px;animation-duration:4s;animation-delay:0.5s;--drift:-5px"></div>
+        <div class="ap-particle" style="background:#7ef;box-shadow:0 0 3px #7ef;bottom:5px;left:40px;animation-duration:3.5s;animation-delay:1s;--drift:12px"></div>
+        <div class="ap-particle" style="background:#cff;box-shadow:0 0 3px #cff;bottom:5px;left:55px;animation-duration:4.5s;animation-delay:0.2s;--drift:-8px"></div>
+        <div class="ap-particle" style="background:#7ef;box-shadow:0 0 3px #7ef;bottom:5px;left:65px;animation-duration:3.2s;animation-delay:1.5s;--drift:6px"></div>
+      </div>
+    </div>
+    <div class="effect-text">
+      <div class="effect-name">环境灵气粒子</div>
+      <div class="effect-desc">场景中漂浮着微小蓝白光点，缓缓上升消散，制造出"灵气充盈"氛围</div>
+      <div class="effect-cost" style="color:#af8">实现难度：中 · GPUParticles2D</div>
+    </div>
+  </div>
+
+  <div class="effect-row option" data-choice="moonbeam" onclick="toggleSelect(this)">
+    <div class="effect-preview">
+      <div class="ml-container">
+        <div class="ml-moon"></div>
+        <div class="ml-beam"></div>
+        <div class="ml-ground-glow"></div>
+      </div>
+    </div>
+    <div class="effect-text">
+      <div class="effect-name">月光束 + 地面光晕</div>
+      <div class="effect-desc">月光从右上角斜射，打亮地面一片区域。场景有方向感和光源感</div>
+      <div class="effect-cost" style="color:#fa8">实现难度：中高 · Light2D 或 CanvasModulate</div>
+    </div>
+  </div>
+
+  <div class="effect-row option" data-choice="shadow" onclick="toggleSelect(this)">
+    <div class="effect-preview">
+      <div class="sd-container">
+        <div class="sd-shadow"></div>
+        <div class="sd-obstacle"></div>
+        <div class="sd-shadow2"></div>
+        <div class="sd-obstacle2"></div>
+      </div>
+    </div>
+    <div class="effect-text">
+      <div class="effect-name">障碍物投影 + 纵深感</div>
+      <div class="effect-desc">树、箱子等物件脚下有软阴影，配合 Y-sort 增加俯视角纵深感</div>
+      <div class="effect-cost" style="color:#fa8">实现难度：中高 · LightOccluder2D</div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px">全选也没问题，我只是想知道哪些是核心、哪些如果工期紧可以砍</p>

@@ -1,0 +1,210 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/world/placeholders/HousePlaceholder.tscn" id="2_house"]
+[ext_resource type="PackedScene" path="res://scenes/world/placeholders/TreePlaceholder.tscn" id="3_tree"]
+[ext_resource type="PackedScene" path="res://scenes/world/placeholders/ObstaclePlaceholder.tscn" id="4_obstacle"]
+[ext_resource type="PackedScene" path="res://scenes/world/placeholders/BoundaryWall.tscn" id="5_boundary"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/BasicEnemy.tscn" id="6_enemy"]
+[ext_resource type="PackedScene" path="res://ui/Hud.tscn" id="7_hud"]
+[ext_resource type="Script" path="res://scripts/world/World.gd" id="8_world"]
+[ext_resource type="PackedScene" path="res://scenes/world/placeholders/BreakableCrate.tscn" id="9_crate"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/FastEnemy.tscn" id="10_fast_enemy"]
+[ext_resource type="Script" path="res://scripts/world/PixelSurface.gd" id="11_surface"]
+[ext_resource type="PackedScene" path="res://scenes/world/ChestEncounter.tscn" id="12_chest"]
+[ext_resource type="Script" path="res://scripts/world/Grassland.gd" id="13_grassland"]
+
+[node name="World" type="Node2D"]
+script = ExtResource("8_world")
+enemy_scene = ExtResource("6_enemy")
+fast_enemy_scene = ExtResource("10_fast_enemy")
+breakable_scene = ExtResource("9_crate")
+chest_scene = ExtResource("12_chest")
+
+[node name="Ground" type="TextureRect" parent="."]
+offset_left = -720.0
+offset_top = -480.0
+offset_right = 720.0
+offset_bottom = 480.0
+mouse_filter = 2
+script = ExtResource("11_surface")
+surface_kind = "dirt"
+
+[node name="VerticalPath" type="TextureRect" parent="."]
+offset_left = -44.0
+offset_top = -480.0
+offset_right = 44.0
+offset_bottom = 480.0
+mouse_filter = 2
+script = ExtResource("11_surface")
+surface_kind = "path"
+
+[node name="HorizontalPath" type="TextureRect" parent="."]
+offset_left = -720.0
+offset_top = -42.0
+offset_right = 720.0
+offset_bottom = 42.0
+mouse_filter = 2
+script = ExtResource("11_surface")
+surface_kind = "path"
+
+[node name="VillageSquare" type="TextureRect" parent="."]
+offset_left = -116.0
+offset_top = -116.0
+offset_right = 116.0
+offset_bottom = 116.0
+mouse_filter = 2
+script = ExtResource("11_surface")
+surface_kind = "stone"
+
+[node name="GrasslandNW" type="TextureRect" parent="."]
+offset_left = -640.0
+offset_top = -440.0
+offset_right = -470.0
+offset_bottom = -100.0
+mouse_filter = 2
+script = ExtResource("11_surface")
+surface_kind = "grassland"
+
+[node name="GrasslandNE" type="TextureRect" parent="."]
+offset_left = 470.0
+offset_top = -440.0
+offset_right = 640.0
+offset_bottom = -100.0
+mouse_filter = 2
+script = ExtResource("11_surface")
+surface_kind = "grassland"
+
+[node name="GrasslandSW" type="TextureRect" parent="."]
+offset_left = -640.0
+offset_top = 100.0
+offset_right = -470.0
+offset_bottom = 440.0
+mouse_filter = 2
+script = ExtResource("11_surface")
+surface_kind = "grassland"
+
+[node name="GrasslandSE" type="TextureRect" parent="."]
+offset_left = 470.0
+offset_top = 100.0
+offset_right = 640.0
+offset_bottom = 440.0
+mouse_filter = 2
+script = ExtResource("11_surface")
+surface_kind = "grassland"
+
+[node name="Grassland" type="Node2D" parent="."]
+script = ExtResource("13_grassland")
+
+[node name="Buildings" type="Node2D" parent="."]
+
+[node name="BlueRoofShop" parent="Buildings" instance=ExtResource("2_house")]
+position = Vector2(-310, -220)
+color = Color(0.12, 0.31, 0.82, 1)
+
+[node name="RedRoofSmithy" parent="Buildings" instance=ExtResource("2_house")]
+position = Vector2(320, -215)
+color = Color(0.72, 0.14, 0.09, 1)
+
+[node name="Chapel" parent="Buildings" instance=ExtResource("2_house")]
+position = Vector2(-310, 235)
+size = Vector2(128, 96)
+color = Color(0.18, 0.34, 0.74, 1)
+
+[node name="Inn" parent="Buildings" instance=ExtResource("2_house")]
+position = Vector2(330, 240)
+color = Color(0.64, 0.32, 0.13, 1)
+
+[node name="Landmarks" type="Node2D" parent="."]
+
+[node name="Fountain" parent="Landmarks" instance=ExtResource("4_obstacle")]
+position = Vector2(0, 0)
+size = Vector2(80, 80)
+color = Color(0.22, 0.45, 0.68, 1)
+visual_style = "fountain"
+
+[node name="Well" parent="Landmarks" instance=ExtResource("4_obstacle")]
+position = Vector2(-150, -185)
+size = Vector2(54, 54)
+color = Color(0.38, 0.4, 0.37, 1)
+visual_style = "well"
+
+[node name="StonePile" parent="Landmarks" instance=ExtResource("4_obstacle")]
+position = Vector2(-500, 150)
+size = Vector2(54, 40)
+color = Color(0.43, 0.45, 0.43, 1)
+visual_style = "stone"
+
+[node name="WoodPile" parent="Landmarks" instance=ExtResource("4_obstacle")]
+position = Vector2(-500, 330)
+size = Vector2(82, 38)
+color = Color(0.44, 0.25, 0.1, 1)
+visual_style = "wood"
+
+[node name="Breakables" type="Node2D" parent="."]
+
+[node name="CrateA" parent="Breakables" instance=ExtResource("9_crate")]
+position = Vector2(140, 210)
+
+[node name="CrateB" parent="Breakables" instance=ExtResource("9_crate")]
+position = Vector2(-130, -95)
+
+[node name="CrateC" parent="Breakables" instance=ExtResource("9_crate")]
+position = Vector2(445, 115)
+
+[node name="Trees" type="Node2D" parent="."]
+
+[node name="TreeA" parent="Trees" instance=ExtResource("3_tree")]
+position = Vector2(-520, -365)
+
+[node name="TreeB" parent="Trees" instance=ExtResource("3_tree")]
+position = Vector2(-430, -370)
+
+[node name="TreeC" parent="Trees" instance=ExtResource("3_tree")]
+position = Vector2(505, -360)
+
+[node name="TreeD" parent="Trees" instance=ExtResource("3_tree")]
+position = Vector2(590, -350)
+
+[node name="TreeE" parent="Trees" instance=ExtResource("3_tree")]
+position = Vector2(-610, 10)
+
+[node name="TreeF" parent="Trees" instance=ExtResource("3_tree")]
+position = Vector2(595, 20)
+
+[node name="TreeG" parent="Trees" instance=ExtResource("3_tree")]
+position = Vector2(-575, 380)
+
+[node name="TreeH" parent="Trees" instance=ExtResource("3_tree")]
+position = Vector2(570, 380)
+
+[node name="Boundaries" type="Node2D" parent="."]
+
+[node name="NorthWall" parent="Boundaries" instance=ExtResource("5_boundary")]
+position = Vector2(0, -505)
+size = Vector2(1500, 50)
+color = Color(0.13, 0.24, 0.1, 1)
+
+[node name="SouthWall" parent="Boundaries" instance=ExtResource("5_boundary")]
+position = Vector2(0, 505)
+size = Vector2(1500, 50)
+color = Color(0.13, 0.24, 0.1, 1)
+
+[node name="WestWall" parent="Boundaries" instance=ExtResource("5_boundary")]
+position = Vector2(-745, 0)
+size = Vector2(50, 1040)
+color = Color(0.13, 0.24, 0.1, 1)
+
+[node name="EastWall" parent="Boundaries" instance=ExtResource("5_boundary")]
+position = Vector2(745, 0)
+size = Vector2(50, 1040)
+color = Color(0.13, 0.24, 0.1, 1)
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+position = Vector2(0, 150)
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="Chests" type="Node2D" parent="."]
+
+[node name="Hud" parent="." instance=ExtResource("7_hud")]

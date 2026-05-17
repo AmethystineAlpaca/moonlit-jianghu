@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/effects/TimedEffect.gd" id="1_effect"]
+
+[node name="SmashMark" type="Node2D"]
+script = ExtResource("1_effect")
+lifetime = 1.1
+start_scale = Vector2(0.8, 0.8)
+end_scale = Vector2(1.15, 1.15)
+
+[node name="CrackA" type="Polygon2D" parent="."]
+color = Color(0.08, 0.06, 0.04, 0.65)
+polygon = PackedVector2Array(-3, -2, 26, -6, 28, -2, -2, 3)
+
+[node name="CrackB" type="Polygon2D" parent="."]
+rotation = 1.05
+color = Color(0.08, 0.06, 0.04, 0.55)
+polygon = PackedVector2Array(-2, -2, 20, -4, 22, 0, -1, 3)
+
+[node name="CrackC" type="Polygon2D" parent="."]
+rotation = -1.0
+color = Color(0.08, 0.06, 0.04, 0.5)
+polygon = PackedVector2Array(-2, -2, 17, -4, 20, 0, -1, 3)

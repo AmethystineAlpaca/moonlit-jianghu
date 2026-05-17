@@ -1,0 +1,192 @@
+<h2>哪里最需要提升？</h2>
+<p class="subtitle">选出你觉得现在最"空"、最需要补上视觉感的那个区域</p>
+
+<style>
+.area-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 20px;
+}
+.area-card {
+  border: 2px solid #333;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #111;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.area-card:hover { transform: translateY(-2px); border-color: #777; }
+.area-card.selected { border-color: #fff; box-shadow: 0 0 16px rgba(255,255,255,0.25); }
+.area-preview {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  font-size: 13px;
+  color: #888;
+}
+.area-info { padding: 12px 14px; }
+.area-name { font-size: 14px; font-weight: bold; color: #eee; margin-bottom: 4px; }
+.area-desc { font-size: 11px; color: #999; line-height: 1.5; }
+.area-missing { font-size: 11px; color: #f88; margin-top: 6px; }
+
+/* A: 角色外观 */
+.char-scene {
+  background: #0a0a14;
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.char-blob {
+  width: 20px; height: 30px;
+  background: #b0c8e0;
+  border-radius: 3px;
+  box-shadow: none;
+  position: relative;
+}
+.char-blob::after {
+  content: '?';
+  position: absolute;
+  top: -22px; left: 50%;
+  transform: translateX(-50%);
+  color: #555;
+  font-size: 14px;
+}
+.enemy-blob {
+  width: 18px; height: 26px;
+  background: #c08040;
+  border-radius: 3px;
+  margin-left: 30px;
+}
+
+/* B: 打击特效 */
+.hit-scene {
+  background: #0d0800;
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.hit-dot {
+  width: 8px; height: 8px;
+  background: #ff8c00;
+  border-radius: 50%;
+  box-shadow: 0 0 4px #f80;
+  animation: blink-hit 1.2s ease-in-out infinite;
+}
+.hit-text {
+  color: #444;
+  font-size: 12px;
+  margin-left: 12px;
+}
+@keyframes blink-hit { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+/* C: 技能特效 */
+.skill-scene {
+  background: #080a0d;
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px;
+}
+.skill-circle {
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  border: 2px dashed #2a4060;
+  display: flex; align-items: center; justify-content: center;
+  color: #2a4060;
+  font-size: 10px;
+  text-align: center;
+}
+
+/* D: 环境地图 */
+.env-scene {
+  background: #060a06;
+  width: 100%; height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+.grass-tile {
+  position: absolute;
+  width: 20px; height: 20px;
+  background: #1a3a1a;
+  border: 1px solid #0d200d;
+}
+.tree-placeholder {
+  position: absolute;
+  width: 24px; height: 32px;
+  background: #1a4020;
+  border-radius: 3px;
+  border: 1px solid #0d2a10;
+}
+</style>
+
+<div class="area-grid">
+  <!-- A: Characters -->
+  <div class="area-card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="area-preview">
+      <div class="char-scene">
+        <div class="char-blob"></div>
+        <div class="enemy-blob"></div>
+      </div>
+    </div>
+    <div class="area-info">
+      <div class="area-name">A · 角色外观与动作</div>
+      <div class="area-desc">玩家和骷髅敌人的像素造型、装备细节、走路/攻击动画</div>
+      <div class="area-missing">现状：形状偏简单，缺乏细节和生命感</div>
+    </div>
+  </div>
+
+  <!-- B: Hit Effects -->
+  <div class="area-card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="area-preview">
+      <div class="hit-scene">
+        <div class="hit-dot"></div>
+        <div class="hit-text">打中了……</div>
+      </div>
+    </div>
+    <div class="area-info">
+      <div class="area-name">B · 打击瞬间特效</div>
+      <div class="area-desc">击中火花、刀光残影、屏幕震动、打击停顿、伤害数字</div>
+      <div class="area-missing">现状：有基础火花，但爆裂感和通透感不足</div>
+    </div>
+  </div>
+
+  <!-- C: Skills -->
+  <div class="area-card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="area-preview">
+      <div class="skill-scene">
+        <div class="skill-circle">技能 A</div>
+        <div class="skill-circle">技能 B</div>
+      </div>
+    </div>
+    <div class="area-info">
+      <div class="area-name">C · 技能与法术特效</div>
+      <div class="area-desc">变身光柱、护体神光、剑气波、粒子爆炸等大技能演出</div>
+      <div class="area-missing">现状：技能效果存在但视觉表现力偏弱</div>
+    </div>
+  </div>
+
+  <!-- D: Environment -->
+  <div class="area-card" data-choice="d" onclick="toggleSelect(this)">
+    <div class="area-preview">
+      <div class="env-scene">
+        <div class="grass-tile" style="top:40px;left:20px"></div>
+        <div class="grass-tile" style="top:40px;left:42px"></div>
+        <div class="grass-tile" style="top:40px;left:64px"></div>
+        <div class="grass-tile" style="top:62px;left:20px"></div>
+        <div class="grass-tile" style="top:62px;left:42px"></div>
+        <div class="grass-tile" style="top:20px;left:86px"></div>
+        <div class="tree-placeholder" style="top:28px;left:140px"></div>
+        <div class="tree-placeholder" style="top:44px;left:170px"></div>
+      </div>
+    </div>
+    <div class="area-info">
+      <div class="area-name">D · 环境与地图氛围</div>
+      <div class="area-desc">草地风效、光影投射、破坏特效、场景纵深感</div>
+      <div class="area-missing">现状：草地shader已有，但整体场景偏平</div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:16px">可以多选，也可以说"B最急，其次C"</p>
+<div class="options" data-multiselect style="display:none"></div>

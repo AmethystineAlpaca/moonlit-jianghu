@@ -1,0 +1,92 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/PlayerController.gd" id="1_controller"]
+[ext_resource type="Script" path="res://scripts/components/HealthComponent.gd" id="2_health"]
+[ext_resource type="Script" path="res://scripts/skills/SkillCaster.gd" id="3_skill_caster"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_player"]
+radius = 12.0
+
+[sub_resource type="Gradient" id="Gradient_player"]
+offsets = PackedFloat32Array(0, 0.7, 1)
+colors = PackedColorArray(0.95, 0.82, 0.42, 1, 0.29, 0.48, 0.86, 1, 0.1, 0.17, 0.33, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_player"]
+gradient = SubResource("Gradient_player")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.35)
+fill_to = Vector2(0.5, 1)
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+script = ExtResource("1_controller")
+move_speed = 190.0
+melee_damage = 2
+
+[node name="Shadow" type="Polygon2D" parent="."]
+color = Color(0.03, 0.04, 0.04, 0.32)
+polygon = PackedVector2Array(-13, 9, 13, 9, 17, 13, 11, 17, -11, 17, -17, 13)
+
+[node name="SelectionRing" type="Polygon2D" parent="."]
+color = Color(1, 0.93, 0.55, 0.38)
+polygon = PackedVector2Array(0, -19, 13, -13, 19, 0, 13, 13, 0, 19, -13, 13, -19, 0, -13, -13)
+
+[node name="GuardRing" type="Polygon2D" parent="."]
+visible = false
+color = Color(0.24, 0.72, 1, 0.45)
+polygon = PackedVector2Array(0, -28, 20, -20, 28, 0, 20, 20, 0, 28, -20, 20, -28, 0, -20, -20)
+
+[node name="DamageRing" type="Polygon2D" parent="."]
+visible = false
+color = Color(1, 0.08, 0.04, 0.58)
+polygon = PackedVector2Array(0, -27, 19, -19, 27, 0, 19, 19, 0, 27, -19, 19, -27, 0, -19, -19)
+
+[node name="Body" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = SubResource("GradientTexture2D_player")
+
+[node name="FacingMarker" type="Polygon2D" parent="."]
+color = Color(0.93, 0.97, 1, 1)
+polygon = PackedVector2Array(0, 17, -5, 6, 5, 6)
+
+[node name="Sword" type="Node2D" parent="."]
+position = Vector2(0, 0)
+
+[node name="Blade" type="Polygon2D" parent="Sword"]
+position = Vector2(0, 18)
+color = Color(0.92, 0.96, 1, 1)
+polygon = PackedVector2Array(-2, 0, 2, 0, 3, 22, 0, 28, -3, 22)
+
+[node name="Guard" type="Polygon2D" parent="Sword"]
+position = Vector2(0, 16)
+color = Color(1, 0.82, 0.35, 1)
+polygon = PackedVector2Array(-7, -1, 7, -1, 7, 2, -7, 2)
+
+[node name="Hilt" type="Polygon2D" parent="Sword"]
+position = Vector2(0, 10)
+color = Color(0.32, 0.18, 0.08, 1)
+polygon = PackedVector2Array(-2, -5, 2, -5, 2, 7, -2, 7)
+
+[node name="AttackPreview" type="Node2D" parent="."]
+visible = false
+
+[node name="Visual" type="Polygon2D" parent="AttackPreview"]
+color = Color(1, 0.9, 0.45, 0.42)
+polygon = PackedVector2Array(0, 0, 34, -27, 48, 0, 34, 27)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_player")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("2_health")
+max_health = 8
+
+[node name="SkillCaster" type="Node" parent="."]
+script = ExtResource("3_skill_caster")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(2.5, 2.5)
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
+enabled = true

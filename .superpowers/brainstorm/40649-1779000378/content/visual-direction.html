@@ -1,0 +1,249 @@
+<h2>整体视觉氛围方向</h2>
+<p class="subtitle">三种主要感觉，选最接近你心目中想要的那种</p>
+
+<style>
+.vd-cards {
+  display: flex;
+  gap: 18px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+.vd-card {
+  flex: 1;
+  min-width: 220px;
+  border: 2px solid #333;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+  background: #111;
+}
+.vd-card:hover { transform: translateY(-3px); border-color: #888; }
+.vd-card.selected { border-color: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.3); }
+.vd-preview {
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  position: relative;
+  overflow: hidden;
+}
+.vd-info { padding: 14px 16px; }
+.vd-name { font-size: 15px; font-weight: bold; color: #eee; margin-bottom: 6px; }
+.vd-desc { font-size: 12px; color: #aaa; line-height: 1.5; }
+.vd-keywords { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+.vd-kw {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid;
+}
+
+/* A: 仙气 - Celestial */
+.a-bg {
+  background: radial-gradient(ellipse at center, #0a1a30 0%, #050d1a 100%);
+}
+.a-glow {
+  position: absolute;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(100,220,255,0.6) 0%, rgba(100,220,255,0) 70%);
+  animation: pulse-a 2s ease-in-out infinite;
+}
+.a-ring {
+  position: absolute;
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  border: 2px solid rgba(150,230,255,0.5);
+  animation: expand-a 2.5s ease-out infinite;
+}
+.a-char {
+  position: absolute;
+  width: 18px; height: 28px;
+  background: rgba(200,240,255,0.9);
+  border-radius: 2px;
+  box-shadow: 0 0 12px #7ef, 0 0 24px rgba(100,220,255,0.4);
+}
+.a-sword {
+  position: absolute;
+  width: 3px; height: 36px;
+  background: linear-gradient(to bottom, #fff, rgba(100,220,255,0.3));
+  transform: rotate(30deg) translateX(14px);
+  box-shadow: 0 0 8px #aef;
+}
+.a-spark {
+  position: absolute;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: #7ef;
+  box-shadow: 0 0 6px #7ef;
+  animation: float-spark 3s ease-in-out infinite;
+}
+@keyframes pulse-a { 0%,100%{opacity:0.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.2)} }
+@keyframes expand-a { 0%{transform:scale(0.5);opacity:0.8} 100%{transform:scale(2);opacity:0} }
+@keyframes float-spark {
+  0%{transform:translate(20px,-10px);opacity:0}
+  30%{opacity:1}
+  100%{transform:translate(-20px,-40px);opacity:0}
+}
+
+/* B: 血战 - Combat Heavy */
+.b-bg {
+  background: radial-gradient(ellipse at center, #1a0800 0%, #0a0300 100%);
+}
+.b-char {
+  position: absolute;
+  width: 18px; height: 28px;
+  background: rgba(255,200,150,0.9);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(255,120,0,0.5);
+}
+.b-slash {
+  position: absolute;
+  width: 70px; height: 4px;
+  background: linear-gradient(to right, transparent, #ff6000, #ffcc00, transparent);
+  border-radius: 2px;
+  transform: rotate(-20deg) translateY(5px);
+  box-shadow: 0 0 12px #f80, 0 0 24px rgba(255,100,0,0.3);
+  animation: slash-b 1.5s ease-in-out infinite;
+}
+.b-impact {
+  position: absolute;
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  border: 3px solid #f60;
+  opacity: 0;
+  animation: impact-b 1.5s ease-out infinite;
+}
+.b-spark1, .b-spark2, .b-spark3 {
+  position: absolute;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: #fa0;
+  box-shadow: 0 0 4px #f80;
+}
+.b-spark1 { animation: fly1 1.5s ease-out infinite; }
+.b-spark2 { animation: fly2 1.5s ease-out 0.2s infinite; }
+.b-spark3 { animation: fly3 1.5s ease-out 0.4s infinite; }
+@keyframes slash-b { 0%,100%{opacity:0.2;transform:rotate(-20deg) translateY(5px) scaleX(0.3)} 40%{opacity:1;transform:rotate(-20deg) translateY(5px) scaleX(1)} }
+@keyframes impact-b { 0%{transform:scale(0);opacity:0.8} 100%{transform:scale(1.5);opacity:0} }
+@keyframes fly1 { 0%{transform:translate(0,0);opacity:0} 20%{opacity:1} 100%{transform:translate(30px,-25px);opacity:0} }
+@keyframes fly2 { 0%{transform:translate(0,0);opacity:0} 20%{opacity:1} 100%{transform:translate(-20px,-35px);opacity:0} }
+@keyframes fly3 { 0%{transform:translate(0,0);opacity:0} 20%{opacity:1} 100%{transform:translate(15px,-30px);opacity:0} }
+
+/* C: 阴阳 - Dual Nature */
+.c-bg {
+  background: radial-gradient(ellipse at 30% 50%, #000d1a 0%, #0d0005 100%);
+}
+.c-char {
+  position: absolute;
+  width: 18px; height: 28px;
+  background: rgba(180,240,255,0.9);
+  border-radius: 2px;
+  box-shadow: 0 0 12px #4ef, 0 0 24px rgba(0,200,255,0.3);
+}
+.c-enemy {
+  position: absolute;
+  width: 16px; height: 24px;
+  background: rgba(255,180,50,0.9);
+  border-radius: 2px;
+  box-shadow: 0 0 12px #f80, 0 0 24px rgba(255,100,0,0.3);
+  transform: translateX(45px);
+}
+.c-clash {
+  position: absolute;
+  width: 30px; height: 30px;
+  background: radial-gradient(circle, #fff 0%, rgba(255,255,255,0) 70%);
+  transform: translateX(20px);
+  animation: clash-c 2s ease-in-out infinite;
+}
+.c-wave-cold {
+  position: absolute;
+  width: 40px; height: 3px;
+  background: linear-gradient(to right, rgba(0,200,255,0.8), transparent);
+  transform: translateX(-15px) translateY(2px);
+  animation: wave-cold 2s ease-out infinite;
+}
+.c-wave-hot {
+  position: absolute;
+  width: 40px; height: 3px;
+  background: linear-gradient(to left, rgba(255,120,0,0.8), transparent);
+  transform: translateX(15px) translateY(2px);
+  animation: wave-hot 2s ease-out infinite;
+}
+@keyframes clash-c { 0%,100%{opacity:0;transform:translateX(20px) scale(0.3)} 50%{opacity:1;transform:translateX(20px) scale(1)} }
+@keyframes wave-cold { 0%{transform:translateX(-5px) translateY(2px) scaleX(0)} 50%{transform:translateX(-15px) translateY(2px) scaleX(1)} 100%{transform:translateX(-5px) translateY(2px) scaleX(0)} }
+@keyframes wave-hot { 0%{transform:translateX(5px) translateY(2px) scaleX(0)} 50%{transform:translateX(15px) translateY(2px) scaleX(1)} 100%{transform:translateX(5px) translateY(2px) scaleX(0)} }
+
+</style>
+
+<div class="vd-cards">
+  <!-- A -->
+  <div class="vd-card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="vd-preview a-bg">
+      <div class="a-glow"></div>
+      <div class="a-ring"></div>
+      <div class="a-char"></div>
+      <div class="a-sword"></div>
+      <div class="a-spark" style="top:30px;left:55px;animation-delay:0s"></div>
+      <div class="a-spark" style="top:50px;left:80px;animation-delay:0.8s"></div>
+      <div class="a-spark" style="top:70px;left:45px;animation-delay:1.5s"></div>
+    </div>
+    <div class="vd-info">
+      <div class="vd-name">A · 仙气飘飘</div>
+      <div class="vd-desc">冷色调为主：冰蓝、青白、霜白。技能和剑气有通透感，粒子轻盈，整体像仙境中的对决</div>
+      <div class="vd-keywords">
+        <span class="vd-kw" style="color:#7ef;border-color:#7ef">通透</span>
+        <span class="vd-kw" style="color:#aef;border-color:#aef">荧光蓝</span>
+        <span class="vd-kw" style="color:#cdf;border-color:#cdf">轻灵</span>
+        <span class="vd-kw" style="color:#fff;border-color:#555">仙气</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- B -->
+  <div class="vd-card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="vd-preview b-bg">
+      <div class="b-impact"></div>
+      <div class="b-slash"></div>
+      <div class="b-char"></div>
+      <div class="b-spark1" style="top:70px;left:90px"></div>
+      <div class="b-spark2" style="top:65px;left:85px"></div>
+      <div class="b-spark3" style="top:75px;left:80px"></div>
+    </div>
+    <div class="vd-info">
+      <div class="vd-name">B · 血气方刚</div>
+      <div class="vd-desc">暖色调为主：赤金、橙红、烈焰黄。每一击都有重量感，打击火花炽烈，爆发感强烈</div>
+      <div class="vd-keywords">
+        <span class="vd-kw" style="color:#f80;border-color:#f80">爆裂</span>
+        <span class="vd-kw" style="color:#fa0;border-color:#fa0">冲击感</span>
+        <span class="vd-kw" style="color:#f60;border-color:#f60">橙金</span>
+        <span class="vd-kw" style="color:#fdd;border-color:#555">气势</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- C -->
+  <div class="vd-card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="vd-preview c-bg">
+      <div class="c-wave-cold"></div>
+      <div class="c-wave-hot"></div>
+      <div class="c-char"></div>
+      <div class="c-enemy"></div>
+      <div class="c-clash"></div>
+    </div>
+    <div class="vd-info">
+      <div class="vd-name">C · 阴阳双绝</div>
+      <div class="vd-desc">冷热对撞：玩家是冰蓝仙气，敌人是赤金骨火，两者交锋时产生白光爆炸，冷暖互搏的戏剧感</div>
+      <div class="vd-keywords">
+        <span class="vd-kw" style="color:#4ef;border-color:#4ef">冰蓝玩家</span>
+        <span class="vd-kw" style="color:#f80;border-color:#f80">赤金敌人</span>
+        <span class="vd-kw" style="color:#fff;border-color:#888">白光碰撞</span>
+        <span class="vd-kw" style="color:#ddd;border-color:#555">对比强烈</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:20px">也可以说"A但更暖一点"之类的，不一定非选一个</p>

@@ -1,0 +1,35 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/ChestEncounter.gd" id="1_chest"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/ChestMimic.tscn" id="2_mimic"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_chest"]
+size = Vector2(34, 28)
+
+[node name="ChestEncounter" type="Area2D" groups=["chests"]]
+script = ExtResource("1_chest")
+mimic_scene = ExtResource("2_mimic")
+
+[node name="Shadow" type="Polygon2D" parent="."]
+color = Color(0.03, 0.025, 0.015, 0.34)
+polygon = PackedVector2Array(-18, 10, 18, 10, 23, 15, 14, 20, -14, 20, -23, 15)
+
+[node name="ChestBody" type="Polygon2D" parent="."]
+color = Color(0.58, 0.27, 0.08, 1)
+polygon = PackedVector2Array(-18, -6, 18, -6, 18, 14, -18, 14)
+
+[node name="Lid" type="Polygon2D" parent="."]
+color = Color(0.72, 0.42, 0.13, 1)
+polygon = PackedVector2Array(-20, -11, 20, -11, 16, -3, -16, -3)
+
+[node name="Band" type="Polygon2D" parent="."]
+color = Color(0.93, 0.76, 0.32, 1)
+polygon = PackedVector2Array(-3, -11, 3, -11, 3, 14, -3, 14)
+
+[node name="Latch" type="Polygon2D" parent="."]
+position = Vector2(0, 3)
+color = Color(1, 0.9, 0.42, 1)
+polygon = PackedVector2Array(-5, -4, 5, -4, 5, 5, -5, 5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_chest")
