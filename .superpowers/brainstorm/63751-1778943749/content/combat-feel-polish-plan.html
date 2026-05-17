@@ -1,0 +1,48 @@
+<h2>Combat Feel Polish Pass</h2>
+<p class="subtitle">Recommended scope: tighten the existing combat loop before adding new mechanics.</p>
+
+<div class="section">
+  <div class="label">Feedback Ladder</div>
+  <div class="mockup">
+    <div class="mockup-header">Player action to readable result</div>
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;text-align:center">
+        <div class="placeholder">Input<br><strong>J / Guard</strong></div>
+        <div class="placeholder">Anticipation<br><strong>weapon pose</strong></div>
+        <div class="placeholder">Impact<br><strong>spark + pause</strong></div>
+        <div class="placeholder">Reaction<br><strong>knockback + flash</strong></div>
+        <div class="placeholder">Reward<br><strong>special cue only</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cards">
+  <div class="card" data-choice="weapon-layer" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="height:120px;display:flex;align-items:center;justify-content:center;font-size:42px">/ -> \</div>
+    </div>
+    <div class="card-body">
+      <h3>Weapon Swing First</h3>
+      <p>Add a visible sword node and quick swing animation so attacks feel physical instead of purely hitbox-driven.</p>
+    </div>
+  </div>
+  <div class="card" data-choice="impact-hierarchy" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="height:120px;display:flex;align-items:center;justify-content:center;font-size:34px">hit | counter | back hit</div>
+    </div>
+    <div class="card-body">
+      <h3>Impact Hierarchy</h3>
+      <p>Keep normal hits mostly visual; reserve HUD messages, bigger sparks, and stronger pause for special hits.</p>
+    </div>
+  </div>
+  <div class="card" data-choice="enemy-readability" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="height:120px;display:flex;align-items:center;justify-content:center;font-size:36px">! -> lunge -> recoil</div>
+    </div>
+    <div class="card-body">
+      <h3>Enemy Readability</h3>
+      <p>Make enemy windup, strike, blocked state, and stagger easier to read without changing enemy rules.</p>
+    </div>
+  </div>
+</div>

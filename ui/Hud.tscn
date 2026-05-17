@@ -1,0 +1,391 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/Hud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://scripts/ui/OffscreenIndicators.gd" id="2_indicators"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stats"]
+bg_color = Color(0.10, 0.08, 0.06, 0.86)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.72, 0.48, 0.22, 0.95)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+content_margin_left = 20.0
+content_margin_top = 14.0
+content_margin_right = 20.0
+content_margin_bottom = 14.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot"]
+bg_color = Color(0.12, 0.10, 0.08, 0.88)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.46, 0.32, 0.17, 0.95)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+content_margin_left = 6.0
+content_margin_top = 5.0
+content_margin_right = 6.0
+content_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_skill"]
+bg_color = Color(0.08, 0.07, 0.06, 0.82)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.68, 0.43, 0.18, 0.92)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar"]
+bg_color = Color(0.16, 0.10, 0.07, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.66, 0.39, 0.18, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_fill"]
+bg_color = Color(0.78, 0.10, 0.08, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stamina_fill"]
+bg_color = Color(0.93, 0.68, 0.14, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot_selected"]
+bg_color = Color(0.26, 0.17, 0.08, 0.95)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.98, 0.74, 0.24, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+content_margin_left = 8.0
+content_margin_top = 6.0
+content_margin_right = 8.0
+content_margin_bottom = 6.0
+
+[node name="Hud" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="DangerOverlay" type="ColorRect" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 0, 0, 0)
+
+[node name="OffscreenIndicators" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_indicators")
+
+[node name="StatsPanel" type="PanelContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -368.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 196.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_stats")
+
+[node name="Stats" type="VBoxContainer" parent="StatsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HPBar" type="ProgressBar" parent="StatsPanel/Stats"]
+custom_minimum_size = Vector2(292, 30)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_bar")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
+show_percentage = false
+value = 10.0
+
+[node name="ValueLabel" type="Label" parent="StatsPanel/Stats/HPBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.95, 0.84, 0.62, 1)
+theme_override_font_sizes/font_size = 22
+text = "HP - / -"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StaminaBar" type="ProgressBar" parent="StatsPanel/Stats"]
+custom_minimum_size = Vector2(292, 30)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_bar")
+theme_override_styles/fill = SubResource("StyleBoxFlat_stamina_fill")
+show_percentage = false
+value = 10.0
+
+[node name="ValueLabel" type="Label" parent="StatsPanel/Stats/StaminaBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.20, 0.13, 0.04, 1)
+theme_override_font_sizes/font_size = 22
+text = "STA - / -"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="StatsPanel/Stats"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.56, 0.36, 1)
+theme_override_font_sizes/font_size = 24
+text = ""
+horizontal_alignment = 2
+
+[node name="DefeatedLabel" type="Label" parent="."]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -84.0
+offset_right = 320.0
+offset_bottom = 84.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 96
+text = "Defeated"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BlockedLabel" type="Label" parent="."]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = 80.0
+offset_right = 260.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 72
+text = "Blocked"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CombatMessageLabel" type="Label" parent="."]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -380.0
+offset_top = 178.0
+offset_right = 380.0
+offset_bottom = 286.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 72
+text = "Combat"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PausedLabel" type="Label" parent="."]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -190.0
+offset_right = 260.0
+offset_bottom = -90.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 72
+text = "Paused"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SkillBar" type="HBoxContainer" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -390.0
+offset_top = -102.0
+offset_right = 390.0
+offset_bottom = -22.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Slot1" type="PanelContainer" parent="SkillBar"]
+custom_minimum_size = Vector2(104, 70)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
+
+[node name="SlotContent" type="VBoxContainer" parent="SkillBar/Slot1"]
+layout_mode = 2
+theme_override_constants/separation = 3
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="SkillBar/Slot1/SlotContent"]
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="SkillBar/Slot1/SlotContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Slot2" type="PanelContainer" parent="SkillBar"]
+custom_minimum_size = Vector2(104, 70)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
+
+[node name="SlotContent" type="VBoxContainer" parent="SkillBar/Slot2"]
+layout_mode = 2
+theme_override_constants/separation = 3
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="SkillBar/Slot2/SlotContent"]
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="SkillBar/Slot2/SlotContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "2"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Slot3" type="PanelContainer" parent="SkillBar"]
+custom_minimum_size = Vector2(104, 70)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
+
+[node name="SlotContent" type="VBoxContainer" parent="SkillBar/Slot3"]
+layout_mode = 2
+theme_override_constants/separation = 3
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="SkillBar/Slot3/SlotContent"]
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="SkillBar/Slot3/SlotContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Slot4" type="PanelContainer" parent="SkillBar"]
+custom_minimum_size = Vector2(104, 70)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
+
+[node name="SlotContent" type="VBoxContainer" parent="SkillBar/Slot4"]
+layout_mode = 2
+theme_override_constants/separation = 3
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="SkillBar/Slot4/SlotContent"]
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="SkillBar/Slot4/SlotContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "4"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Slot5" type="PanelContainer" parent="SkillBar"]
+custom_minimum_size = Vector2(104, 70)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
+
+[node name="SlotContent" type="VBoxContainer" parent="SkillBar/Slot5"]
+layout_mode = 2
+theme_override_constants/separation = 3
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="SkillBar/Slot5/SlotContent"]
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="SkillBar/Slot5/SlotContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "5"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ControlsHint" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -430.0
+offset_top = 10.0
+offset_right = 430.0
+offset_bottom = 34.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.86, 0.78, 0.62, 0.86)
+theme_override_font_sizes/font_size = 16
+text = "WASD/Arrows Move  |  J Attack  |  Space Skill  |  1-5 Select  |  K Guard  |  L Dash  |  Esc Pause"
+horizontal_alignment = 1

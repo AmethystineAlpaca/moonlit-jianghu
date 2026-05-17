@@ -1,0 +1,71 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/BasicEnemy.gd" id="1_enemy"]
+[ext_resource type="Script" path="res://scripts/components/HealthComponent.gd" id="2_health"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_zombie"]
+radius = 13.0
+
+[sub_resource type="Gradient" id="Gradient_zombie"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.42, 0.95, 0.28, 1, 0.08, 0.38, 0.1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_zombie"]
+gradient = SubResource("Gradient_zombie")
+width = 30
+height = 30
+fill = 1
+fill_from = Vector2(0.5, 0.35)
+fill_to = Vector2(0.5, 1)
+
+[node name="Zombie" type="CharacterBody2D" groups=["enemies", "zombies"]]
+script = ExtResource("1_enemy")
+move_speed = 57.5
+detection_radius = 9999.0
+leash_radius = 9999.0
+faction = "zombie"
+visual_accent_color = Color(0.98, 0.36, 0.24, 1)
+
+[node name="Shadow" type="Polygon2D" parent="."]
+color = Color(0.02, 0.04, 0.02, 0.35)
+polygon = PackedVector2Array(-13, 9, 13, 9, 17, 13, 11, 17, -11, 17, -17, 13)
+
+[node name="Body" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = SubResource("GradientTexture2D_zombie")
+
+[node name="FacingMarker" type="Polygon2D" parent="."]
+color = Color(0.72, 1, 0.62, 1)
+polygon = PackedVector2Array(0, 16, -5, 5, 5, 5)
+
+[node name="AttackWarning" type="Node2D" parent="."]
+visible = false
+position = Vector2(0, -32)
+
+[node name="Triangle" type="Polygon2D" parent="AttackWarning"]
+color = Color(0.2, 0.9, 0.15, 0.9)
+polygon = PackedVector2Array(0, -12, 10, 8, -10, 8)
+
+[node name="Mark" type="Polygon2D" parent="AttackWarning"]
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(-1, -6, 1, -6, 1, 2, -1, 2)
+
+[node name="Dot" type="Polygon2D" parent="AttackWarning"]
+position = Vector2(0, 5)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(0, -1.5, 1.5, 0, 0, 1.5, -1.5, 0)
+
+[node name="HPBar" type="ProgressBar" parent="."]
+offset_left = -18.0
+offset_top = -29.0
+offset_right = 18.0
+offset_bottom = -23.0
+show_percentage = false
+value = 4.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_zombie")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("2_health")
+max_health = 4

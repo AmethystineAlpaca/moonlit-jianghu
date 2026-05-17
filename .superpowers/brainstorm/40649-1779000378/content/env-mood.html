@@ -1,0 +1,265 @@
+<h2>地图氛围基调</h2>
+<p class="subtitle">光从哪里来，决定了"荧光""通透"的实现方式</p>
+
+<style>
+.mood-cards {
+  display: flex;
+  gap: 16px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.mood-card {
+  flex: 1;
+  min-width: 200px;
+  border: 2px solid #333;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #111;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.mood-card:hover { transform: translateY(-3px); border-color: #777; }
+.mood-card.selected { border-color: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.25); }
+.mood-preview {
+  height: 150px;
+  position: relative;
+  overflow: hidden;
+}
+.mood-info { padding: 12px 16px; }
+.mood-name { font-size: 14px; font-weight: bold; color: #eee; margin-bottom: 5px; }
+.mood-desc { font-size: 11px; color: #aaa; line-height: 1.6; }
+.mood-glow-source { font-size: 11px; color: #7af; margin-top: 6px; }
+
+/* A: 月夜仙境 */
+.night-bg {
+  background: radial-gradient(ellipse at 70% 20%, #0a1530 0%, #030810 60%, #000508 100%);
+  width: 100%; height: 100%;
+  position: relative;
+}
+.moon {
+  position: absolute;
+  top: 12px; right: 20px;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #e8f0ff, #b0c8ff);
+  box-shadow: 0 0 20px rgba(180,210,255,0.8), 0 0 40px rgba(120,160,255,0.3);
+}
+.moon-ray {
+  position: absolute;
+  top: 0; right: 34px;
+  width: 60px; height: 150px;
+  background: linear-gradient(to bottom, rgba(180,210,255,0.15), transparent);
+  transform-origin: top right;
+  transform: rotate(-10deg);
+}
+.grass-night {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 45px;
+}
+.grass-blade {
+  position: absolute;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to top, #0d2a18, #1a4a28);
+  border-radius: 2px 2px 0 0;
+  transform-origin: bottom center;
+}
+.grass-glow-blade {
+  position: absolute;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to top, #0a3a20, rgba(50,200,100,0.4));
+  border-radius: 2px 2px 0 0;
+  box-shadow: 0 0 6px rgba(50,200,100,0.5);
+  animation: sway 3s ease-in-out infinite;
+}
+.star {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle 2s ease-in-out infinite;
+}
+.rune-glow {
+  position: absolute;
+  width: 30px; height: 30px;
+  border: 1px solid rgba(100,180,255,0.3);
+  border-radius: 50%;
+  animation: rune-pulse 3s ease-in-out infinite;
+}
+@keyframes sway { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
+@keyframes twinkle { 0%,100%{opacity:0.3} 50%{opacity:1} }
+@keyframes rune-pulse { 0%,100%{opacity:0;transform:scale(0.8)} 50%{opacity:0.6;transform:scale(1.2)} }
+
+/* B: 黄昏战场 */
+.dusk-bg {
+  background: linear-gradient(to bottom, #1a0800 0%, #2d1200 30%, #0d0800 70%, #050300 100%);
+  width: 100%; height: 100%;
+  position: relative;
+}
+.sun-glow {
+  position: absolute;
+  top: -20px; left: 50%;
+  transform: translateX(-50%);
+  width: 120px; height: 80px;
+  background: radial-gradient(ellipse, rgba(255,100,0,0.4) 0%, transparent 70%);
+}
+.dust-particle {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: rgba(255,150,50,0.6);
+  border-radius: 50%;
+  animation: drift 4s linear infinite;
+}
+.grass-dusk {
+  position: absolute;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to top, #1a0800, #3a1a00);
+  border-radius: 2px 2px 0 0;
+}
+.ember {
+  position: absolute;
+  width: 3px; height: 3px;
+  background: #ff6000;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #f60;
+  animation: ember-float 3s ease-in-out infinite;
+}
+@keyframes drift { 0%{transform:translate(0,0);opacity:0} 20%{opacity:0.8} 100%{transform:translate(-30px,-60px);opacity:0} }
+@keyframes ember-float { 0%{transform:translate(0,0);opacity:0} 30%{opacity:1} 100%{transform:translate(-10px,-50px);opacity:0} }
+
+/* C: 灵界异空 */
+.void-bg {
+  background: radial-gradient(ellipse at center, #0a0520 0%, #030008 100%);
+  width: 100%; height: 100%;
+  position: relative;
+}
+.void-ground {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 30px;
+  background: linear-gradient(to top, #0d0520, transparent);
+}
+.void-rune {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid;
+  animation: void-spin 4s linear infinite;
+}
+.void-mist {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(140,80,255,0.2) 0%, transparent 70%);
+  animation: void-breathe 4s ease-in-out infinite;
+}
+.crystal {
+  position: absolute;
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 14px solid rgba(100,200,255,0.5);
+  filter: drop-shadow(0 0 4px rgba(100,200,255,0.8));
+  animation: crystal-pulse 3s ease-in-out infinite;
+}
+@keyframes void-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+@keyframes void-breathe { 0%,100%{transform:scale(1);opacity:0.3} 50%{transform:scale(1.3);opacity:0.7} }
+@keyframes crystal-pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+</style>
+
+<div class="mood-cards">
+
+  <!-- A: 月夜仙境 -->
+  <div class="mood-card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="mood-preview">
+      <div class="night-bg">
+        <div class="moon"></div>
+        <div class="moon-ray"></div>
+        <div class="rune-glow" style="bottom:60px;left:40px"></div>
+        <div class="star" style="top:20px;left:30px;animation-delay:0s"></div>
+        <div class="star" style="top:35px;left:60px;animation-delay:0.5s"></div>
+        <div class="star" style="top:15px;left:80px;animation-delay:1s"></div>
+        <div class="star" style="top:40px;left:110px;animation-delay:0.3s"></div>
+        <div class="star" style="top:25px;left:140px;animation-delay:0.8s"></div>
+        <div class="grass-night">
+          <div class="grass-blade" style="left:10px;height:35px"></div>
+          <div class="grass-blade" style="left:18px;height:28px"></div>
+          <div class="grass-glow-blade" style="left:25px;height:40px;animation-delay:0.3s"></div>
+          <div class="grass-blade" style="left:35px;height:32px"></div>
+          <div class="grass-blade" style="left:50px;height:38px"></div>
+          <div class="grass-glow-blade" style="left:60px;height:30px;animation-delay:1.2s"></div>
+          <div class="grass-blade" style="left:75px;height:36px"></div>
+          <div class="grass-blade" style="left:90px;height:28px"></div>
+          <div class="grass-glow-blade" style="left:100px;height:42px;animation-delay:0.8s"></div>
+          <div class="grass-blade" style="left:115px;height:34px"></div>
+          <div class="grass-blade" style="left:130px;height:30px"></div>
+          <div class="grass-glow-blade" style="left:145px;height:38px;animation-delay:0.5s"></div>
+          <div class="grass-blade" style="left:160px;height:32px"></div>
+          <div class="grass-blade" style="left:175px;height:36px"></div>
+          <div class="grass-glow-blade" style="left:185px;height:28px;animation-delay:1.5s"></div>
+        </div>
+      </div>
+    </div>
+    <div class="mood-info">
+      <div class="mood-name">A · 月夜仙境</div>
+      <div class="mood-desc">深蓝夜空，月光打亮地面，草叶带荧绿冷光，地面偶有法阵光纹</div>
+      <div class="mood-glow-source">荧光来源：月光反射 + 灵气草叶自发光</div>
+    </div>
+  </div>
+
+  <!-- B: 黄昏战场 -->
+  <div class="mood-card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="mood-preview">
+      <div class="dusk-bg">
+        <div class="sun-glow"></div>
+        <div class="dust-particle" style="top:80px;left:40px;animation-delay:0s"></div>
+        <div class="dust-particle" style="top:60px;left:80px;animation-delay:0.8s"></div>
+        <div class="dust-particle" style="top:70px;left:120px;animation-delay:1.5s"></div>
+        <div class="dust-particle" style="top:50px;left:160px;animation-delay:0.4s"></div>
+        <div class="ember" style="bottom:30px;left:50px;animation-delay:0s"></div>
+        <div class="ember" style="bottom:20px;left:100px;animation-delay:1s"></div>
+        <div class="ember" style="bottom:25px;left:150px;animation-delay:0.5s"></div>
+        <div style="position:absolute;bottom:0;left:0;right:0;height:35px;display:flex;align-items:flex-end">
+          <div class="grass-dusk" style="height:30px;left:15px;position:absolute"></div>
+          <div class="grass-dusk" style="height:24px;left:30px;position:absolute"></div>
+          <div class="grass-dusk" style="height:35px;left:50px;position:absolute"></div>
+          <div class="grass-dusk" style="height:28px;left:70px;position:absolute"></div>
+          <div class="grass-dusk" style="height:32px;left:90px;position:absolute"></div>
+          <div class="grass-dusk" style="height:26px;left:110px;position:absolute"></div>
+          <div class="grass-dusk" style="height:34px;left:130px;position:absolute"></div>
+          <div class="grass-dusk" style="height:22px;left:150px;position:absolute"></div>
+          <div class="grass-dusk" style="height:30px;left:170px;position:absolute"></div>
+        </div>
+      </div>
+    </div>
+    <div class="mood-info">
+      <div class="mood-name">B · 黄昏战场</div>
+      <div class="mood-desc">橙红夕光，灰尘飞舞，草地被血火染暗，余烬四散，有末世悲壮感</div>
+      <div class="mood-glow-source">荧光来源：余烬、火焰、落日背光</div>
+    </div>
+  </div>
+
+  <!-- C: 灵界异空 -->
+  <div class="mood-card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="mood-preview">
+      <div class="void-bg">
+        <div class="void-mist" style="width:100px;height:80px;top:20px;left:30px;animation-delay:0s"></div>
+        <div class="void-mist" style="width:80px;height:60px;top:40px;left:110px;animation-delay:1.5s"></div>
+        <div class="void-rune" style="width:60px;height:60px;border-color:rgba(140,80,255,0.4);top:40px;left:70px"></div>
+        <div class="void-rune" style="width:40px;height:40px;border-color:rgba(80,180,255,0.3);top:50px;left:80px;animation-direction:reverse"></div>
+        <div class="crystal" style="bottom:30px;left:40px"></div>
+        <div class="crystal" style="bottom:25px;left:100px;border-bottom-color:rgba(180,100,255,0.5)"></div>
+        <div class="crystal" style="bottom:35px;left:160px"></div>
+        <div class="void-ground"></div>
+      </div>
+    </div>
+    <div class="mood-info">
+      <div class="mood-name">C · 灵界异空</div>
+      <div class="mood-desc">紫黑虚空，法阵旋转，水晶柱自发光，灵雾流动，脱离现实感最强</div>
+      <div class="mood-glow-source">荧光来源：水晶自发光 + 法阵能量 + 灵气雾气</div>
+    </div>
+  </div>
+
+</div>
+<p class="subtitle" style="margin-top:16px">也可以说"A为主，偶尔穿插C的法阵"这类组合</p>

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SkillDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/skills/SkillDefinition.gd" id="1_definition"]
+[ext_resource type="PackedScene" path="res://scenes/skills/ProtectiveDivineLightEffect.tscn" id="2_effect"]
+
+[resource]
+script = ExtResource("1_definition")
+display_name = "Divine Light"
+stamina_cost = 0.0
+cooldown = 0.4
+cast_range = 0.0
+targeting_mode = 0
+effect_scene = ExtResource("2_effect")

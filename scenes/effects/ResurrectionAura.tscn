@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/effects/TimedEffect.gd" id="1_effect"]
+
+[node name="ResurrectionAura" type="Node2D"]
+script = ExtResource("1_effect")
+lifetime = 0.55
+start_scale = Vector2(0.35, 0.35)
+end_scale = Vector2(2.1, 2.1)
+
+[node name="OuterRing" type="Polygon2D" parent="."]
+color = Color(0.36, 0.92, 0.42, 0.72)
+polygon = PackedVector2Array(22, 0, 20.3, 8.4, 15.6, 15.6, 8.4, 20.3, 0, 22, -8.4, 20.3, -15.6, 15.6, -20.3, 8.4, -22, 0, -20.3, -8.4, -15.6, -15.6, -8.4, -20.3, 0, -22, 8.4, -20.3, 15.6, -15.6, 20.3, -8.4)
+
+[node name="InnerGlow" type="Polygon2D" parent="."]
+color = Color(0.78, 1, 0.66, 0.55)
+polygon = PackedVector2Array(14, 0, 12.1, 7, 7, 12.1, 0, 14, -7, 12.1, -12.1, 7, -14, 0, -12.1, -7, -7, -12.1, 0, -14, 7, -12.1, 12.1, -7)
