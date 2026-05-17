@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/enemies/BasicEnemy.gd" id="1_enemy"]
 [ext_resource type="Script" path="res://scripts/components/HealthComponent.gd" id="2_health"]
+[ext_resource type="Texture2D" path="res://assets/xianxia/pixel_night_assets/light_circle.png" id="3_night_light"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_enemy"]
 radius = 13.0
@@ -29,6 +30,16 @@ polygon = PackedVector2Array(-13, 9, 13, 9, 17, 13, 11, 17, -11, 17, -17, 13)
 [node name="Body" type="Sprite2D" parent="."]
 texture_filter = 1
 texture = SubResource("GradientTexture2D_enemy")
+
+[node name="EnemyAccentLight" type="PointLight2D" parent="."]
+position = Vector2(0, -2)
+texture = ExtResource("3_night_light")
+texture_scale = 0.62
+color = Color(0.56, 0.82, 1, 1)
+energy = 0.26
+blend_mode = 1
+range_item_cull_mask = 1
+shadow_enabled = false
 
 [node name="FacingMarker" type="Polygon2D" parent="."]
 color = Color(1, 0.82, 0.68, 1)

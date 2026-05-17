@@ -17,6 +17,7 @@ func _initialize() -> void:
 	await _test_screen_fx_stays_outside_hud_canvas_layer()
 	await _test_particle_and_patch_layers_are_populated()
 	await _test_world_keeps_glow_environment_under_night_ambience()
+	await _test_world_enemy_instances_have_accent_lights()
 	quit(failures)
 
 func _test_required_night_assets_exist() -> void:
@@ -106,6 +107,25 @@ func _test_world_keeps_glow_environment_under_night_ambience() -> void:
 	if world_env != null and world_env.environment != null:
 		_assert_true(world_env.environment.glow_enabled, "night environment enables glow")
 		_assert_true(world_env.environment.glow_intensity >= 0.35, "night glow intensity is meaningful")
+
+	world.free()
+
+func _test_world_enemy_instances_have_accent_lights() -> void:
+	var world := WORLD_SCENE.instantiate()
+	root.add_child(world)
+	await process_frame
+
+	var enemies := world.get_node_or_null("Enemies")
+	_assert_true(enemies != null, "Enemies container exists")
+	if enemies != null:
+		world.call("_try_spawn_enemy")
+		await process_frame
+		var found_light := false
+		for child in enemies.get_children():
+			if child.get_node_or_null("EnemyAccentLight") is PointLight2D:
+				found_light = true
+				break
+		_assert_true(found_light, "spawned enemies expose EnemyAccentLight")
 
 	world.free()
 
