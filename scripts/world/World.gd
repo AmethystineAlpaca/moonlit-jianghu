@@ -482,6 +482,28 @@ func _setup_night_atmosphere() -> void:
 	spirit_particles.z_index = 10
 	add_child(spirit_particles)
 
+	# Directional moon light from upper-right
+	var moon_light := DirectionalLight2D.new()
+	moon_light.name = "MoonLight"
+	moon_light.color = Color(0.70, 0.80, 1.0)
+	moon_light.energy = 0.20
+	moon_light.rotation_degrees = -30.0
+	moon_light.max_distance = 2048
+	add_child(moon_light)
+
+	# Moon glow pool (large ellipse in upper-right corner)
+	var moon_glow := Polygon2D.new()
+	moon_glow.name = "MoonGlow"
+	moon_glow.position = Vector2(580.0, -380.0)
+	moon_glow.color = Color(0.65, 0.78, 1.0, 0.12)
+	moon_glow.z_index = -5
+	var moon_pts := PackedVector2Array()
+	for i in range(32):
+		var a := TAU * i / 32.0
+		moon_pts.append(Vector2(cos(a) * 280.0, sin(a) * 160.0))
+	moon_glow.polygon = moon_pts
+	add_child(moon_glow)
+
 func _add_slam_charge() -> void:
 	slam_charge += 1
 	if slam_charge >= slam_charge_required:
