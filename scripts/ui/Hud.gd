@@ -13,6 +13,10 @@ extends CanvasLayer
 @onready var danger_overlay: ColorRect = $DangerOverlay
 @onready var controls_hint: Label = $ControlsHint
 
+const TRANSFORM_ICON_TEXTURE := preload("res://assets/xianxia/icon_dash.png")
+const DIVINE_LIGHT_ICON_TEXTURE := preload("res://assets/xianxia/icon_shield.png")
+const EMPTY_SLOT_ICON_TEXTURE := preload("res://assets/xianxia/icon_sword.png")
+
 var player_health: HealthComponent
 var player_controller: Node
 var blocked_timer: float = 0.0
@@ -206,9 +210,9 @@ func _update_controls_hint_fade(delta: float) -> void:
 	controls_hint.visible = controls_hint.modulate.a > 0.0
 
 func _build_skill_icon_textures() -> void:
-	resurrection_icon_texture = _make_resurrection_icon()
-	divine_light_icon_texture = _make_divine_light_icon()
-	empty_icon_texture = _make_empty_icon()
+	resurrection_icon_texture = TRANSFORM_ICON_TEXTURE
+	divine_light_icon_texture = DIVINE_LIGHT_ICON_TEXTURE
+	empty_icon_texture = EMPTY_SLOT_ICON_TEXTURE
 
 func _get_skill_icon(skill_name: String) -> Texture2D:
 	if skill_name == "Transform":

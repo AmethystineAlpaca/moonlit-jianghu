@@ -4,6 +4,8 @@ signal combat_message_requested(message: String)
 
 const NIGHT_AMBIENCE_SCENE := preload("res://scenes/world/NightAmbienceController.tscn")
 const AMBIENT_MAGIC_SCENE := preload("res://scenes/world/AmbientMagicController.tscn")
+const GROUND_DAY_TEXTURE := preload("res://assets/xianxia/land.png")
+const GROUND_NIGHT_TEXTURE := preload("res://assets/xianxia/land_night.png")
 
 @export var enemy_scene: PackedScene
 @export var fast_enemy_scene: PackedScene
@@ -30,6 +32,11 @@ const AMBIENT_MAGIC_SCENE := preload("res://scenes/world/AmbientMagicController.
 @export var player_spawn_clearance: float = 120.0
 @export var chest_spawn_attempts: int = 1200
 @export var chest_spawn_clearance: float = 22.0
+@export var tree_scene: PackedScene
+@export var random_tree_min_count: int = 35
+@export var random_tree_max_count: int = 45
+@export var random_tree_spawn_attempts: int = 800
+@export var random_tree_clearance: float = 40.0
 
 var elapsed_time: float = 0.0
 var spawn_timer: float = 0.0
@@ -42,15 +49,18 @@ var path_solid_counts := {}
 var dynamic_navigation_obstacle_cells := {}
 var breakable_rng := RandomNumberGenerator.new()
 var chest_rng := RandomNumberGenerator.new()
+var tree_rng := RandomNumberGenerator.new()
 
 @onready var enemies_parent: Node2D = $Enemies
 @onready var breakables_parent: Node2D = get_node_or_null("Breakables") as Node2D
 @onready var chests_parent: Node2D = get_node_or_null("Chests") as Node2D
+@onready var trees_parent: Node2D = get_node_or_null("Trees") as Node2D
 
 func _ready() -> void:
 	add_to_group("world")
 	chest_rng.randomize()
 	_spawn_random_breakables()
+	_spawn_random_trees()
 	_regenerate_grassland()
 	_build_path_grid()
 	spawn_timer = initial_spawn_interval
@@ -76,6 +86,20 @@ func _process(delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("reset_scene"):
 		get_tree().reload_current_scene()
+	if event.is_action_pressed("toggle_night"):
+		var ambience := get_node_or_null("NightAmbience")
+		if ambience and ambience.has_method("toggle"):
+			ambience.toggle()
+		var is_night: bool = ambience != null and ambience.visible
+		var ground := get_node_or_null("Ground") as TextureRect
+		if ground != null:
+			ground.texture = GROUND_NIGHT_TEXTURE if is_night else GROUND_DAY_TEXTURE
+		var player := get_node_or_null("Player")
+		if player != null:
+			for light_path in ["PlayerLight", "Sword/WeaponLight"]:
+				var light := player.get_node_or_null(light_path)
+				if light != null:
+					light.visible = is_night
 
 func report_combat_message(message: String) -> void:
 	combat_message_requested.emit(message)
@@ -187,7 +211,29 @@ func _find_random_chest_position() -> Vector2:
 		var rect := _get_spawn_rect(position, _get_chest_spawn_size_from_scene())
 		if _is_spawn_rect_clear(rect, occupied_rects):
 			return position
-	return Vector2.INF
+	return _find_grid_chest_position(occupied_rects)
+
+func _find_grid_chest_position(occupied_rects: Array[Rect2]) -> Vector2:
+	var step := maxf(24.0, navigation_cell_size * 0.75)
+	var center := Vector2.ZERO
+	var best_position := Vector2.INF
+	var best_distance := INF
+
+	var x := -spawn_area_half_size.x
+	while x <= spawn_area_half_size.x:
+		var y := -spawn_area_half_size.y
+		while y <= spawn_area_half_size.y:
+			var position := Vector2(x, y)
+			var rect := _get_spawn_rect(position, _get_chest_spawn_size_from_scene())
+			if _is_spawn_rect_clear(rect, occupied_rects):
+				var distance := position.distance_squared_to(center)
+				if distance < best_distance:
+					best_distance = distance
+					best_position = position
+			y += step
+		x += step
+
+	return best_position
 
 func _pick_enemy_scene() -> PackedScene:
 	if fast_enemy_scene == null or elapsed_time < fast_enemy_grace_seconds:
@@ -503,3 +549,72 @@ func _add_slam_charge() -> void:
 	slam_charge += 1
 	if slam_charge >= slam_charge_required:
 		report_combat_message("Slam Charged")
+
+func _spawn_random_trees() -> void:
+	if tree_scene == null or trees_parent == null:
+		return
+
+	tree_rng.randomize()
+	var spawn_count := tree_rng.randi_range(random_tree_min_count, random_tree_max_count)
+	var occupied_rects := _get_tree_spawn_blockers()
+	var tree_half := Vector2.ONE * (12.0 + random_tree_clearance)
+	var spawned := 0
+	for _attempt in range(random_tree_spawn_attempts):
+		if spawned >= spawn_count:
+			break
+		var position := Vector2(
+			tree_rng.randf_range(-spawn_area_half_size.x, spawn_area_half_size.x),
+			tree_rng.randf_range(-spawn_area_half_size.y, spawn_area_half_size.y)
+		)
+		var rect := _get_spawn_rect(position, tree_half)
+		if _is_spawn_rect_clear(rect, occupied_rects):
+			var tree := tree_scene.instantiate() as Node2D
+			tree.name = "RandomTree%s" % [spawned + 1]
+			tree.global_position = position
+			trees_parent.add_child(tree)
+			occupied_rects.append(_get_spawn_rect(position, tree_half))
+			spawned += 1
+
+func _get_tree_spawn_blockers() -> Array[Rect2]:
+	var blockers: Array[Rect2] = []
+	var c := random_tree_clearance
+
+	# Exclude village paths and central square
+	var phw := 44.0 + c
+	blockers.append(Rect2(Vector2(-phw, -spawn_area_half_size.y), Vector2(phw * 2.0, spawn_area_half_size.y * 2.0)))
+	var phh := 42.0 + c
+	blockers.append(Rect2(Vector2(-spawn_area_half_size.x, -phh), Vector2(spawn_area_half_size.x * 2.0, phh * 2.0)))
+	var sq := 116.0 + c
+	blockers.append(Rect2(Vector2(-sq, -sq), Vector2(sq * 2.0, sq * 2.0)))
+
+	# All static obstacles in the scene (buildings, landmarks, existing trees, boundaries)
+	for child in get_children():
+		_collect_static_obstacle_rects(child, blockers, c)
+
+	# Breakable crates
+	for candidate in get_tree().get_nodes_in_group("breakables"):
+		if candidate is Node2D:
+			var obs := candidate as Node2D
+			var sz := _get_obstacle_size(obs)
+			if sz == Vector2.ZERO:
+				sz = Vector2(42.0, 42.0)
+			var half := sz * 0.5 + Vector2.ONE * c
+			blockers.append(Rect2(obs.global_position - half, half * 2.0))
+
+	# Keep player spawn area clear
+	var player := get_node_or_null("Player") as Node2D
+	if player != null:
+		var half_size := Vector2.ONE * player_spawn_clearance
+		blockers.append(Rect2(player.global_position - half_size, half_size * 2.0))
+
+	return blockers
+
+func _collect_static_obstacle_rects(node: Node, blockers: Array[Rect2], clearance: float) -> void:
+	if node is StaticBody2D:
+		var obs := node as Node2D
+		var sz := _get_obstacle_size(obs)
+		if sz != Vector2.ZERO:
+			var half := sz * 0.5 + Vector2.ONE * clearance
+			blockers.append(Rect2(obs.global_position - half, half * 2.0))
+	for child in node.get_children():
+		_collect_static_obstacle_rects(child, blockers, clearance)

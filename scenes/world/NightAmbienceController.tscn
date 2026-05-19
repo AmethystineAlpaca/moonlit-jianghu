@@ -7,7 +7,14 @@ script = ExtResource("1_script")
 
 [node name="NightEnvironment" type="WorldEnvironment" parent="."]
 
-[node name="WorldEffects" type="Node2D" parent="."]
+[node name="NightModulate" type="CanvasModulate" parent="."]
+color = Color(0.06, 0.08, 0.14, 1)
+
+[node name="FireflyLights" type="Node2D" parent="."]
+
+[node name="WorldEffects" type="CanvasLayer" parent="."]
+layer = 6
+follow_viewport_enabled = true
 
 [node name="FireflyParticles" type="GPUParticles2D" parent="WorldEffects"]
 position = Vector2(0, 0)
@@ -22,14 +29,6 @@ z_index = 3
 
 [node name="ScreenFx" type="CanvasLayer" parent="."]
 layer = 5
-
-[node name="NightOverlay" type="ColorRect" parent="ScreenFx"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
 
 [node name="Vignette" type="TextureRect" parent="ScreenFx"]
 anchors_preset = 15

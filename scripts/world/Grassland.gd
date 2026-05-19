@@ -14,7 +14,7 @@ const PIXEL_SURFACE := preload("res://scripts/world/PixelSurface.gd")
 @export var front_layer_z: int = 4
 @export var obstacle_padding: float = 12.0
 @export var region_padding: float = 4.0
-@export var edge_bleed: float = 14.0
+@export var edge_bleed: float = 20.0
 @export var edge_bleed_density: float = 1.0
 @export var generate_seed: int = 1337
 
@@ -50,7 +50,7 @@ func _populate_region(region: Rect2, textures: Array, exclusions: Array[Rect2], 
 		return
 
 	var bleed := Vector2(edge_bleed, edge_bleed)
-	var spawn_area := Rect2(inner.position - bleed, inner.size + bleed * 2.0).intersection(region)
+	var spawn_area := Rect2(inner.position - bleed, inner.size + bleed * 2.0)
 	spawn_area = spawn_area.intersection(_get_map_bounds())
 	if spawn_area.size.x <= 0.0 or spawn_area.size.y <= 0.0:
 		return
@@ -126,7 +126,14 @@ func _collect_grassland_regions() -> Array[Rect2]:
 	if parent == null:
 		return rects
 	for child in parent.get_children():
-		if child is TextureRect and "surface_kind" in child and child.surface_kind == "grassland":
+		if not child is TextureRect:
+			continue
+		var kind := ""
+		if "surface_kind" in child:
+			kind = child.surface_kind
+		elif child.has_meta("surface_kind"):
+			kind = child.get_meta("surface_kind")
+		if kind == "grassland":
 			rects.append(_texture_rect_world_rect(child))
 	return rects
 
@@ -177,12 +184,41 @@ func _get_map_bounds() -> Rect2:
 	return Rect2(-half, half * 2.0)
 
 func _collect_obstacle_rect(n: Node2D, rects: Array[Rect2]) -> void:
-	var size := _get_node_size(n)
-	if size == Vector2.ZERO:
+	var rect := _get_node_exclusion_rect(n)
+	if rect.size == Vector2.ZERO:
 		return
-	var pad := Vector2(obstacle_padding, obstacle_padding)
-	var half := size * 0.5 + pad
-	rects.append(Rect2(n.global_position - half, half * 2.0))
+	rects.append(rect)
+
+func _get_node_exclusion_rect(n: Node2D) -> Rect2:
+	var rect := Rect2()
+	var has_rect := false
+
+	var size := _get_node_size(n)
+	if size != Vector2.ZERO:
+		var half := size * 0.5
+		rect = Rect2(n.global_position - half, size)
+		has_rect = true
+
+	var sprite_rect := _get_visual_sprite_rect(n)
+	if sprite_rect.size != Vector2.ZERO:
+		rect = sprite_rect if not has_rect else rect.merge(sprite_rect)
+		has_rect = true
+
+	if not has_rect:
+		return Rect2()
+
+	var pad := Vector2.ONE * obstacle_padding
+	return Rect2(rect.position - pad, rect.size + pad * 2.0)
+
+func _get_visual_sprite_rect(n: Node2D) -> Rect2:
+	var sprite := n.get_node_or_null("Visual") as Sprite2D
+	if sprite == null or sprite.texture == null:
+		return Rect2()
+
+	var size := Vector2(sprite.texture.get_width(), sprite.texture.get_height()) * sprite.scale.abs()
+	var offset := sprite.offset * sprite.scale
+	var top_left := sprite.global_position - size * 0.5 + offset
+	return Rect2(top_left, size)
 
 func _get_node_size(n: Node2D) -> Vector2:
 	if "collision_size" in n:

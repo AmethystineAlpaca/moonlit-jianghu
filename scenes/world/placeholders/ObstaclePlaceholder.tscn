@@ -4,10 +4,13 @@
 
 [node name="ObstaclePlaceholder" type="StaticBody2D"]
 script = ExtResource("1_obstacle")
-size = Vector2(64, 48)
+size = Vector2(96, 96)
+collision_size = Vector2(64, 44)
 color = Color(0.43, 0.45, 0.43, 1)
 visual_style = "stone"
 
 [node name="Visual" type="Sprite2D" parent="."]
+
+[node name="CanopyVisual" type="Sprite2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

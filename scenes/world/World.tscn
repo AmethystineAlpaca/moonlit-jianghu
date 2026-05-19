@@ -13,6 +13,8 @@
 [ext_resource type="Script" path="res://scripts/world/PixelSurface.gd" id="11_surface"]
 [ext_resource type="PackedScene" path="res://scenes/world/ChestEncounter.tscn" id="12_chest"]
 [ext_resource type="Script" path="res://scripts/world/Grassland.gd" id="13_grassland"]
+[ext_resource type="PackedScene" path="res://scenes/world/placeholders/TreePlaceholder.tscn" id="14_rand_tree"]
+[ext_resource type="Texture2D" uid="uid://cg21628pbbaux" path="res://assets/xianxia/land_night.png" id="15_land"]
 
 [node name="World" type="Node2D"]
 script = ExtResource("8_world")
@@ -20,6 +22,7 @@ enemy_scene = ExtResource("6_enemy")
 fast_enemy_scene = ExtResource("10_fast_enemy")
 breakable_scene = ExtResource("9_crate")
 chest_scene = ExtResource("12_chest")
+tree_scene = ExtResource("14_rand_tree")
 
 [node name="Ground" type="TextureRect" parent="."]
 offset_left = -720.0
@@ -27,71 +30,11 @@ offset_top = -480.0
 offset_right = 720.0
 offset_bottom = 480.0
 mouse_filter = 2
-script = ExtResource("11_surface")
-surface_kind = "dirt"
+texture = ExtResource("15_land")
+stretch_mode = 1
+texture_filter = 1
+metadata/surface_kind = "grassland"
 
-[node name="VerticalPath" type="TextureRect" parent="."]
-offset_left = -44.0
-offset_top = -480.0
-offset_right = 44.0
-offset_bottom = 480.0
-mouse_filter = 2
-script = ExtResource("11_surface")
-surface_kind = "path"
-
-[node name="HorizontalPath" type="TextureRect" parent="."]
-offset_left = -720.0
-offset_top = -42.0
-offset_right = 720.0
-offset_bottom = 42.0
-mouse_filter = 2
-script = ExtResource("11_surface")
-surface_kind = "path"
-
-[node name="VillageSquare" type="TextureRect" parent="."]
-offset_left = -116.0
-offset_top = -116.0
-offset_right = 116.0
-offset_bottom = 116.0
-mouse_filter = 2
-script = ExtResource("11_surface")
-surface_kind = "stone"
-
-[node name="GrasslandNW" type="TextureRect" parent="."]
-offset_left = -640.0
-offset_top = -440.0
-offset_right = -470.0
-offset_bottom = -100.0
-mouse_filter = 2
-script = ExtResource("11_surface")
-surface_kind = "grassland"
-
-[node name="GrasslandNE" type="TextureRect" parent="."]
-offset_left = 470.0
-offset_top = -440.0
-offset_right = 640.0
-offset_bottom = -100.0
-mouse_filter = 2
-script = ExtResource("11_surface")
-surface_kind = "grassland"
-
-[node name="GrasslandSW" type="TextureRect" parent="."]
-offset_left = -640.0
-offset_top = 100.0
-offset_right = -470.0
-offset_bottom = 440.0
-mouse_filter = 2
-script = ExtResource("11_surface")
-surface_kind = "grassland"
-
-[node name="GrasslandSE" type="TextureRect" parent="."]
-offset_left = 470.0
-offset_top = 100.0
-offset_right = 640.0
-offset_bottom = 440.0
-mouse_filter = 2
-script = ExtResource("11_surface")
-surface_kind = "grassland"
 
 [node name="Grassland" type="Node2D" parent="."]
 script = ExtResource("13_grassland")
@@ -131,9 +74,14 @@ visual_style = "well"
 
 [node name="StonePile" parent="Landmarks" instance=ExtResource("4_obstacle")]
 position = Vector2(-500, 150)
-size = Vector2(54, 40)
+size = Vector2(96, 96)
+collision_size = Vector2(72, 32)
+collision_offset = Vector2(0, -16)
 color = Color(0.43, 0.45, 0.43, 1)
 visual_style = "stone"
+visual_scale = Vector2(1.2, 1.2)
+anchor_visual_to_bottom = true
+passable_upper_ratio = 0.67
 
 [node name="WoodPile" parent="Landmarks" instance=ExtResource("4_obstacle")]
 position = Vector2(-500, 330)

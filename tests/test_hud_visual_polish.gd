@@ -90,9 +90,11 @@ func _test_skill_slots_use_icons_for_transform_and_empty_slots() -> void:
 	_assert_true(transform_icon is TextureRect, "Transform slot has an icon")
 	_assert_true(empty_icon is TextureRect, "empty slot has an icon")
 	if transform_icon is TextureRect and empty_icon is TextureRect:
-		_assert_true((transform_icon as TextureRect).texture != null, "Transform icon has a generated texture")
-		_assert_true((empty_icon as TextureRect).texture != null, "empty icon has a generated texture")
+		_assert_true((transform_icon as TextureRect).texture != null, "Transform icon has a texture")
+		_assert_true((empty_icon as TextureRect).texture != null, "empty icon has a texture")
 		_assert_true((transform_icon as TextureRect).texture != (empty_icon as TextureRect).texture, "Transform and empty slots use different icons")
+		_assert_true((transform_icon as TextureRect).texture.resource_path.ends_with("icon_dash.png"), "Transform uses imported dash icon")
+		_assert_true((empty_icon as TextureRect).texture.resource_path.ends_with("icon_sword.png"), "empty slot uses imported sword fallback icon")
 
 	hud.free()
 

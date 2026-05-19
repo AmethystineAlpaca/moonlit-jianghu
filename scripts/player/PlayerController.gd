@@ -58,12 +58,21 @@ const HIT_SPARK_SCENE := preload("res://scenes/effects/HitSpark.tscn")
 const SLASH_TRAIL_SCENE := preload("res://scenes/effects/SlashTrail.tscn")
 const TRANSFORM_SKILL := preload("res://resources/skills/Transform.tres")
 const DIVINE_LIGHT_SKILL := preload("res://resources/skills/ProtectiveDivineLight.tres")
+const PLAYER_DOWN_IDLE_TEXTURE := preload("res://assets/xianxia/players/transparent_32x36/down_idle_32x36.png")
+const PLAYER_DOWN_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent_32x36/down_run_32x36.png")
+const PLAYER_UP_IDLE_TEXTURE := preload("res://assets/xianxia/players/transparent_32x36/up_idle_32x36.png")
+const PLAYER_UP_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent_32x36/up_run_32x36.png")
+const PLAYER_LEFT_IDLE_TEXTURE := preload("res://assets/xianxia/players/transparent_32x36/left_idle_32x36.png")
+const PLAYER_LEFT_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent_32x36/left_run_32x36.png")
+const PLAYER_RIGHT_IDLE_TEXTURE := preload("res://assets/xianxia/players/transparent_32x36/right_idle_32x36.png")
+const PLAYER_RIGHT_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent_32x36/right_run_32x36.png")
+const RUN_ANIM_FPS: float = 6.0
+const PLAYER_SWORD_TEXTURE := preload("res://assets/xianxia/sword.png")
 const ATTACK_VARIANT_NORMAL := "normal"
 const ATTACK_VARIANT_COUNTER := "counter"
 const ATTACK_VARIANT_BACK_HIT := "back_hit"
 const ATTACK_VARIANT_MOMENTUM := "momentum"
 const ATTACK_VARIANT_IMPACT := "impact"
-const GLOW_OUTLINE_SHADER := preload("res://resources/shaders/glow_outline.gdshader")
 
 var sword_visual: Sprite2D
 var sword_mount: Node2D
@@ -93,6 +102,8 @@ var is_exhausted: bool = false
 var is_defeated: bool = false
 var normal_body_scale: Vector2 = Vector2.ONE
 var visual_time: float = 0.0
+var _run_anim_timer: float = 0.0
+var _run_anim_frame: int = 0
 var _afterimage_timer: float = 0.0
 var _afterimage_interval_move: float = 0.07
 var _afterimage_interval_dash: float = 0.035
@@ -214,12 +225,10 @@ func _try_melee_attack() -> void:
 	melee_timer = melee_cooldown
 	attack_visual_timer = 0.18
 	_set_stamina(current_stamina - attack_stamina_cost)
-	_show_attack_preview()
 	var world := get_tree().get_first_node_in_group("world")
 	var _is_slam: bool = world != null and world.has_method("has_slam_charge") and world.has_slam_charge()
 	var _is_counter: bool = counter_ready_timer > 0.0
 	var _has_momentum: bool = current_input_direction != Vector2.ZERO and current_input_direction.dot(last_facing_direction) > 0.75
-	_spawn_slash_trail(_choose_attack_variant(_is_slam, _is_counter, _has_momentum, false))
 	_start_sword_swing(1.0)
 	velocity += last_facing_direction * melee_lunge_force
 
@@ -345,18 +354,17 @@ func _update_sword_feedback(_delta: float) -> void:
 	sword.rotation = facing_angle + swing_offset
 
 func _setup_xianxia_visuals() -> void:
-	body.texture = _build_player_texture()
+	body.texture = PLAYER_DOWN_IDLE_TEXTURE
 	body.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	body.centered = true
-	var outline_mat := ShaderMaterial.new()
-	outline_mat.shader = GLOW_OUTLINE_SHADER
-	outline_mat.set_shader_parameter("outline_color", Color(0.25, 0.88, 0.82, 0.85))
-	outline_mat.set_shader_parameter("outline_width", 1.2)
-	outline_mat.set_shader_parameter("glow_strength", 0.55)
-	body.material = outline_mat
+	body.material = null
+	if selection_ring != null:
+		selection_ring.visible = false
+	if facing_marker != null:
+		facing_marker.visible = false
 
 	sword_mount = sword
-	sword_visual = sword_mount as Sprite2D
+	sword_visual = get_node_or_null("Sword/SwordSprite") as Sprite2D if sword_mount != null else null
 	if sword_visual == null and sword_mount == null:
 		sword_visual = Sprite2D.new()
 		sword_visual.name = "Sword"
@@ -364,10 +372,15 @@ func _setup_xianxia_visuals() -> void:
 		move_child(sword_visual, body.get_index() + 1)
 		sword_mount = sword_visual
 		sword = sword_mount
+	elif sword_visual == null and sword_mount != null:
+		sword_visual = Sprite2D.new()
+		sword_visual.name = "SwordSprite"
+		sword_mount.add_child(sword_visual)
 	if sword_visual != null:
-		sword_visual.texture = _build_sword_texture()
+		sword_visual.texture = PLAYER_SWORD_TEXTURE
 		sword_visual.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		sword_visual.centered = true
+		sword_visual.rotation = PI
 		sword_visual.z_index = 2
 	if sword_mount != null:
 		sword_mount.position = Vector2(13.0, 1.0)
@@ -376,10 +389,13 @@ func _setup_xianxia_visuals() -> void:
 
 	var blade := sword_mount.get_node_or_null("Blade") as Polygon2D if sword_mount != null else null
 	if blade != null:
-		blade.color = Color(0.78, 0.94, 1.0, 1.0)
+		blade.visible = false
 	var guard_poly := sword_mount.get_node_or_null("Guard") as Polygon2D if sword_mount != null else null
 	if guard_poly != null:
-		guard_poly.color = Color(0.55, 0.82, 0.96, 1.0)
+		guard_poly.visible = false
+	var hilt_poly := sword_mount.get_node_or_null("Hilt") as Polygon2D if sword_mount != null else null
+	if hilt_poly != null:
+		hilt_poly.visible = false
 
 	robe_sash_visual = get_node_or_null("RobeSash") as Polygon2D
 	if robe_sash_visual == null:
@@ -387,9 +403,20 @@ func _setup_xianxia_visuals() -> void:
 		robe_sash_visual.name = "RobeSash"
 		add_child(robe_sash_visual)
 		move_child(robe_sash_visual, body.get_index() + 1)
-	robe_sash_visual.color = Color(0.58, 0.88, 0.98, 0.78)
-	robe_sash_visual.polygon = PackedVector2Array([Vector2(-9, 3), Vector2(9, 3), Vector2(7, 8), Vector2(-7, 8)])
-	robe_sash_visual.z_index = 3
+	robe_sash_visual.visible = false
+
+func _get_directional_textures() -> Array[Texture2D]:
+	var direction := last_facing_direction
+	if direction == Vector2.ZERO:
+		return [PLAYER_DOWN_IDLE_TEXTURE, PLAYER_DOWN_RUN_TEXTURE]
+	if absf(direction.x) > absf(direction.y):
+		if direction.x > 0.0:
+			return [PLAYER_RIGHT_IDLE_TEXTURE, PLAYER_RIGHT_RUN_TEXTURE]
+		else:
+			return [PLAYER_LEFT_IDLE_TEXTURE, PLAYER_LEFT_RUN_TEXTURE]
+	if direction.y > 0.0:
+		return [PLAYER_DOWN_IDLE_TEXTURE, PLAYER_DOWN_RUN_TEXTURE]
+	return [PLAYER_UP_IDLE_TEXTURE, PLAYER_UP_RUN_TEXTURE]
 
 func _build_player_texture() -> Texture2D:
 	var image := Image.create(32, 36, false, Image.FORMAT_RGBA8)
@@ -435,16 +462,17 @@ func _update_xianxia_animation(_delta: float) -> void:
 
 	var moving := current_input_direction != Vector2.ZERO
 	var is_dashing := dash_timer > 0.0
-	if is_dashing or moving:
-		var interval := _afterimage_interval_dash if is_dashing else _afterimage_interval_move
-		_afterimage_timer -= _delta
-		if _afterimage_timer <= 0.0:
-			_afterimage_timer = interval
-			var alpha := 0.55 if is_dashing else 0.30
-			_spawn_afterimage(alpha)
+	if moving or is_dashing:
+		_run_anim_timer -= _delta
+		if _run_anim_timer <= 0.0:
+			_run_anim_frame = (_run_anim_frame + 1) % 2
+			_run_anim_timer = 1.0 / RUN_ANIM_FPS
+		body.texture = _get_directional_textures()[_run_anim_frame]
 	else:
-		_afterimage_timer = 0.0
-	var walk_bob := sin(visual_time * 12.0) * 1.6 if moving else sin(visual_time * 3.0) * 0.45
+		_run_anim_timer = 0.0
+		_run_anim_frame = 0
+		body.texture = PLAYER_DOWN_IDLE_TEXTURE
+	var walk_bob := sin(visual_time * 7.0) * 0.7 if moving else sin(visual_time * 3.0) * 0.45
 	body.position = Vector2(0.0, walk_bob)
 	if robe_sash_visual != null:
 		robe_sash_visual.position = Vector2(sin(visual_time * 8.0) * (1.2 if moving else 0.35), walk_bob)
@@ -455,7 +483,7 @@ func _update_xianxia_animation(_delta: float) -> void:
 		sword_mount.modulate = Color(0.72, 0.94, 1.0, 0.86)
 		return
 
-	body.rotation = sin(visual_time * 9.0) * (0.025 if moving else 0.01)
+	body.rotation = 0.0
 	if attack_visual_timer > 0.0:
 		sword_mount.position = last_facing_direction * 20.0 + Vector2(0.0, walk_bob)
 		sword_mount.modulate = Color(0.9, 0.98, 1.0, 1.0)
@@ -476,7 +504,9 @@ func _spawn_afterimage(alpha: float) -> void:
 	get_parent().call_deferred("add_child", ghost)
 	var fade_time := 0.12 if dash_timer <= 0.0 else 0.08
 	get_tree().create_tween().tween_property(ghost, "modulate:a", 0.0, fade_time).set_delay(0.02)
-	get_tree().create_tween().tween_interval(fade_time + 0.03).tween_callback(ghost.queue_free)
+	var cleanup_tween := get_tree().create_tween()
+	cleanup_tween.tween_interval(fade_time + 0.03)
+	cleanup_tween.tween_callback(ghost.queue_free)
 
 func _fill_rect(image: Image, rect: Rect2i, fill: Color) -> void:
 	for y in range(rect.position.y, rect.end.y):
@@ -537,7 +567,10 @@ func _get_variant_spark_end_scale(variant: String) -> Vector2:
 
 func _spawn_hit_spark(effect_position: Vector2, variant: String = ATTACK_VARIANT_NORMAL) -> void:
 	var spark := HIT_SPARK_SCENE.instantiate() as Node2D
-	get_tree().current_scene.add_child(spark)
+	var effect_host := _get_effect_host()
+	if effect_host == null:
+		return
+	effect_host.add_child(spark)
 	spark.global_position = effect_position
 	if spark.has_method("configure"):
 		spark.configure(
@@ -549,10 +582,21 @@ func _spawn_hit_spark(effect_position: Vector2, variant: String = ATTACK_VARIANT
 
 func _spawn_slash_trail(variant: String) -> void:
 	var trail := SLASH_TRAIL_SCENE.instantiate() as Node2D
-	get_tree().current_scene.add_child(trail)
+	var effect_host := _get_effect_host()
+	if effect_host == null:
+		return
+	effect_host.add_child(trail)
 	trail.global_position = global_position + last_facing_direction * melee_range
 	if trail.has_method("setup"):
 		trail.setup(last_facing_direction, variant, melee_range)
+
+func _get_effect_host() -> Node:
+	var tree := get_tree()
+	if tree == null:
+		return get_parent()
+	if tree.current_scene != null:
+		return tree.current_scene
+	return get_parent()
 
 func _apply_hit_pause() -> void:
 	get_tree().paused = true
@@ -575,7 +619,6 @@ func _on_died() -> void:
 	is_exhausted = false
 	body.modulate = Color(0.45, 0.45, 0.45, 1.0)
 	body.scale = normal_body_scale
-	selection_ring.color = Color(0.4, 0.4, 0.4, 0.35)
 	guard_ring.visible = false
 	damage_ring.visible = false
 	attack_preview.visible = false
@@ -589,7 +632,6 @@ func apply_incoming_damage(amount: int) -> void:
 		final_damage = maxi(amount - defend_block_amount, 0)
 		if final_damage < amount:
 			blocked.emit()
-			selection_ring.color = Color(0.2, 0.95, 1.0, 0.7)
 			block_ring_timer = 0.18
 
 	if final_damage > 0:
@@ -687,18 +729,7 @@ func _refresh_body_feedback() -> void:
 	else:
 		body.modulate = Color.WHITE
 
-	if _is_counter_ready_visual_active():
-		selection_ring.color = Color(0.1, 1.0, 0.9, 0.62)
-		guard_ring.visible = true
-	elif is_defending:
-		selection_ring.color = Color(0.42, 0.78, 1.0, 0.45)
-		guard_ring.visible = true
-	elif is_exhausted:
-		selection_ring.color = Color(0.55, 0.55, 0.55, 0.35)
-		guard_ring.visible = false
-	else:
-		selection_ring.color = Color(1.0, 0.93, 0.55, 0.38)
-		guard_ring.visible = false
+	guard_ring.visible = _is_counter_ready_visual_active() or is_defending
 
 func _try_dash(input_direction: Vector2) -> void:
 	if dash_cooldown_timer > 0.0 or is_exhausted or is_defeated or current_stamina < dash_stamina_cost:

@@ -1,26 +1,121 @@
 @tool
 extends StaticBody2D
 
+const TREE_SWAY_SHADER := preload("res://resources/shaders/grass_wind.gdshader")
+
 @export var size: Vector2 = Vector2(96.0, 96.0)
 @export var color: Color = Color(0.45, 0.35, 0.22, 1.0)
 @export var collision_size: Vector2 = Vector2.ZERO
+@export var collision_offset: Vector2 = Vector2.ZERO
 @export_enum("house", "tree", "stone", "well", "wood", "fountain") var visual_style: String = "stone"
+@export_file("*.png") var texture_path: String = ""
+@export var visual_scale: Vector2 = Vector2.ONE
+@export var anchor_visual_to_bottom: bool = false
+@export_range(0.0, 0.95, 0.01) var passable_upper_ratio: float = 0.0
+@export var is_boundary: bool = false
 
 @onready var visual: Sprite2D = $Visual
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
+@onready var canopy_visual: Sprite2D = $CanopyVisual if has_node("CanopyVisual") else null
+
+const DEFAULT_TEXTURE_BY_STYLE := {
+	"house": "res://assets/xianxia/shrine.png",
+	"tree": "res://assets/xianxia/tree.png",
+	"stone": "res://assets/xianxia/rock.png",
+	"well": "res://assets/xianxia/rock.png",
+	"wood": "res://assets/xianxia/rock.png",
+	"fountain": "res://assets/xianxia/rock.png",
+}
 
 func _ready() -> void:
 	var resolved_collision_size := collision_size
 	if resolved_collision_size == Vector2.ZERO:
 		resolved_collision_size = size
 
-	visual.texture = _build_texture()
-	visual.centered = true
-	visual.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	var texture := _resolve_texture()
+	_apply_visual_texture(texture)
 
-	var shape := RectangleShape2D.new()
-	shape.size = resolved_collision_size
-	collision_shape.shape = shape
+	if is_boundary:
+		var shape := RectangleShape2D.new()
+		shape.size = resolved_collision_size
+		collision_shape.shape = shape
+	else:
+		var w := resolved_collision_size.x
+		var h := resolved_collision_size.y
+		var shape := CapsuleShape2D.new()
+		shape.radius = min(w, h) * 0.5
+		shape.height = max(w, h)
+		collision_shape.rotation = 0.0 if h >= w else PI * 0.5
+		collision_shape.shape = shape
+	collision_shape.position = collision_offset
+
+func _process(_delta: float) -> void:
+	if canopy_visual == null or not canopy_visual.visible:
+		return
+	var player := get_tree().get_first_node_in_group("player") as Node2D
+	if player == null:
+		return
+	canopy_visual.z_index = 4 if player.global_position.y < global_position.y else 0
+
+func _apply_visual_texture(texture: Texture2D) -> void:
+	if texture == null:
+		return
+	if canopy_visual != null and passable_upper_ratio > 0.0:
+		_apply_split_tree_texture(texture)
+		return
+
+	visual.texture = texture
+	visual.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	visual.centered = true
+	visual.scale = visual_scale
+	visual.position = Vector2.ZERO
+	if anchor_visual_to_bottom:
+		visual.position.y = -texture.get_height() * visual_scale.y * 0.5
+	if visual_style == "tree":
+		visual.material = _make_tree_sway_material()
+	if canopy_visual != null:
+		canopy_visual.visible = false
+
+func _apply_split_tree_texture(texture: Texture2D) -> void:
+	var width := texture.get_width()
+	var height := texture.get_height()
+	var split_y := clampi(roundi(height * passable_upper_ratio), 1, height - 1)
+	var top_height := split_y
+	var bottom_height := height - split_y
+
+	visual.texture = _make_region_texture(texture, Rect2(0, split_y, width, bottom_height))
+	visual.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	visual.centered = true
+	visual.scale = visual_scale
+	visual.position = Vector2(0, -bottom_height * visual_scale.y * 0.5)
+
+	canopy_visual.texture = _make_region_texture(texture, Rect2(0, 0, width, top_height))
+	canopy_visual.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	canopy_visual.centered = true
+	canopy_visual.scale = visual_scale
+	canopy_visual.position = Vector2(
+		0,
+		-bottom_height * visual_scale.y - top_height * visual_scale.y * 0.5
+	)
+	canopy_visual.visible = true
+	canopy_visual.z_index = 4
+	canopy_visual.material = _make_tree_sway_material()
+
+func _make_region_texture(texture: Texture2D, region: Rect2) -> AtlasTexture:
+	var atlas := AtlasTexture.new()
+	atlas.atlas = texture
+	atlas.region = region
+	return atlas
+
+func _resolve_texture() -> Texture2D:
+	var resolved_path := texture_path
+	if resolved_path.is_empty() and DEFAULT_TEXTURE_BY_STYLE.has(visual_style):
+		resolved_path = String(DEFAULT_TEXTURE_BY_STYLE[visual_style])
+	if not resolved_path.is_empty():
+		var texture := load(resolved_path) as Texture2D
+		if texture != null:
+			return texture
+	return _build_texture()
 
 func _build_texture() -> Texture2D:
 	var texture_size := Vector2i(maxi(8, roundi(size.x)), maxi(8, roundi(size.y)))
@@ -111,6 +206,15 @@ func _draw_wood_pile(image: Image) -> void:
 		_fill_rect(image, Rect2i(w * 0.12, y, w * 0.76, max(4, h * 0.10)), dark)
 		_fill_rect(image, Rect2i(w * 0.16, y, w * 0.66, max(2, h * 0.05)), mid)
 		_fill_rect(image, Rect2i(w * 0.18, y + 1, w * 0.10, 2), light)
+
+func _make_tree_sway_material() -> ShaderMaterial:
+	var mat := ShaderMaterial.new()
+	mat.shader = TREE_SWAY_SHADER
+	mat.set_shader_parameter("wind_strength", 1.2)
+	mat.set_shader_parameter("wind_speed", 0.65)
+	mat.set_shader_parameter("wind_frequency", 0.4)
+	mat.set_shader_parameter("wind_dir", Vector2(1.0, 0.0))
+	return mat
 
 func _draw_fountain(image: Image) -> void:
 	var w := image.get_width()

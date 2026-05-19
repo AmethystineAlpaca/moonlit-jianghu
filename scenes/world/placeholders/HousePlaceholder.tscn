@@ -4,10 +4,17 @@
 
 [node name="HousePlaceholder" type="StaticBody2D"]
 script = ExtResource("1_obstacle")
-size = Vector2(168, 112)
+size = Vector2(128, 128)
+collision_size = Vector2(110, 50)
+collision_offset = Vector2(0, -22)
 color = Color(0.62, 0.29, 0.13, 1)
 visual_style = "house"
+visual_scale = Vector2(1.5, 1.5)
+anchor_visual_to_bottom = true
+passable_upper_ratio = 0.67
 
 [node name="Visual" type="Sprite2D" parent="."]
+
+[node name="CanopyVisual" type="Sprite2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

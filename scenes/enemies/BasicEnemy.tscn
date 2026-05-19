@@ -34,10 +34,10 @@ texture = SubResource("GradientTexture2D_enemy")
 [node name="EnemyAccentLight" type="PointLight2D" parent="."]
 position = Vector2(0, -2)
 texture = ExtResource("3_night_light")
-texture_scale = 0.62
+texture_scale = 0.28
 color = Color(0.56, 0.82, 1, 1)
-energy = 0.26
-blend_mode = 1
+energy = 0.07
+blend_mode = 0
 range_item_cull_mask = 1
 shadow_enabled = false
 
@@ -45,22 +45,6 @@ shadow_enabled = false
 color = Color(1, 0.82, 0.68, 1)
 polygon = PackedVector2Array(0, 16, -5, 5, 5, 5)
 
-[node name="AttackWarning" type="Node2D" parent="."]
-visible = false
-position = Vector2(0, -32)
-
-[node name="Triangle" type="Polygon2D" parent="AttackWarning"]
-color = Color(1, 0.1, 0.05, 0.9)
-polygon = PackedVector2Array(0, -12, 10, 8, -10, 8)
-
-[node name="Mark" type="Polygon2D" parent="AttackWarning"]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-1, -6, 1, -6, 1, 2, -1, 2)
-
-[node name="Dot" type="Polygon2D" parent="AttackWarning"]
-position = Vector2(0, 5)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(0, -1.5, 1.5, 0, 0, 1.5, -1.5, 0)
 
 [node name="HPBar" type="ProgressBar" parent="."]
 offset_left = -18.0

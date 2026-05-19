@@ -1,562 +1,102 @@
 [
   {
-    "name": "player_idle_down.png",
-    "source_box": [
+    "file": "player_idle.png",
+    "target_size": "32x36",
+    "mode": "RGBA",
+    "alpha_values": [
       0,
-      25,
-      175,
-      350
+      255
     ],
-    "original_cut_size": [
-      162,
-      325
-    ],
-    "scaled_size": [
-      32,
-      36
-    ],
-    "kind": "player"
+    "source": "a_clean_pixel_art_8_bit_style_sprite_on_a_transp_1.png"
   },
   {
-    "name": "player_idle_up.png",
-    "source_box": [
-      180,
-      25,
-      330,
-      350
-    ],
-    "original_cut_size": [
-      149,
-      319
-    ],
-    "scaled_size": [
-      32,
-      36
-    ],
-    "kind": "player"
-  },
-  {
-    "name": "player_idle_left.png",
-    "source_box": [
-      335,
-      25,
-      485,
-      350
-    ],
-    "original_cut_size": [
-      140,
-      306
-    ],
-    "scaled_size": [
-      32,
-      36
-    ],
-    "kind": "player"
-  },
-  {
-    "name": "player_idle_right.png",
-    "source_box": [
-      490,
-      25,
-      620,
-      350
-    ],
-    "original_cut_size": [
-      112,
-      311
-    ],
-    "scaled_size": [
-      32,
-      36
-    ],
-    "kind": "player"
-  },
-  {
-    "name": "player_run_down_1.png",
-    "source_box": [
-      625,
-      25,
-      750,
-      330
-    ],
-    "original_cut_size": [
-      125,
-      283
-    ],
-    "scaled_size": [
-      32,
-      36
-    ],
-    "kind": "player"
-  },
-  {
-    "name": "player_run_down_2.png",
-    "source_box": [
-      755,
-      25,
-      885,
-      330
-    ],
-    "original_cut_size": [
-      130,
-      276
-    ],
-    "scaled_size": [
-      32,
-      36
-    ],
-    "kind": "player"
-  },
-  {
-    "name": "player_run_down_3.png",
-    "source_box": [
-      890,
-      25,
-      1025,
-      330
-    ],
-    "original_cut_size": [
-      135,
-      279
-    ],
-    "scaled_size": [
-      32,
-      36
-    ],
-    "kind": "player"
-  },
-  {
-    "name": "player_run_up_1.png",
-    "source_box": [
+    "file": "player_run_left.png",
+    "target_size": "32x36",
+    "mode": "RGBA",
+    "alpha_values": [
       0,
-      350,
-      155,
-      630
+      255
     ],
-    "original_cut_size": [
-      148,
-      278
-    ],
-    "scaled_size": [
-      32,
-      36
-    ],
-    "kind": "player"
+    "source": "a_clean_transparent_background_pixel_art_sprite_s_2_batch_1.png"
   },
   {
-    "name": "player_run_up_2.png",
-    "source_box": [
-      160,
-      350,
-      295,
-      630
+    "file": "player_run_right.png",
+    "target_size": "32x36",
+    "mode": "RGBA",
+    "alpha_values": [
+      0,
+      255
     ],
-    "original_cut_size": [
-      135,
-      263
-    ],
-    "scaled_size": [
-      32,
-      36
-    ],
-    "kind": "player"
+    "source": "a_clean_minimal_pixel_art_sprite_scene_on_a_trans_3_batch_2.png"
   },
   {
-    "name": "player_run_up_3.png",
-    "source_box": [
-      300,
-      350,
-      440,
-      630
+    "file": "player_run_up.png",
+    "target_size": "32x36",
+    "mode": "RGBA",
+    "alpha_values": [
+      0,
+      255
     ],
-    "original_cut_size": [
-      140,
-      267
-    ],
-    "scaled_size": [
-      32,
-      36
-    ],
-    "kind": "player"
+    "source": "a_minimalist_pixel_art_style_sprite_on_a_transp_11.png"
   },
   {
-    "name": "player_run_right_1.png",
-    "source_box": [
-      440,
-      350,
-      590,
-      630
+    "file": "player_run_down.png",
+    "target_size": "32x36",
+    "mode": "RGBA",
+    "alpha_values": [
+      0,
+      255
     ],
-    "original_cut_size": [
-      150,
-      265
-    ],
-    "scaled_size": [
-      32,
-      36
-    ],
-    "kind": "player"
+    "source": "a_clean_transparent_png_style_image_with_a_pixel_5_batch_4.png"
   },
   {
-    "name": "player_run_right_2.png",
-    "source_box": [
-      590,
-      350,
-      740,
-      630
+    "file": "sword.png",
+    "target_size": "28x28",
+    "mode": "RGBA",
+    "alpha_values": [
+      0,
+      255
     ],
-    "original_cut_size": [
-      150,
-      269
-    ],
-    "scaled_size": [
-      32,
-      36
-    ],
-    "kind": "player"
+    "source": "a_clean_centered_pixel_art_scene_on_a_transparent_6_batch_5.png"
   },
   {
-    "name": "player_run_right_3.png",
-    "source_box": [
-      735,
-      350,
-      880,
-      630
+    "file": "skeleton_idle.png",
+    "target_size": "30x32",
+    "mode": "RGBA",
+    "alpha_values": [
+      0,
+      255
     ],
-    "original_cut_size": [
-      129,
-      269
-    ],
-    "scaled_size": [
-      32,
-      36
-    ],
-    "kind": "player"
+    "source": "a_clean_pixel_art_sprite_on_a_transparent_backgrou_7_batch_6.png"
   },
   {
-    "name": "player_run_left_1.png",
-    "source_box": [
-      35,
-      615,
-      180,
-      885
+    "file": "skeleton_corpse.png",
+    "target_size": "32x24",
+    "mode": "RGBA",
+    "alpha_values": [
+      0,
+      255
     ],
-    "original_cut_size": [
-      136,
-      270
-    ],
-    "scaled_size": [
-      32,
-      36
-    ],
-    "kind": "player"
+    "source": "a_clean_minimal_pixel_art_sprite_on_a_solid_trans_8_batch_7.png"
   },
   {
-    "name": "player_run_left_2.png",
-    "source_box": [
-      185,
-      615,
-      335,
-      885
+    "file": "tree.png",
+    "target_size": "42x42",
+    "mode": "RGBA",
+    "alpha_values": [
+      0,
+      255
     ],
-    "original_cut_size": [
-      150,
-      270
-    ],
-    "scaled_size": [
-      32,
-      36
-    ],
-    "kind": "player"
+    "source": "a_clean_isolated_pixel_art_illustration_on_a_trans_9_batch_8.png"
   },
   {
-    "name": "player_run_left_3.png",
-    "source_box": [
-      340,
-      615,
-      490,
-      885
+    "file": "rock.png",
+    "target_size": "96x96",
+    "mode": "RGBA",
+    "alpha_values": [
+      0,
+      255
     ],
-    "original_cut_size": [
-      145,
-      270
-    ],
-    "scaled_size": [
-      32,
-      36
-    ],
-    "kind": "player"
-  },
-  {
-    "name": "player_run_left_4.png",
-    "source_box": [
-      495,
-      615,
-      640,
-      885
-    ],
-    "original_cut_size": [
-      145,
-      270
-    ],
-    "scaled_size": [
-      32,
-      36
-    ],
-    "kind": "player"
-  },
-  {
-    "name": "sword.png",
-    "source_box": [
-      1060,
-      40,
-      1160,
-      290
-    ],
-    "original_cut_size": [
-      57,
-      201
-    ],
-    "scaled_size": [
-      28,
-      28
-    ],
-    "kind": "sword"
-  },
-  {
-    "name": "skeleton_idle.png",
-    "source_box": [
-      1210,
-      50,
-      1410,
-      310
-    ],
-    "original_cut_size": [
-      168,
-      216
-    ],
-    "scaled_size": [
-      30,
-      32
-    ],
-    "kind": "skeleton"
-  },
-  {
-    "name": "skeleton_corpse.png",
-    "source_box": [
-      1110,
-      315,
-      1425,
-      405
-    ],
-    "original_cut_size": [
-      235,
-      82
-    ],
-    "scaled_size": [
-      32,
-      24
-    ],
-    "kind": "corpse"
-  },
-  {
-    "name": "tree_1.png",
-    "source_box": [
-      925,
-      405,
-      1135,
-      630
-    ],
-    "original_cut_size": [
-      210,
-      218
-    ],
-    "scaled_size": [
-      42,
-      42
-    ],
-    "kind": "tree"
-  },
-  {
-    "name": "tree_2.png",
-    "source_box": [
-      1190,
-      405,
-      1395,
-      630
-    ],
-    "original_cut_size": [
-      205,
-      209
-    ],
-    "scaled_size": [
-      42,
-      42
-    ],
-    "kind": "tree"
-  },
-  {
-    "name": "rock.png",
-    "source_box": [
-      705,
-      620,
-      1040,
-      1035
-    ],
-    "original_cut_size": [
-      335,
-      399
-    ],
-    "scaled_size": [
-      96,
-      96
-    ],
-    "kind": "obstacle"
-  },
-  {
-    "name": "shrine.png",
-    "source_box": [
-      1080,
-      625,
-      1465,
-      1035
-    ],
-    "original_cut_size": [
-      385,
-      390
-    ],
-    "scaled_size": [
-      96,
-      96
-    ],
-    "kind": "obstacle"
-  },
-  {
-    "name": "icon_shield.png",
-    "source_box": [
-      40,
-      895,
-      160,
-      1015
-    ],
-    "original_cut_size": [
-      119,
-      120
-    ],
-    "scaled_size": [
-      32,
-      32
-    ],
-    "kind": "icon"
-  },
-  {
-    "name": "icon_sword.png",
-    "source_box": [
-      200,
-      895,
-      320,
-      1015
-    ],
-    "original_cut_size": [
-      118,
-      107
-    ],
-    "scaled_size": [
-      32,
-      32
-    ],
-    "kind": "icon"
-  },
-  {
-    "name": "icon_fire.png",
-    "source_box": [
-      360,
-      895,
-      480,
-      1015
-    ],
-    "original_cut_size": [
-      114,
-      120
-    ],
-    "scaled_size": [
-      32,
-      32
-    ],
-    "kind": "icon"
-  },
-  {
-    "name": "icon_dash.png",
-    "source_box": [
-      520,
-      895,
-      640,
-      1015
-    ],
-    "original_cut_size": [
-      112,
-      120
-    ],
-    "scaled_size": [
-      32,
-      32
-    ],
-    "kind": "icon"
-  },
-  {
-    "name": "firefly_core.png",
-    "scaled_size": [
-      8,
-      8
-    ],
-    "kind": "vfx"
-  },
-  {
-    "name": "firefly_halo.png",
-    "scaled_size": [
-      24,
-      24
-    ],
-    "kind": "vfx"
-  },
-  {
-    "name": "crystal_sparkle.png",
-    "scaled_size": [
-      12,
-      12
-    ],
-    "kind": "vfx"
-  },
-  {
-    "name": "gleam_star.png",
-    "scaled_size": [
-      10,
-      10
-    ],
-    "kind": "vfx"
-  },
-  {
-    "name": "dot_variant_a.png",
-    "scaled_size": [
-      6,
-      6
-    ],
-    "kind": "vfx"
-  },
-  {
-    "name": "dot_variant_b.png",
-    "scaled_size": [
-      6,
-      6
-    ],
-    "kind": "vfx"
-  },
-  {
-    "name": "dot_variant_c.png",
-    "scaled_size": [
-      6,
-      6
-    ],
-    "kind": "vfx"
+    "source": "a_centered_pixel_art_illustration_on_a_transparent_10_batch_9.png"
   }
 ]

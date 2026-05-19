@@ -9,8 +9,8 @@
 radius = 12.0
 
 [sub_resource type="Gradient" id="Gradient_player"]
-offsets = PackedFloat32Array(0, 0.7, 1)
-colors = PackedColorArray(0.95, 0.82, 0.42, 1, 0.29, 0.48, 0.86, 1, 0.1, 0.17, 0.33, 1)
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.95, 0.82, 0.42, 1, 0.1, 0.17, 0.33, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_player"]
 gradient = SubResource("Gradient_player")
@@ -54,10 +54,10 @@ polygon = PackedVector2Array(0, 17, -5, 6, 5, 6)
 [node name="PlayerLight" type="PointLight2D" parent="."]
 position = Vector2(0, -2)
 texture = ExtResource("4_night_light")
-texture_scale = 0.85
+texture_scale = 0.38
 color = Color(0.74, 0.88, 1, 1)
-energy = 0.42
-blend_mode = 1
+energy = 0.17
+blend_mode = 0
 range_item_cull_mask = 1
 shadow_enabled = false
 
@@ -82,12 +82,27 @@ polygon = PackedVector2Array(-2, -5, 2, -5, 2, 7, -2, 7)
 [node name="WeaponLight" type="PointLight2D" parent="Sword"]
 position = Vector2(0, 20)
 texture = ExtResource("4_night_light")
-texture_scale = 0.45
+texture_scale = 0.20
 color = Color(0.68, 0.92, 1, 1)
-energy = 0.68
-blend_mode = 1
+energy = 0.14
+blend_mode = 0
 range_item_cull_mask = 1
 shadow_enabled = false
+
+[node name="AttackWarning" type="Node2D" parent="."]
+visible = false
+position = Vector2(0, -38)
+
+[node name="DangerLabel" type="Label" parent="AttackWarning"]
+offset_left = -12.0
+offset_top = -10.0
+offset_right = 12.0
+offset_bottom = 10.0
+theme_override_colors/font_color = Color(1, 0.1, 0.05, 1)
+theme_override_font_sizes/font_size = 10
+text = "危"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="AttackPreview" type="Node2D" parent="."]
 visible = false
@@ -107,7 +122,6 @@ max_health = 8
 script = ExtResource("3_skill_caster")
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(2.5, 2.5)
-position_smoothing_enabled = true
-position_smoothing_speed = 8.0
+zoom = Vector2(3, 3)
+position_smoothing_enabled = false
 enabled = true
