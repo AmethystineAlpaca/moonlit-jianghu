@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/AmbientMagicController.gd" id="1_script"]
+
+[node name="AmbientMagic" type="Node2D"]
+z_index = 9
+script = ExtResource("1_script")
+
+[node name="BackgroundDotsA" type="GPUParticles2D" parent="."]
+z_index = 0
+
+[node name="BackgroundDotsB" type="GPUParticles2D" parent="."]
+z_index = 1
+
+[node name="BackgroundDotsC" type="GPUParticles2D" parent="."]
+z_index = 2
+
+[node name="HeroLayer" type="Node2D" parent="."]
+z_index = 3
+
+[node name="SparkleLayer" type="Node2D" parent="."]
+z_index = 4

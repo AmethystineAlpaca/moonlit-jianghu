@@ -1,0 +1,37 @@
+{
+  "target_size": "30x32",
+  "format": "PNG RGBA",
+  "alpha": "binary 0/255",
+  "sprites": [
+    {
+      "name": "enemy_idle.png",
+      "size": "30x32",
+      "source": "a_simple_isolated_pixel_art_scene_on_a_transparent_1_batch_1.png",
+      "notes": "bottom-aligned, centered, RGBA transparent"
+    },
+    {
+      "name": "enemy_left.png",
+      "size": "30x32",
+      "source": "a_clean_centered_pixel_art_sprite_on_a_transparen_2_batch_2.png",
+      "notes": "bottom-aligned, centered, RGBA transparent"
+    },
+    {
+      "name": "enemy_right.png",
+      "size": "30x32",
+      "source": "a_single_pixel_art_image_on_a_transparent_checkerb_3_batch_3.png",
+      "notes": "bottom-aligned, centered, RGBA transparent"
+    },
+    {
+      "name": "enemy_down.png",
+      "size": "30x32",
+      "source": "a_clean_centered_pixel_art_sprite_on_a_transparen_4_batch_4.png",
+      "notes": "bottom-aligned, centered, RGBA transparent"
+    },
+    {
+      "name": "enemy_up.png",
+      "size": "30x32",
+      "source": "a_clean_centered_pixel_art_sprite_on_a_transparen_5_batch_5.png",
+      "notes": "bottom-aligned, centered, RGBA transparent"
+    }
+  ]
+}

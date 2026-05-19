@@ -1,0 +1,40 @@
+{
+  "recommended_first_pass": "先只用四方向站立 + 简单移动时切到对应方向 idle；不要先做完整走路系统。原因：这张 AI sheet 的跑步帧数量不完全规整，down/up/right 只有 3 帧，left 有 4 帧，直接接入完整动画会很容易抖。",
+  "available_frames": {
+    "idle_down": [
+      "player_idle_down.png"
+    ],
+    "idle_up": [
+      "player_idle_up.png"
+    ],
+    "idle_left": [
+      "player_idle_left.png"
+    ],
+    "idle_right": [
+      "player_idle_right.png"
+    ],
+    "run_down": [
+      "player_run_down_1.png",
+      "player_run_down_2.png",
+      "player_run_down_3.png"
+    ],
+    "run_up": [
+      "player_run_up_1.png",
+      "player_run_up_2.png",
+      "player_run_up_3.png"
+    ],
+    "run_right": [
+      "player_run_right_1.png",
+      "player_run_right_2.png",
+      "player_run_right_3.png"
+    ],
+    "run_left": [
+      "player_run_left_1.png",
+      "player_run_left_2.png",
+      "player_run_left_3.png",
+      "player_run_left_4.png"
+    ]
+  },
+  "if_you_want_full_walk_loop": "建议重新生成一个严格网格版：4 directions × 4 frames，每格固定 64x64 或 48x48，再统一缩放进 32x36。这样切图和动画系统最稳。",
+  "godot_import": "Import: Lossless/VRAM Uncompressed, Filter: Nearest, Mipmaps: Off. scaled_exact_sizes 文件夹里的图片已经按你当前代码尺寸缩放。"
+}

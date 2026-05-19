@@ -35,7 +35,15 @@ extends CharacterBody2D
 @onready var body: Sprite2D = $Body
 @onready var facing_marker: Polygon2D = $FacingMarker
 @onready var hp_bar: ProgressBar = $HPBar
-@onready var attack_warning: Node2D = $AttackWarning
+var active_warning_node: Node2D = null
+
+const SKELETON_IDLE_TEXTURE := preload("res://assets/xianxia/skeleton_idle.png")
+const SKELETON_CORPSE_TEXTURE := preload("res://assets/xianxia/skeleton_corpse.png")
+const ENEMY_IDLE_TEXTURE := preload("res://assets/xianxia/evil_rogue_enemy_transparent_pack/godot_scaled/enemy_idle.png")
+const ENEMY_LEFT_TEXTURE := preload("res://assets/xianxia/evil_rogue_enemy_transparent_pack/godot_scaled/enemy_left.png")
+const ENEMY_RIGHT_TEXTURE := preload("res://assets/xianxia/evil_rogue_enemy_transparent_pack/godot_scaled/enemy_right.png")
+const ENEMY_UP_TEXTURE := preload("res://assets/xianxia/evil_rogue_enemy_transparent_pack/godot_scaled/enemy_up.png")
+const ENEMY_DOWN_TEXTURE := preload("res://assets/xianxia/evil_rogue_enemy_transparent_pack/godot_scaled/enemy_down.png")
 
 var soul_accent_visual: Polygon2D
 var bone_weapon_visual: Polygon2D
@@ -61,6 +69,9 @@ var is_dead_body_settled: bool = false
 var death_timer: float = 0.0
 var normal_body_scale: Vector2 = Vector2.ONE
 var visual_time: float = 0.0
+var _run_anim_timer: float = 0.0
+var _run_anim_frame: int = 0
+const RUN_ANIM_FPS: float = 7.0
 var attack_snap_timer: float = 0.0
 
 func _ready() -> void:
@@ -206,10 +217,8 @@ func _assign_faction_groups() -> void:
 func _apply_faction_visuals() -> void:
 	if faction == "zombie":
 		body.modulate = Color(0.78, 1.0, 0.72, 1.0)
-		_ensure_zombie_halo()
 	else:
 		body.modulate = Color.WHITE
-		_remove_zombie_halo()
 	if soul_accent_visual != null:
 		soul_accent_visual.color = get_visual_accent_color()
 	if bone_weapon_visual != null:
@@ -405,14 +414,19 @@ func _update_attack_windup(_delta: float) -> void:
 		windup_timer = attack_windup
 		body.scale = normal_body_scale * 1.08
 		facing_marker.color = Color(1.0, 0.35, 0.2, 1.0)
-		attack_warning.visible = true
+		if current_target != null and is_instance_valid(current_target) and current_target.is_in_group("player"):
+			active_warning_node = current_target.get_node_or_null("AttackWarning")
+			if active_warning_node:
+				active_warning_node.visible = true
 		return
 
 	if windup_timer <= 0.0:
 		is_winding_up = false
 		body.scale = normal_body_scale
 		facing_marker.color = Color(1.0, 0.82, 0.68, 1.0)
-		attack_warning.visible = false
+		if active_warning_node:
+			active_warning_node.visible = false
+			active_warning_node = null
 		attack_snap_timer = 0.16
 		attack_release_timer = 0.12
 		facing_marker.scale = Vector2.ONE * 1.25
@@ -424,7 +438,9 @@ func _cancel_windup() -> void:
 	is_winding_up = false
 	body.scale = normal_body_scale
 	facing_marker.color = Color(1.0, 0.82, 0.68, 1.0)
-	attack_warning.visible = false
+	if active_warning_node:
+		active_warning_node.visible = false
+		active_warning_node = null
 
 func _try_damage_player() -> void:
 	if attack_timer > 0.0:
@@ -501,7 +517,7 @@ func _on_died() -> void:
 	slammed_bodies.clear()
 	_cancel_windup()
 	hp_bar.visible = false
-	body.texture = _build_skeleton_corpse_texture(visual_accent_color)
+	body.texture = SKELETON_CORPSE_TEXTURE
 	body.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	body.modulate = Color(0.62, 0.60, 0.58, 1.0)
 	body.scale = normal_body_scale
@@ -513,9 +529,10 @@ func _build_accent_material() -> CanvasItemMaterial:
 	return mat
 
 func _setup_skeleton_visuals() -> void:
-	body.texture = _build_skeleton_texture(visual_accent_color, faction == "zombie")
+	body.texture = SKELETON_IDLE_TEXTURE if faction == "zombie" else ENEMY_IDLE_TEXTURE
 	body.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	body.centered = true
+	facing_marker.visible = false
 
 	soul_accent_visual = get_node_or_null("SoulAccent") as Polygon2D
 	if soul_accent_visual == null:
@@ -529,6 +546,7 @@ func _setup_skeleton_visuals() -> void:
 	soul_accent_visual.color = get_visual_accent_color()
 	soul_accent_visual.material = _build_accent_material()
 	soul_accent_visual.z_index = 3
+	soul_accent_visual.visible = false
 
 	bone_weapon_visual = get_node_or_null("BoneWeapon") as Polygon2D
 	if bone_weapon_visual == null:
@@ -539,6 +557,7 @@ func _setup_skeleton_visuals() -> void:
 	bone_weapon_visual.polygon = PackedVector2Array([Vector2(8, -4), Vector2(18, -8), Vector2(20, -5), Vector2(10, 2)])
 	bone_weapon_visual.color = get_visual_accent_color().lerp(Color(0.88, 0.86, 0.72, 1.0), 0.35)
 	bone_weapon_visual.z_index = 2
+	bone_weapon_visual.visible = false
 
 func _build_skeleton_texture(accent: Color, corrupted: bool) -> Texture2D:
 	var image := Image.create(30, 32, false, Image.FORMAT_RGBA8)
@@ -584,7 +603,7 @@ func _update_skeleton_animation(_delta: float) -> void:
 	var sway := sin(visual_time * (10.0 if moving else 3.0)) * (0.05 if moving else 0.018)
 	if is_dying:
 		body.position = Vector2(0.0, 4.0)
-		body.rotation = facing_direction.angle() + PI * 0.5
+		body.rotation = 0.0
 	elif attack_snap_timer > 0.0:
 		body.position = facing_direction * 4.0
 		body.rotation = facing_direction.angle() * 0.025
@@ -594,39 +613,30 @@ func _update_skeleton_animation(_delta: float) -> void:
 	else:
 		body.position = Vector2(0.0, bob)
 		body.rotation = sway
+	_update_enemy_direction_texture(moving, _delta)
 
-	if soul_accent_visual != null:
-		soul_accent_visual.position = Vector2(sin(visual_time * 6.0) * 1.2, bob - 1.5)
-		soul_accent_visual.scale = Vector2.ONE * (1.0 + sin(visual_time * 9.0) * 0.08)
-	if bone_weapon_visual != null:
-		bone_weapon_visual.position = Vector2(0.0, bob * 0.5)
-		bone_weapon_visual.rotation = facing_direction.angle() * 0.18 + (0.55 if is_winding_up else 0.0) - (0.85 if attack_snap_timer > 0.0 else 0.0)
-	var halo := get_node_or_null("ZombieHalo") as Polygon2D
-	if halo != null:
-		halo.scale = Vector2.ONE * (1.0 + sin(visual_time * 5.5) * 0.12)
-		halo.modulate.a = 0.85 + sin(visual_time * 5.5) * 0.15
-
-func _ensure_zombie_halo() -> void:
-	if get_node_or_null("ZombieHalo") != null:
+func _update_enemy_direction_texture(moving: bool, delta: float) -> void:
+	if faction == "zombie" or is_dying:
 		return
-	var halo := Polygon2D.new()
-	halo.name = "ZombieHalo"
-	var pts := PackedVector2Array()
-	for i in range(24):
-		var a := TAU * i / 24.0
-		pts.append(Vector2(cos(a) * 18.0, sin(a) * 12.0))
-	halo.polygon = pts
-	halo.color = Color(0.22, 1.0, 0.38, 0.28)
-	halo.z_index = -1
-	var mat := CanvasItemMaterial.new()
-	mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-	halo.material = mat
-	add_child(halo)
+	if not moving:
+		body.texture = ENEMY_IDLE_TEXTURE
+		_run_anim_frame = 0
+		_run_anim_timer = 0.0
+		return
+	_run_anim_timer -= delta
+	if _run_anim_timer <= 0.0:
+		_run_anim_frame = (_run_anim_frame + 1) % 2
+		_run_anim_timer = 1.0 / RUN_ANIM_FPS
+	if _run_anim_frame == 0:
+		body.texture = ENEMY_IDLE_TEXTURE
+		return
+	var abs_x := absf(facing_direction.x)
+	var abs_y := absf(facing_direction.y)
+	if abs_x >= abs_y:
+		body.texture = ENEMY_RIGHT_TEXTURE if facing_direction.x >= 0.0 else ENEMY_LEFT_TEXTURE
+	else:
+		body.texture = ENEMY_DOWN_TEXTURE if facing_direction.y >= 0.0 else ENEMY_UP_TEXTURE
 
-func _remove_zombie_halo() -> void:
-	var halo := get_node_or_null("ZombieHalo")
-	if halo != null:
-		halo.queue_free()
 
 func _fill_rect(image: Image, rect: Rect2i, fill: Color) -> void:
 	for y in range(rect.position.y, rect.end.y):

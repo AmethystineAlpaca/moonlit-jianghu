@@ -44,12 +44,13 @@ func _test_controller_owns_expected_layer_groups() -> void:
 	if ambience != null:
 		for path in [
 			"NightEnvironment",
+			"NightModulate",
+			"FireflyLights",
 			"WorldEffects",
 			"WorldEffects/FireflyParticles",
 			"WorldEffects/SparkleParticles",
 			"WorldEffects/MoonlightPatches",
 			"ScreenFx",
-			"ScreenFx/NightOverlay",
 			"ScreenFx/Vignette",
 		]:
 			_assert_true(ambience.get_node_or_null(path) != null, "NightAmbience has %s" % path)
@@ -62,12 +63,13 @@ func _test_screen_fx_stays_outside_hud_canvas_layer() -> void:
 	await process_frame
 
 	var hud := world.get_node_or_null("Hud")
-	var overlay := world.get_node_or_null("NightAmbience/ScreenFx/NightOverlay")
+	var night_mod := world.get_node_or_null("NightAmbience/NightModulate")
 	var vignette := world.get_node_or_null("NightAmbience/ScreenFx/Vignette")
 	_assert_true(hud is CanvasLayer, "HUD remains a CanvasLayer")
+	_assert_true(night_mod is CanvasModulate, "NightModulate is a CanvasModulate node")
 	if hud != null:
-		if overlay != null:
-			_assert_true(not hud.is_ancestor_of(overlay), "NightOverlay is not parented under HUD")
+		if night_mod != null:
+			_assert_true(not hud.is_ancestor_of(night_mod), "NightModulate is not parented under HUD")
 		if vignette != null:
 			_assert_true(not hud.is_ancestor_of(vignette), "Vignette is not parented under HUD")
 

@@ -94,6 +94,7 @@ content_margin_right = 8.0
 content_margin_bottom = 6.0
 
 [node name="Hud" type="CanvasLayer"]
+layer = 10
 script = ExtResource("1_hud")
 
 [node name="DangerOverlay" type="ColorRect" parent="."]

@@ -1,7 +1,7 @@
 extends Node2D
 
 @export var orbit_radius: float = 32.0
-@export var orbit_speed_rad: float = 4.0
+@export var orbit_speed_rad: float = 40.0
 @export var damage: int = 1
 @export var lifetime: float = 1.5
 @export var hit_dwell: float = 0.6

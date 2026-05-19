@@ -3,7 +3,10 @@ extends SceneTree
 const WORLD_SCENE := preload("res://scenes/world/World.tscn")
 const TREE_SCENE := preload("res://scenes/world/placeholders/TreePlaceholder.tscn")
 const CRATE_SCENE := preload("res://scenes/world/placeholders/BreakableCrate.tscn")
+const HOUSE_SCENE := preload("res://scenes/world/placeholders/HousePlaceholder.tscn")
 const PixelSurface := preload("res://scripts/world/PixelSurface.gd")
+const TREE_PLACEHOLDER_TEXTURE := preload("res://assets/xianxia/tree.png")
+const BREAKABLE_TREE_TEXTURE := preload("res://assets/xianxia/tree.png")
 
 var failures := 0
 
@@ -14,9 +17,11 @@ func _initialize() -> void:
 	await _test_grassland_generates_dense_tufts()
 	await _test_grassland_tufts_bleed_past_region_edges()
 	await _test_grassland_avoids_breakable_collision_shapes()
+	await _test_grassland_avoids_house_visual_bounds()
 	_test_grass_tuft_texture_is_bushy()
 	await _test_placeholder_obstacles_use_pixel_sprites()
-	await _test_tree_placeholder_is_stone_obstacle()
+	await _test_tree_placeholder_uses_large_passable_tree_texture()
+	await _test_house_placeholder_uses_shrine_texture()
 	await _test_breakable_crate_uses_pixel_sprite()
 	await _test_breakable_crate_renders_as_tree()
 	quit(failures)
@@ -63,16 +68,43 @@ func _test_placeholder_obstacles_use_pixel_sprites() -> void:
 
 	tree.free()
 
-func _test_tree_placeholder_is_stone_obstacle() -> void:
+func _test_tree_placeholder_uses_large_passable_tree_texture() -> void:
 	var tree := TREE_SCENE.instantiate()
 	root.add_child(tree)
 	await process_frame
 
-	_assert_equal(tree.visual_style, "stone", "tree placeholder now renders as an immovable stone")
+	var visual := tree.get_node("Visual") as Sprite2D
+	var canopy := tree.get_node_or_null("CanopyVisual") as Sprite2D
+	_assert_equal(tree.visual_style, "tree", "tree placeholder uses tree visual style again")
+	_assert_equal(tree.texture_path, "res://assets/xianxia/tree.png", "tree placeholder pins the imported tree texture explicitly")
+	_assert_true(absf(tree.visual_scale.y - 72.0 / 42.0) < 0.01, "tree visual scales to roughly double the player height")
+	_assert_equal(tree.collision_size, Vector2(24, 24), "tree collision covers only the lower third trunk area")
+	_assert_equal(tree.collision_offset, Vector2(0, -12), "tree trunk collision is anchored to the bottom of the sprite")
 	_assert_true(not tree.is_in_group("breakables"), "tree placeholder remains non-breakable")
 	_assert_true(not tree.has_method("shatter"), "tree placeholder has no shatter behavior")
+	if visual != null and visual.texture != null:
+		_assert_true(visual.texture is AtlasTexture, "tree trunk uses a cropped atlas texture")
+		if visual.texture is AtlasTexture:
+			_assert_equal((visual.texture as AtlasTexture).atlas, TREE_PLACEHOLDER_TEXTURE, "tree trunk atlas comes from the imported tree sprite")
+	_assert_true(canopy != null, "tree placeholder exposes a canopy overlay for behind-pass visuals")
+	if canopy != null and canopy.texture != null:
+		_assert_true(canopy.texture is AtlasTexture, "tree canopy uses a cropped atlas texture")
+		if canopy.texture is AtlasTexture:
+			_assert_equal((canopy.texture as AtlasTexture).atlas, TREE_PLACEHOLDER_TEXTURE, "tree canopy atlas comes from the imported tree sprite")
 
 	tree.free()
+
+func _test_house_placeholder_uses_shrine_texture() -> void:
+	var house := HOUSE_SCENE.instantiate()
+	root.add_child(house)
+	await process_frame
+
+	var visual := house.get_node("Visual") as Sprite2D
+	_assert_equal(house.visual_style, "house", "house placeholder keeps house visual style")
+	if visual != null and visual.texture != null:
+		_assert_true(visual.texture.resource_path.ends_with("shrine.png"), "house placeholder uses shrine sprite")
+
+	house.free()
 
 func _test_breakable_crate_uses_pixel_sprite() -> void:
 	var crate := CRATE_SCENE.instantiate()
@@ -93,21 +125,10 @@ func _test_breakable_crate_renders_as_tree() -> void:
 	await process_frame
 
 	var visual := crate.get_node("Visual") as Sprite2D
-	_assert_true(crate.is_in_group("breakables"), "tree-like breakable remains in breakables group")
-	_assert_true(crate.has_method("shatter"), "tree-like breakable keeps shatter behavior")
+	_assert_true(crate.is_in_group("breakables"), "tree breakable remains in breakables group")
+	_assert_true(crate.has_method("shatter"), "tree breakable keeps shatter behavior")
 	if visual != null and visual.texture != null:
-		var image := visual.texture.get_image()
-		var leaf_pixels := 0
-		var trunk_pixels := 0
-		for y in range(image.get_height()):
-			for x in range(image.get_width()):
-				var pixel := image.get_pixel(x, y)
-				if pixel.g > pixel.r * 1.4 and pixel.g > pixel.b * 1.4 and pixel.a > 0.9:
-					leaf_pixels += 1
-				if pixel.r > pixel.g * 1.35 and pixel.g > pixel.b * 1.2 and pixel.a > 0.9:
-					trunk_pixels += 1
-		_assert_true(leaf_pixels >= 120, "breakable visual has a leafy green canopy")
-		_assert_true(trunk_pixels >= 40, "breakable visual has a tree trunk")
+		_assert_equal(visual.texture, BREAKABLE_TREE_TEXTURE, "breakable crate uses imported tree sprite")
 
 	crate.free()
 
@@ -187,6 +208,38 @@ func _test_grassland_avoids_breakable_collision_shapes() -> void:
 	var crate_rect := Rect2(Vector2(-21.0, -21.0), Vector2(42.0, 42.0))
 	for sprite in _collect_sprite_descendants(grassland):
 		_assert_true(not _sprite_world_rect(sprite).intersects(crate_rect), "grass tuft footprint avoids breakable collision shape")
+
+	parent.free()
+
+func _test_grassland_avoids_house_visual_bounds() -> void:
+	var parent := Node2D.new()
+	root.add_child(parent)
+
+	var region := PixelSurface.new()
+	region.surface_kind = "grassland"
+	region.position = Vector2(-100.0, -80.0)
+	region.size = Vector2(200.0, 160.0)
+	parent.add_child(region)
+
+	var buildings := Node2D.new()
+	buildings.name = "Buildings"
+	parent.add_child(buildings)
+
+	var house := HOUSE_SCENE.instantiate() as Node2D
+	house.position = Vector2.ZERO
+	buildings.add_child(house)
+
+	var grassland := preload("res://scripts/world/Grassland.gd").new()
+	grassland.cell_size = 10.0
+	grassland.jitter = 0.0
+	grassland.obstacle_padding = 0.0
+	grassland.edge_bleed = 0.0
+	parent.add_child(grassland)
+	await process_frame
+
+	var house_rect := _sprite_world_rect(house.get_node("Visual") as Sprite2D)
+	for sprite in _collect_sprite_descendants(grassland):
+		_assert_true(not _sprite_world_rect(sprite).intersects(house_rect), "grass tuft footprint avoids house visual bounds")
 
 	parent.free()
 
