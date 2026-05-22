@@ -4,11 +4,6 @@ const PLAYER_SCENE := preload("res://scenes/player/Player.tscn")
 const BASIC_ENEMY_SCENE := preload("res://scenes/enemies/BasicEnemy.tscn")
 const FAST_ENEMY_SCENE := preload("res://scenes/enemies/FastEnemy.tscn")
 const ZOMBIE_SCENE := preload("res://scenes/allies/Zombie.tscn")
-const PLAYER_IDLE_TEXTURE := preload("res://assets/xianxia/player_idle.png")
-const PLAYER_RUN_UP_TEXTURE := preload("res://assets/xianxia/player_run_up.png")
-const PLAYER_RUN_DOWN_TEXTURE := preload("res://assets/xianxia/player_run_down.png")
-const PLAYER_RUN_LEFT_TEXTURE := preload("res://assets/xianxia/player_run_left.png")
-const PLAYER_RUN_RIGHT_TEXTURE := preload("res://assets/xianxia/player_run_right.png")
 const PLAYER_SWORD_TEXTURE := preload("res://assets/xianxia/sword.png")
 
 var failures := 0
@@ -20,6 +15,7 @@ func _initialize() -> void:
 	await _test_corpse_keeps_source_skeleton_accent()
 	await _test_zombie_keeps_source_accent_with_corruption_tint()
 	await _test_player_attack_animation_moves_sword()
+	await _test_player_idle_animation_uses_sheet_frames()
 	quit(failures)
 
 func _test_player_is_white_robed_pixel_swordsman() -> void:
@@ -53,33 +49,125 @@ func _test_player_uses_idle_and_four_direction_run_textures() -> void:
 	var player := PLAYER_SCENE.instantiate()
 	root.add_child(player)
 	await process_frame
+	var player_five_dir_run_sheet := load("res://assets/xianxia/players_gemini_aligned_5dir_run.png") as Texture2D
+	var player_down_idle_texture: Texture2D = player._player_down_idle_texture
+	var player_up_idle_texture: Texture2D = player._player_up_idle_texture
+	var player_left_idle_texture: Texture2D = player._player_left_idle_texture
 
 	var body := player.get_node("Body") as Sprite2D
 	_assert_true(body.texture != null, "player body texture exists for movement texture switching")
+	_assert_true(player_down_idle_texture != null, "player down idle texture is available")
+	_assert_true(player_up_idle_texture != null, "player up idle texture is available")
+	_assert_true(player_left_idle_texture != null, "player left idle texture is available")
+
+	var down_frames: Array = player._get_idle_frames_for_direction(Vector2.DOWN)
+	var up_frames: Array = player._get_idle_frames_for_direction(Vector2.UP)
+	var left_frames: Array = player._get_idle_frames_for_direction(Vector2.LEFT)
+
+	_assert_true(not down_frames.is_empty(), "player has down idle frames from sheet")
+	_assert_true(not up_frames.is_empty(), "player has up idle frames from sheet")
+	_assert_true(not left_frames.is_empty(), "player has left idle frames from sheet")
+	_assert_true(down_frames[0] is AtlasTexture, "player down idle frame is AtlasTexture")
+	_assert_true(up_frames[0] is AtlasTexture, "player up idle frame is AtlasTexture")
+	_assert_true(left_frames[0] is AtlasTexture, "player left idle frame is AtlasTexture")
+
+	if down_frames[0] is AtlasTexture and up_frames[0] is AtlasTexture:
+		var down_y: float = (down_frames[0] as AtlasTexture).region.position.y
+		var up_y: float = (up_frames[0] as AtlasTexture).region.position.y
+		_assert_true(down_y != up_y, "player down and up idle use different rows in sheet")
+
+	if left_frames[0] is AtlasTexture and up_frames[0] is AtlasTexture:
+		var left_y: float = (left_frames[0] as AtlasTexture).region.position.y
+		var up_y: float = (up_frames[0] as AtlasTexture).region.position.y
+		_assert_true(left_y != up_y, "player left and up idle use different rows in sheet")
+
+	player.last_facing_direction = Vector2.DOWN
+	player.current_input_direction = Vector2.ZERO
+	player._update_xianxia_animation(0.0)
+	_assert_true(body.texture is AtlasTexture, "player uses atlas idle frame while standing still facing down")
+	_assert_true(not body.flip_h, "player does not mirror the down idle texture")
+
 	player.last_facing_direction = Vector2.UP
 	player.current_input_direction = Vector2.ZERO
 	player._update_xianxia_animation(0.0)
-	_assert_equal(body.texture, PLAYER_IDLE_TEXTURE, "player uses shared idle texture while standing still")
+	_assert_true(body.texture is AtlasTexture, "player uses atlas idle frame while standing still facing up")
+	_assert_true(not body.flip_h, "player does not mirror the up idle texture")
+
+	player.last_facing_direction = Vector2.LEFT
+	player.current_input_direction = Vector2.ZERO
+	player._update_xianxia_animation(0.0)
+	_assert_true(body.texture is AtlasTexture, "player uses atlas idle frame while standing still facing left")
+	_assert_true(not body.flip_h, "player does not mirror the left idle texture")
+
+	player.last_facing_direction = Vector2.RIGHT
+	player.current_input_direction = Vector2.ZERO
+	player._update_xianxia_animation(0.0)
+	_assert_true(body.texture is AtlasTexture, "player uses atlas idle frame while standing still facing right")
+	_assert_true(body.flip_h, "player mirrors the left idle row for right-facing idle")
 
 	player.current_input_direction = Vector2.LEFT
 	player.last_facing_direction = Vector2.LEFT
 	player._update_xianxia_animation(0.0)
-	_assert_equal(body.texture, PLAYER_RUN_LEFT_TEXTURE, "player uses run left texture when moving left")
+	_assert_true(body.texture is AtlasTexture, "player uses atlas-sliced run frames when moving left")
+	if body.texture is AtlasTexture:
+		var left_frame := body.texture as AtlasTexture
+		_assert_equal(left_frame.atlas, player_five_dir_run_sheet, "player run left uses the five-direction run sheet atlas")
+		_assert_equal(left_frame.region.position, Vector2(128, 208), "player run left uses the left run row from the aligned source sheet")
+		_assert_true(not body.flip_h, "player does not mirror left-facing run frames")
 
 	player.current_input_direction = Vector2.RIGHT
 	player.last_facing_direction = Vector2.RIGHT
 	player._update_xianxia_animation(0.0)
-	_assert_equal(body.texture, PLAYER_RUN_RIGHT_TEXTURE, "player uses run right texture when moving right")
+	_assert_true(body.texture is AtlasTexture, "player uses atlas-sliced run frames when moving right")
+	if body.texture is AtlasTexture:
+		var right_frame := body.texture as AtlasTexture
+		_assert_equal(right_frame.atlas, player_five_dir_run_sheet, "player run right mirrors the five-direction run sheet atlas")
+		_assert_equal(right_frame.region.position, Vector2(128, 208), "player run right reuses the mirrored left run row from the aligned source sheet")
+	_assert_true(body.flip_h, "player mirrors right-facing run frames")
 
 	player.current_input_direction = Vector2.DOWN
 	player.last_facing_direction = Vector2.DOWN
 	player._update_xianxia_animation(0.0)
-	_assert_equal(body.texture, PLAYER_RUN_DOWN_TEXTURE, "player uses run down texture when moving down")
+	_assert_true(body.texture is AtlasTexture, "player uses atlas-sliced run frames when moving down")
+	if body.texture is AtlasTexture:
+		var down_frame := body.texture as AtlasTexture
+		_assert_equal(down_frame.region.position, Vector2(128, 832), "player run down uses the down run row from the aligned source sheet")
+	_assert_true(not body.flip_h, "player does not mirror down-facing run frames")
 
 	player.current_input_direction = Vector2.UP
 	player.last_facing_direction = Vector2.UP
 	player._update_xianxia_animation(0.0)
-	_assert_equal(body.texture, PLAYER_RUN_UP_TEXTURE, "player uses run up texture when moving up")
+	_assert_true(body.texture is AtlasTexture, "player uses atlas-sliced run frames when moving up")
+	if body.texture is AtlasTexture:
+		var up_frame := body.texture as AtlasTexture
+		_assert_equal(up_frame.region.position, Vector2(128, 624), "player run up uses the up run row from the aligned source sheet")
+
+	player.current_input_direction = Vector2(-1.0, -1.0).normalized()
+	player.last_facing_direction = player.current_input_direction
+	player._update_xianxia_animation(0.0)
+	_assert_true(body.texture is AtlasTexture, "player uses atlas-sliced run frames when moving up-left")
+	if body.texture is AtlasTexture:
+		var up_left_frame := body.texture as AtlasTexture
+		_assert_equal(up_left_frame.region.position, Vector2(128, 416), "player run up-left uses the up-left run row from the aligned source sheet")
+	_assert_true(not body.flip_h, "player does not mirror up-left run frames")
+
+	player.current_input_direction = Vector2(-1.0, 1.0).normalized()
+	player.last_facing_direction = player.current_input_direction
+	player._update_xianxia_animation(0.0)
+	_assert_true(body.texture is AtlasTexture, "player uses atlas-sliced run frames when moving down-left")
+	if body.texture is AtlasTexture:
+		var down_left_frame := body.texture as AtlasTexture
+		_assert_equal(down_left_frame.region.position, Vector2(128, 0), "player run down-left uses the down-left run row from the aligned source sheet")
+
+	player.current_input_direction = Vector2.LEFT
+	player.last_facing_direction = Vector2.LEFT
+	player._run_anim_timer = 0.0
+	player._run_anim_frame = 0
+	player._update_xianxia_animation(0.2)
+	var advanced_frame := body.texture as AtlasTexture
+	_assert_true(advanced_frame != null, "player keeps atlas frames when advancing run animation")
+	if advanced_frame != null:
+		_assert_equal(advanced_frame.region.position, Vector2(128, 208), "player advances to the second left-run frame over time")
 
 	player.free()
 
@@ -171,6 +259,24 @@ func _test_player_attack_animation_moves_sword() -> void:
 	var right_rest_rotation := sword.rotation
 	var expected_right_rest: float = Vector2.RIGHT.angle() - PI * 0.5 + player.sword_rest_offset
 	_assert_true(absf(right_rest_rotation - expected_right_rest) < 0.01, "player sword rests along facing direction")
+
+	player.free()
+
+func _test_player_idle_animation_uses_sheet_frames() -> void:
+	var player := PLAYER_SCENE.instantiate()
+	root.add_child(player)
+	await process_frame
+
+	var down_frames: Array = player._get_idle_frames_for_direction(Vector2.DOWN)
+	var up_frames: Array = player._get_idle_frames_for_direction(Vector2.UP)
+	var left_frames: Array = player._get_idle_frames_for_direction(Vector2.LEFT)
+
+	_assert_equal(down_frames.size(), 6, "player has 6 down idle frames from sheet")
+	_assert_equal(up_frames.size(), 6, "player has 6 up idle frames from sheet")
+	_assert_equal(left_frames.size(), 6, "player has 6 left idle frames from sheet")
+
+	for i in range(down_frames.size()):
+		_assert_true(down_frames[i] is AtlasTexture, "down idle frame %d is AtlasTexture" % i)
 
 	player.free()
 
