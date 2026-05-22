@@ -58,16 +58,31 @@ const HIT_SPARK_SCENE := preload("res://scenes/effects/HitSpark.tscn")
 const SLASH_TRAIL_SCENE := preload("res://scenes/effects/SlashTrail.tscn")
 const TRANSFORM_SKILL := preload("res://resources/skills/Transform.tres")
 const DIVINE_LIGHT_SKILL := preload("res://resources/skills/ProtectiveDivineLight.tres")
-const PLAYER_DOWN_IDLE_TEXTURE := preload("res://assets/xianxia/players/transparent_32x36/down_idle_32x36.png")
-const PLAYER_DOWN_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent_32x36/down_run_32x36.png")
-const PLAYER_UP_IDLE_TEXTURE := preload("res://assets/xianxia/players/transparent_32x36/up_idle_32x36.png")
-const PLAYER_UP_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent_32x36/up_run_32x36.png")
-const PLAYER_LEFT_IDLE_TEXTURE := preload("res://assets/xianxia/players/transparent_32x36/left_idle_32x36.png")
-const PLAYER_LEFT_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent_32x36/left_run_32x36.png")
-const PLAYER_RIGHT_IDLE_TEXTURE := preload("res://assets/xianxia/players/transparent_32x36/right_idle_32x36.png")
-const PLAYER_RIGHT_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent_32x36/right_run_32x36.png")
+const PLAYER_DOWN_IDLE_TEXTURE_PATH := "res://assets/xianxia/players_gemini_idle_down.png"
+const PLAYER_DOWN_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent_cropped_original_size/down_run.png")
+const PLAYER_UP_IDLE_TEXTURE_PATH := "res://assets/xianxia/players_gemini_idle_up.png"
+const PLAYER_UP_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent_cropped_original_size/up_run.png")
+const PLAYER_LEFT_IDLE_TEXTURE_PATH := "res://assets/xianxia/players_gemini_idle_left.png"
+const PLAYER_LEFT_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent_cropped_original_size/left_run.png")
+const PLAYER_RIGHT_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent_cropped_original_size/right_run.png")
+const PLAYER_FIVE_DIR_RUN_SHEET_PATH := "res://assets/xianxia/players_gemini_aligned_5dir_run.png"
 const RUN_ANIM_FPS: float = 6.0
+const PLAYER_IDLE_SHEET_PATH := "res://assets/xianxia/players_gemini_aligned_idle.png"
+const IDLE_ANIM_FPS: float = 4.0
+const PLAYER_IDLE_SHEET_COLUMNS := 6
+const PLAYER_IDLE_SHEET_ROWS := 3
+const PLAYER_IDLE_ROW_DOWN := 0
+const PLAYER_IDLE_ROW_UP := 1
+const PLAYER_IDLE_ROW_LEFT := 2
 const PLAYER_SWORD_TEXTURE := preload("res://assets/xianxia/sword.png")
+const PLAYER_DISPLAY_SIZE := Vector2(32.0, 36.0)
+const PLAYER_RUN_SHEET_COLUMNS := 6
+const PLAYER_RUN_SHEET_ROWS := 5
+const PLAYER_RUN_ROW_DOWN_LEFT := 0
+const PLAYER_RUN_ROW_LEFT := 1
+const PLAYER_RUN_ROW_UP_LEFT := 2
+const PLAYER_RUN_ROW_UP := 3
+const PLAYER_RUN_ROW_DOWN := 4
 const ATTACK_VARIANT_NORMAL := "normal"
 const ATTACK_VARIANT_COUNTER := "counter"
 const ATTACK_VARIANT_BACK_HIT := "back_hit"
@@ -107,10 +122,26 @@ var _run_anim_frame: int = 0
 var _afterimage_timer: float = 0.0
 var _afterimage_interval_move: float = 0.07
 var _afterimage_interval_dash: float = 0.035
+var equipped_weapon_id: String = "iron_sword"
+var _body_base_scale: Vector2 = Vector2.ONE
+var _five_dir_run_frames: Dictionary = {}
+var _five_dir_run_sheet: Texture2D
+var _player_down_idle_texture: Texture2D
+var _player_up_idle_texture: Texture2D
+var _player_left_idle_texture: Texture2D
+var _idle_frames: Dictionary = {}
+var _idle_sheet: Texture2D
+var _idle_anim_timer: float = 0.0
+var _idle_anim_frame: int = 0
 
 func _ready() -> void:
+	_idle_sheet = _load_png_texture(PLAYER_IDLE_SHEET_PATH)
+	_player_down_idle_texture = _load_png_texture(PLAYER_DOWN_IDLE_TEXTURE_PATH)
+	_player_up_idle_texture = _load_png_texture(PLAYER_UP_IDLE_TEXTURE_PATH)
+	_player_left_idle_texture = _load_png_texture(PLAYER_LEFT_IDLE_TEXTURE_PATH)
+	_five_dir_run_sheet = load(PLAYER_FIVE_DIR_RUN_SHEET_PATH) as Texture2D
 	_setup_xianxia_visuals()
-	normal_body_scale = body.scale
+	_sync_body_scale()
 	current_stamina = max_stamina
 	health_component.damaged.connect(_on_damaged)
 	health_component.died.connect(_on_died)
@@ -354,10 +385,11 @@ func _update_sword_feedback(_delta: float) -> void:
 	sword.rotation = facing_angle + swing_offset
 
 func _setup_xianxia_visuals() -> void:
-	body.texture = PLAYER_DOWN_IDLE_TEXTURE
+	body.texture = _player_down_idle_texture
 	body.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	body.centered = true
 	body.material = null
+	_sync_body_scale()
 	if selection_ring != null:
 		selection_ring.visible = false
 	if facing_marker != null:
@@ -404,19 +436,153 @@ func _setup_xianxia_visuals() -> void:
 		add_child(robe_sash_visual)
 		move_child(robe_sash_visual, body.get_index() + 1)
 	robe_sash_visual.visible = false
+	_refresh_equipped_weapon_visual()
 
-func _get_directional_textures() -> Array[Texture2D]:
+func set_equipped_weapon(item_id: String) -> void:
+	equipped_weapon_id = item_id
+	_refresh_equipped_weapon_visual()
+
+func _refresh_equipped_weapon_visual() -> void:
+	if sword_mount == null:
+		return
+	sword_mount.visible = equipped_weapon_id != ""
+
+func _get_directional_animation_state() -> Dictionary:
 	var direction := last_facing_direction
 	if direction == Vector2.ZERO:
-		return [PLAYER_DOWN_IDLE_TEXTURE, PLAYER_DOWN_RUN_TEXTURE]
+		return {
+			"idle_frames": _get_idle_frames_for_direction(Vector2.DOWN),
+			"run_frames": [PLAYER_DOWN_RUN_TEXTURE],
+			"flip_h": false,
+		}
+
+	var run_key := ""
+	var flip_h := false
+	if direction.x < -0.001:
+		if direction.y < -0.001:
+			run_key = "up_left"
+		elif direction.y > 0.001:
+			run_key = "down_left"
+		else:
+			run_key = "left"
+	elif direction.x > 0.001:
+		flip_h = true
+		if direction.y < -0.001:
+			run_key = "up_left"
+		elif direction.y > 0.001:
+			run_key = "down_left"
+		else:
+			run_key = "left"
+	elif direction.y > 0.001:
+		run_key = "down"
+	else:
+		run_key = "up"
+
+	var run_frames := _get_five_dir_run_frames(run_key)
+	if not run_frames.is_empty():
+		return {
+			"idle_frames": _get_idle_frames_for_direction(direction),
+			"run_frames": run_frames,
+			"flip_h": flip_h,
+		}
+
 	if absf(direction.x) > absf(direction.y):
 		if direction.x > 0.0:
-			return [PLAYER_RIGHT_IDLE_TEXTURE, PLAYER_RIGHT_RUN_TEXTURE]
-		else:
-			return [PLAYER_LEFT_IDLE_TEXTURE, PLAYER_LEFT_RUN_TEXTURE]
+			return {
+				"idle_frames": _get_idle_frames_for_direction(direction),
+				"run_frames": [PLAYER_RIGHT_RUN_TEXTURE],
+				"flip_h": true,
+			}
+		return {
+			"idle_frames": _get_idle_frames_for_direction(direction),
+			"run_frames": [PLAYER_LEFT_RUN_TEXTURE],
+			"flip_h": false,
+		}
 	if direction.y > 0.0:
-		return [PLAYER_DOWN_IDLE_TEXTURE, PLAYER_DOWN_RUN_TEXTURE]
-	return [PLAYER_UP_IDLE_TEXTURE, PLAYER_UP_RUN_TEXTURE]
+		return {
+			"idle_frames": _get_idle_frames_for_direction(direction),
+			"run_frames": [PLAYER_DOWN_RUN_TEXTURE],
+			"flip_h": false,
+		}
+	return {
+		"idle_frames": _get_idle_frames_for_direction(direction),
+		"run_frames": [PLAYER_UP_RUN_TEXTURE],
+		"flip_h": false,
+	}
+
+func _get_five_dir_run_frames(key: String) -> Array[Texture2D]:
+	if _five_dir_run_frames.is_empty():
+		_build_five_dir_run_frames()
+	return _five_dir_run_frames.get(key, [])
+
+func _build_five_dir_run_frames() -> void:
+	_five_dir_run_frames.clear()
+	if _five_dir_run_sheet == null:
+		return
+
+	var frame_width := int(_five_dir_run_sheet.get_width() / PLAYER_RUN_SHEET_COLUMNS)
+	var frame_height := int(_five_dir_run_sheet.get_height() / PLAYER_RUN_SHEET_ROWS)
+	if frame_width <= 0 or frame_height <= 0:
+		return
+
+	_five_dir_run_frames["down_left"] = _slice_run_sheet_row(PLAYER_RUN_ROW_DOWN_LEFT, frame_width, frame_height)
+	_five_dir_run_frames["left"] = _slice_run_sheet_row(PLAYER_RUN_ROW_LEFT, frame_width, frame_height)
+	_five_dir_run_frames["up_left"] = _slice_run_sheet_row(PLAYER_RUN_ROW_UP_LEFT, frame_width, frame_height)
+	_five_dir_run_frames["up"] = _slice_run_sheet_row(PLAYER_RUN_ROW_UP, frame_width, frame_height)
+	_five_dir_run_frames["down"] = _slice_run_sheet_row(PLAYER_RUN_ROW_DOWN, frame_width, frame_height)
+
+func _slice_run_sheet_row(row: int, frame_width: int, frame_height: int) -> Array[Texture2D]:
+	var frames: Array[Texture2D] = []
+	for column in range(PLAYER_RUN_SHEET_COLUMNS):
+		var atlas := AtlasTexture.new()
+		atlas.atlas = _five_dir_run_sheet
+		atlas.region = Rect2(column * frame_width, row * frame_height, frame_width, frame_height)
+		frames.append(atlas)
+	return frames
+
+func _get_idle_frames_for_direction(direction: Vector2) -> Array[Texture2D]:
+	if _idle_frames.is_empty():
+		_build_idle_frames()
+	var key: String
+	if absf(direction.x) > absf(direction.y):
+		key = "left"
+	elif direction.y > 0.0:
+		key = "down"
+	else:
+		key = "up"
+	return _idle_frames.get(key, [])
+
+func _build_idle_frames() -> void:
+	_idle_frames.clear()
+	if _idle_sheet == null:
+		return
+	var frame_width := int(_idle_sheet.get_width() / PLAYER_IDLE_SHEET_COLUMNS)
+	var frame_height := int(_idle_sheet.get_height() / PLAYER_IDLE_SHEET_ROWS)
+	if frame_width <= 0 or frame_height <= 0:
+		return
+	_idle_frames["down"] = _slice_idle_sheet_row(PLAYER_IDLE_ROW_DOWN, frame_width, frame_height)
+	_idle_frames["up"] = _slice_idle_sheet_row(PLAYER_IDLE_ROW_UP, frame_width, frame_height)
+	_idle_frames["left"] = _slice_idle_sheet_row(PLAYER_IDLE_ROW_LEFT, frame_width, frame_height)
+
+func _slice_idle_sheet_row(row: int, frame_width: int, frame_height: int) -> Array[Texture2D]:
+	var frames: Array[Texture2D] = []
+	for col in range(PLAYER_IDLE_SHEET_COLUMNS):
+		var atlas := AtlasTexture.new()
+		atlas.atlas = _idle_sheet
+		atlas.region = Rect2(col * frame_width, row * frame_height, frame_width, frame_height)
+		frames.append(atlas)
+	return frames
+
+func _load_png_texture(path: String) -> Texture2D:
+	var resource := load(path) as Texture2D
+	if resource != null:
+		return resource
+
+	var image := Image.load_from_file(ProjectSettings.globalize_path(path))
+	if image == null:
+		push_error("Failed to load idle texture image: %s" % path)
+		return null
+	return ImageTexture.create_from_image(image)
 
 func _build_player_texture() -> Texture2D:
 	var image := Image.create(32, 36, false, Image.FORMAT_RGBA8)
@@ -462,16 +628,31 @@ func _update_xianxia_animation(_delta: float) -> void:
 
 	var moving := current_input_direction != Vector2.ZERO
 	var is_dashing := dash_timer > 0.0
+	var state := _get_directional_animation_state()
+	var run_frames: Array = state.get("run_frames", [])
+	var idle_frames: Array = state.get("idle_frames", [])
+	body.flip_h = bool(state.get("flip_h", false))
 	if moving or is_dashing:
 		_run_anim_timer -= _delta
 		if _run_anim_timer <= 0.0:
-			_run_anim_frame = (_run_anim_frame + 1) % 2
+			_run_anim_frame = (_run_anim_frame + 1) % maxi(run_frames.size(), 1)
 			_run_anim_timer = 1.0 / RUN_ANIM_FPS
-		body.texture = _get_directional_textures()[_run_anim_frame]
+		if run_frames.is_empty():
+			body.texture = idle_frames[0] if not idle_frames.is_empty() else _player_down_idle_texture
+		else:
+			body.texture = run_frames[_run_anim_frame % run_frames.size()]
 	else:
 		_run_anim_timer = 0.0
 		_run_anim_frame = 0
-		body.texture = PLAYER_DOWN_IDLE_TEXTURE
+		if idle_frames.is_empty():
+			body.texture = _player_down_idle_texture
+		else:
+			_idle_anim_timer -= _delta
+			if _idle_anim_timer <= 0.0:
+				_idle_anim_frame = (_idle_anim_frame + 1) % idle_frames.size()
+				_idle_anim_timer = 1.0 / IDLE_ANIM_FPS
+			body.texture = idle_frames[_idle_anim_frame % idle_frames.size()]
+	_sync_body_scale()
 	var walk_bob := sin(visual_time * 7.0) * 0.7 if moving else sin(visual_time * 3.0) * 0.45
 	body.position = Vector2(0.0, walk_bob)
 	if robe_sash_visual != null:
@@ -491,6 +672,7 @@ func _update_xianxia_animation(_delta: float) -> void:
 		sword_mount.position = Vector2(13.0, 1.0 + walk_bob * 0.45)
 		sword_mount.modulate = Color.WHITE
 
+
 func _spawn_afterimage(alpha: float) -> void:
 	var ghost := Sprite2D.new()
 	ghost.texture = body.texture
@@ -507,6 +689,23 @@ func _spawn_afterimage(alpha: float) -> void:
 	var cleanup_tween := get_tree().create_tween()
 	cleanup_tween.tween_interval(fade_time + 0.03)
 	cleanup_tween.tween_callback(ghost.queue_free)
+
+func _sync_body_scale() -> void:
+	var tex := body.texture
+	if tex == null:
+		_body_base_scale = Vector2.ONE
+		normal_body_scale = _body_base_scale
+		body.scale = normal_body_scale
+		return
+
+	var tex_size := tex.get_size()
+	if tex_size.x <= 0.0 or tex_size.y <= 0.0:
+		_body_base_scale = Vector2.ONE
+	else:
+		var uniform_scale := minf(PLAYER_DISPLAY_SIZE.x / tex_size.x, PLAYER_DISPLAY_SIZE.y / tex_size.y)
+		_body_base_scale = Vector2.ONE * uniform_scale
+	normal_body_scale = _body_base_scale
+	body.scale = normal_body_scale
 
 func _fill_rect(image: Image, rect: Rect2i, fill: Color) -> void:
 	for y in range(rect.position.y, rect.end.y):
