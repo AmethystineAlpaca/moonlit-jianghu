@@ -12,10 +12,25 @@ extends CanvasLayer
 @onready var skill_bar: HBoxContainer = $SkillBar
 @onready var danger_overlay: ColorRect = $DangerOverlay
 @onready var controls_hint: Label = $ControlsHint
+@onready var inventory_overlay: Control = $InventoryOverlay
+@onready var inventory_status_label: Label = $InventoryOverlay/Window/Margin/Layout/Header/InventoryStatus
+@onready var weapon_button: Button = $InventoryOverlay/Window/Margin/Layout/Columns/EquipmentPanel/EquipmentContent/WeaponButton
+@onready var armor_button: Button = $InventoryOverlay/Window/Margin/Layout/Columns/EquipmentPanel/EquipmentContent/ArmorButton
+@onready var bag_buttons: Array[Button] = [
+	$InventoryOverlay/Window/Margin/Layout/Columns/BagPanel/BagContent/BagGrid/BagSlot1,
+	$InventoryOverlay/Window/Margin/Layout/Columns/BagPanel/BagContent/BagGrid/BagSlot2,
+	$InventoryOverlay/Window/Margin/Layout/Columns/BagPanel/BagContent/BagGrid/BagSlot3,
+	$InventoryOverlay/Window/Margin/Layout/Columns/BagPanel/BagContent/BagGrid/BagSlot4,
+	$InventoryOverlay/Window/Margin/Layout/Columns/BagPanel/BagContent/BagGrid/BagSlot5,
+	$InventoryOverlay/Window/Margin/Layout/Columns/BagPanel/BagContent/BagGrid/BagSlot6,
+]
 
 const TRANSFORM_ICON_TEXTURE := preload("res://assets/xianxia/icon_dash.png")
 const DIVINE_LIGHT_ICON_TEXTURE := preload("res://assets/xianxia/icon_shield.png")
 const EMPTY_SLOT_ICON_TEXTURE := preload("res://assets/xianxia/icon_sword.png")
+const ARMOR_ICON_TEXTURE := preload("res://assets/xianxia/icon_shield.png")
+const WEAPON_ICON_TEXTURE := preload("res://assets/xianxia/icon_sword.png")
+const TALISMAN_ICON_TEXTURE := preload("res://assets/xianxia/icon_dash.png")
 
 var player_health: HealthComponent
 var player_controller: Node
@@ -32,6 +47,21 @@ var empty_icon_texture: Texture2D
 var controls_hint_timer: float = 0.0
 var controls_hint_visible_seconds: float = 30.0
 var controls_hint_fade_seconds: float = 1.5
+var inventory_open: bool = false
+var inventory_previously_paused: bool = false
+var equipped_items := {
+	"weapon": "iron_sword",
+	"armor": "",
+}
+var bag_items: Array[String] = [
+	"spirit_armor",
+	"jade_talisman",
+	"healing_pill",
+	"",
+	"",
+	"",
+]
+var item_definitions := {}
 
 func _process(delta: float) -> void:
 	if blocked_timer > 0.0:
@@ -50,8 +80,11 @@ func _process(delta: float) -> void:
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_build_skill_icon_textures()
+	_build_item_definitions()
+	_connect_inventory_buttons()
 	_update_skill_bar()
 	_update_pause_label()
+	_refresh_inventory_ui()
 	if controls_hint != null:
 		controls_hint.modulate.a = 1.0
 
@@ -85,6 +118,7 @@ func _ready() -> void:
 	player_health = player.get_node_or_null("HealthComponent") as HealthComponent
 	if player_health == null:
 		_set_hp_text(0, 0)
+		_sync_player_equipment_visuals()
 		return
 
 	player_health.health_changed.connect(_on_player_health_changed)
@@ -92,9 +126,18 @@ func _ready() -> void:
 	player_health.died.connect(_on_player_died)
 	_set_hp_text(player_health.current_health, player_health.max_health)
 	_set_danger_health(player_health.current_health, player_health.max_health)
+	_sync_player_equipment_visuals()
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("toggle_inventory"):
+		_toggle_inventory()
+		get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed("pause_game"):
+		if inventory_open:
+			_close_inventory()
+			get_viewport().set_input_as_handled()
+			return
 		get_tree().paused = not get_tree().paused
 		_update_pause_label()
 		get_viewport().set_input_as_handled()
@@ -195,7 +238,7 @@ func _update_skill_bar() -> void:
 
 func _update_pause_label() -> void:
 	if paused_label != null:
-		paused_label.visible = get_tree().paused
+		paused_label.visible = get_tree().paused and not inventory_open
 
 func _update_controls_hint_fade(delta: float) -> void:
 	if controls_hint == null:
@@ -213,6 +256,169 @@ func _build_skill_icon_textures() -> void:
 	resurrection_icon_texture = TRANSFORM_ICON_TEXTURE
 	divine_light_icon_texture = DIVINE_LIGHT_ICON_TEXTURE
 	empty_icon_texture = EMPTY_SLOT_ICON_TEXTURE
+
+func _build_item_definitions() -> void:
+	item_definitions = {
+		"iron_sword": {
+			"name": "Iron Sword",
+			"slot": "weapon",
+			"icon": WEAPON_ICON_TEXTURE,
+		},
+		"spirit_armor": {
+			"name": "Spirit Armor",
+			"slot": "armor",
+			"icon": ARMOR_ICON_TEXTURE,
+		},
+		"jade_talisman": {
+			"name": "Jade Talisman",
+			"slot": "",
+			"icon": TALISMAN_ICON_TEXTURE,
+		},
+		"healing_pill": {
+			"name": "Healing Pill",
+			"slot": "",
+			"icon": TALISMAN_ICON_TEXTURE,
+		},
+	}
+
+func _connect_inventory_buttons() -> void:
+	if weapon_button != null and not weapon_button.pressed.is_connected(_on_weapon_button_pressed):
+		weapon_button.pressed.connect(_on_weapon_button_pressed)
+	if armor_button != null and not armor_button.pressed.is_connected(_on_armor_button_pressed):
+		armor_button.pressed.connect(_on_armor_button_pressed)
+	for index in range(bag_buttons.size()):
+		var button := bag_buttons[index]
+		var callable := Callable(self, "_on_bag_button_pressed").bind(index)
+		if button != null and not button.pressed.is_connected(callable):
+			button.pressed.connect(callable)
+
+func _on_weapon_button_pressed() -> void:
+	_move_equipment_to_bag("weapon")
+
+func _on_armor_button_pressed() -> void:
+	_move_equipment_to_bag("armor")
+
+func _on_bag_button_pressed(index: int) -> void:
+	if index < 0 or index >= bag_items.size():
+		return
+	var item_id := bag_items[index]
+	if item_id == "":
+		_show_inventory_status("Empty bag slot.")
+		return
+
+	var slot_name := _get_item_slot(item_id)
+	if slot_name == "":
+		_show_inventory_status("%s stays in the bag." % [_get_item_name(item_id)])
+		return
+
+	var previous_item := String(equipped_items.get(slot_name, ""))
+	equipped_items[slot_name] = item_id
+	bag_items[index] = previous_item
+	_refresh_inventory_ui()
+	_sync_player_equipment_visuals()
+	if previous_item == "":
+		_show_inventory_status("%s equipped." % [_get_item_name(item_id)])
+	else:
+		_show_inventory_status("%s swapped with %s." % [_get_item_name(item_id), _get_item_name(previous_item)])
+
+func _move_equipment_to_bag(slot_name: String) -> void:
+	var item_id := String(equipped_items.get(slot_name, ""))
+	if item_id == "":
+		_show_inventory_status("%s slot is empty." % [slot_name.capitalize()])
+		return
+
+	var empty_index := _find_first_empty_bag_slot()
+	if empty_index == -1:
+		_show_inventory_status("Bag is full.")
+		return
+
+	equipped_items[slot_name] = ""
+	bag_items[empty_index] = item_id
+	_refresh_inventory_ui()
+	_sync_player_equipment_visuals()
+	_show_inventory_status("%s moved to the bag." % [_get_item_name(item_id)])
+
+func _refresh_inventory_ui() -> void:
+	if inventory_overlay != null:
+		inventory_overlay.visible = inventory_open
+	_update_equipment_button(weapon_button, "weapon", "Weapon")
+	_update_equipment_button(armor_button, "armor", "Armor")
+	for index in range(bag_buttons.size()):
+		_update_bag_button(bag_buttons[index], index)
+
+func _update_equipment_button(button: Button, slot_name: String, slot_label: String) -> void:
+	if button == null:
+		return
+	var item_id := String(equipped_items.get(slot_name, ""))
+	button.icon = _get_item_icon(item_id)
+	button.expand_icon = true
+	button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	button.text = "%s\n%s" % [slot_label, _get_item_name(item_id)]
+
+func _update_bag_button(button: Button, index: int) -> void:
+	if button == null or index < 0 or index >= bag_items.size():
+		return
+	var item_id := bag_items[index]
+	button.icon = _get_item_icon(item_id)
+	button.expand_icon = true
+	button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	button.text = _get_item_name(item_id)
+
+func _toggle_inventory() -> void:
+	if inventory_open:
+		_close_inventory()
+	else:
+		_open_inventory()
+
+func _open_inventory() -> void:
+	inventory_previously_paused = get_tree().paused
+	inventory_open = true
+	get_tree().paused = true
+	_refresh_inventory_ui()
+	_update_pause_label()
+	_show_inventory_status("Click equipment or bag slots to move items.")
+
+func _close_inventory() -> void:
+	inventory_open = false
+	get_tree().paused = inventory_previously_paused
+	inventory_previously_paused = false
+	_refresh_inventory_ui()
+	_update_pause_label()
+
+func _show_inventory_status(message: String) -> void:
+	if inventory_status_label != null:
+		inventory_status_label.text = message
+
+func _find_first_empty_bag_slot() -> int:
+	for index in range(bag_items.size()):
+		if bag_items[index] == "":
+			return index
+	return -1
+
+func _get_item_name(item_id: String) -> String:
+	if item_id == "":
+		return "Empty"
+	if item_definitions.has(item_id):
+		return String(item_definitions[item_id].get("name", item_id))
+	return item_id.capitalize()
+
+func _get_item_slot(item_id: String) -> String:
+	if item_id == "" or not item_definitions.has(item_id):
+		return ""
+	return String(item_definitions[item_id].get("slot", ""))
+
+func _get_item_icon(item_id: String) -> Texture2D:
+	if item_id == "":
+		return null
+	if item_definitions.has(item_id):
+		return item_definitions[item_id].get("icon") as Texture2D
+	return null
+
+func _sync_player_equipment_visuals() -> void:
+	if player_controller == null:
+		return
+	if player_controller.has_method("set_equipped_weapon"):
+		player_controller.set_equipped_weapon(String(equipped_items.get("weapon", "")))
 
 func _get_skill_icon(skill_name: String) -> Texture2D:
 	if skill_name == "Transform":

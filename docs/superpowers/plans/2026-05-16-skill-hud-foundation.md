@@ -51,6 +51,6 @@
 **Files:**
 - Validate existing project scenes and scripts.
 
-- [ ] Run `/usr/local/bin/godot --headless --path /Users/ming/gaame --quit-after 1`.
+- [ ] Run `/usr/local/bin/godot --headless --path <repo> --quit-after 1`.
 - [ ] Confirm parse/load succeeds.
 - [ ] Confirm expected controls: `1-5` select/toggle skill slots, `Space` emits `No Skill`, `J`/mouse still attack, `ESC` pauses/resumes.

@@ -66,4 +66,4 @@ Expected: PASS for all SceneTree tests.
 
 ## Self-Review
 
-The plan covers player appearance, enemy skeleton colors, corpse/zombie color inheritance, procedural movement/attack animation, and regression testing. No placeholders or contradictory scope remain. Git commits are omitted because `/Users/ming/gaame` is not currently a git repository.
+The plan covers player appearance, enemy skeleton colors, corpse/zombie color inheritance, procedural movement/attack animation, and regression testing. No placeholders or contradictory scope remain. Git commits are omitted because `<repo>` is not currently a git repository.

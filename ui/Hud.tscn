@@ -93,6 +93,74 @@ content_margin_top = 6.0
 content_margin_right = 8.0
 content_margin_bottom = 6.0
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_inventory_window"]
+bg_color = Color(0.07, 0.06, 0.05, 0.97)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.78, 0.55, 0.22, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 22.0
+content_margin_top = 18.0
+content_margin_right = 22.0
+content_margin_bottom = 22.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_inventory_panel"]
+bg_color = Color(0.12, 0.10, 0.08, 0.92)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.52, 0.36, 0.16, 0.98)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+content_margin_left = 14.0
+content_margin_top = 14.0
+content_margin_right = 14.0
+content_margin_bottom = 14.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_inventory_button"]
+bg_color = Color(0.18, 0.14, 0.10, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.65, 0.45, 0.19, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_inventory_button_hover"]
+bg_color = Color(0.24, 0.19, 0.12, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.90, 0.72, 0.30, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_inventory_button_pressed"]
+bg_color = Color(0.30, 0.22, 0.12, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.84, 0.34, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
 [node name="Hud" type="CanvasLayer"]
 layer = 10
 script = ExtResource("1_hud")
@@ -106,6 +174,205 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 0, 0, 0)
+
+[node name="InventoryOverlay" type="Control" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dimmer" type="ColorRect" parent="InventoryOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="Window" type="PanelContainer" parent="InventoryOverlay"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -420.0
+offset_top = -220.0
+offset_right = 420.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_inventory_window")
+
+[node name="Margin" type="MarginContainer" parent="InventoryOverlay/Window"]
+layout_mode = 2
+
+[node name="Layout" type="VBoxContainer" parent="InventoryOverlay/Window/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="VBoxContainer" parent="InventoryOverlay/Window/Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="InventoryOverlay/Window/Margin/Layout/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.88, 0.62, 1)
+theme_override_font_sizes/font_size = 32
+text = "Inventory"
+horizontal_alignment = 1
+
+[node name="InventoryStatus" type="Label" parent="InventoryOverlay/Window/Margin/Layout/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.84, 0.76, 0.60, 1)
+theme_override_font_sizes/font_size = 16
+text = "Click equipment or bag slots to move items."
+horizontal_alignment = 1
+
+[node name="Columns" type="HBoxContainer" parent="InventoryOverlay/Window/Margin/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="EquipmentPanel" type="PanelContainer" parent="InventoryOverlay/Window/Margin/Layout/Columns"]
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_inventory_panel")
+
+[node name="EquipmentContent" type="VBoxContainer" parent="InventoryOverlay/Window/Margin/Layout/Columns/EquipmentPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="EquipmentLabel" type="Label" parent="InventoryOverlay/Window/Margin/Layout/Columns/EquipmentPanel/EquipmentContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.82, 0.54, 1)
+theme_override_font_sizes/font_size = 24
+text = "Equipment"
+horizontal_alignment = 1
+
+[node name="WeaponButton" type="Button" parent="InventoryOverlay/Window/Margin/Layout/Columns/EquipmentPanel/EquipmentContent"]
+custom_minimum_size = Vector2(0, 108)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.89, 0.74, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_inventory_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_inventory_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_inventory_button_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_inventory_button_hover")
+icon_alignment = 1
+expand_icon = true
+text = "Weapon"
+
+[node name="ArmorButton" type="Button" parent="InventoryOverlay/Window/Margin/Layout/Columns/EquipmentPanel/EquipmentContent"]
+custom_minimum_size = Vector2(0, 108)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.89, 0.74, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_inventory_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_inventory_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_inventory_button_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_inventory_button_hover")
+icon_alignment = 1
+expand_icon = true
+text = "Armor"
+
+[node name="BagPanel" type="PanelContainer" parent="InventoryOverlay/Window/Margin/Layout/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_inventory_panel")
+
+[node name="BagContent" type="VBoxContainer" parent="InventoryOverlay/Window/Margin/Layout/Columns/BagPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="BagLabel" type="Label" parent="InventoryOverlay/Window/Margin/Layout/Columns/BagPanel/BagContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.82, 0.54, 1)
+theme_override_font_sizes/font_size = 24
+text = "Bag"
+horizontal_alignment = 1
+
+[node name="BagGrid" type="GridContainer" parent="InventoryOverlay/Window/Margin/Layout/Columns/BagPanel/BagContent"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 3
+
+[node name="BagSlot1" type="Button" parent="InventoryOverlay/Window/Margin/Layout/Columns/BagPanel/BagContent/BagGrid"]
+custom_minimum_size = Vector2(150, 110)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.89, 0.74, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_inventory_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_inventory_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_inventory_button_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_inventory_button_hover")
+icon_alignment = 1
+expand_icon = true
+
+[node name="BagSlot2" type="Button" parent="InventoryOverlay/Window/Margin/Layout/Columns/BagPanel/BagContent/BagGrid"]
+custom_minimum_size = Vector2(150, 110)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.89, 0.74, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_inventory_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_inventory_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_inventory_button_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_inventory_button_hover")
+icon_alignment = 1
+expand_icon = true
+
+[node name="BagSlot3" type="Button" parent="InventoryOverlay/Window/Margin/Layout/Columns/BagPanel/BagContent/BagGrid"]
+custom_minimum_size = Vector2(150, 110)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.89, 0.74, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_inventory_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_inventory_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_inventory_button_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_inventory_button_hover")
+icon_alignment = 1
+expand_icon = true
+
+[node name="BagSlot4" type="Button" parent="InventoryOverlay/Window/Margin/Layout/Columns/BagPanel/BagContent/BagGrid"]
+custom_minimum_size = Vector2(150, 110)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.89, 0.74, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_inventory_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_inventory_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_inventory_button_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_inventory_button_hover")
+icon_alignment = 1
+expand_icon = true
+
+[node name="BagSlot5" type="Button" parent="InventoryOverlay/Window/Margin/Layout/Columns/BagPanel/BagContent/BagGrid"]
+custom_minimum_size = Vector2(150, 110)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.89, 0.74, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_inventory_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_inventory_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_inventory_button_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_inventory_button_hover")
+icon_alignment = 1
+expand_icon = true
+
+[node name="BagSlot6" type="Button" parent="InventoryOverlay/Window/Margin/Layout/Columns/BagPanel/BagContent/BagGrid"]
+custom_minimum_size = Vector2(150, 110)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.89, 0.74, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_inventory_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_inventory_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_inventory_button_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_inventory_button_hover")
+icon_alignment = 1
+expand_icon = true
 
 [node name="OffscreenIndicators" type="Control" parent="."]
 anchors_preset = 15
@@ -388,5 +655,5 @@ offset_bottom = 34.0
 grow_horizontal = 2
 theme_override_colors/font_color = Color(0.86, 0.78, 0.62, 0.86)
 theme_override_font_sizes/font_size = 16
-text = "WASD/Arrows Move  |  J Attack  |  Space Skill  |  1-5 Select  |  K Guard  |  L Dash  |  Esc Pause"
+text = "WASD/Arrows Move  |  J Attack  |  Space Skill  |  1-5 Select  |  K Guard  |  L Dash  |  M Inventory  |  Esc Pause"
 horizontal_alignment = 1

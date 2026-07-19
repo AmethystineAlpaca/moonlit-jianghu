@@ -16,6 +16,7 @@ func _initialize() -> void:
 	await _test_controller_owns_expected_layer_groups()
 	await _test_screen_fx_stays_outside_hud_canvas_layer()
 	await _test_particle_and_patch_layers_are_populated()
+	await _test_firefly_particles_stay_small()
 	await _test_world_keeps_glow_environment_under_night_ambience()
 	await _test_world_enemy_instances_have_accent_lights()
 	quit(failures)
@@ -96,6 +97,22 @@ func _test_particle_and_patch_layers_are_populated() -> void:
 	if patches != null:
 		_assert_true(patches.get_child_count() >= 3, "moonlight patches create visible breakup")
 		_assert_true(patches.get_child_count() <= 6, "moonlight patches stay sparse")
+
+	world.free()
+
+func _test_firefly_particles_stay_small() -> void:
+	var world := WORLD_SCENE.instantiate()
+	root.add_child(world)
+	await process_frame
+
+	var fireflies := world.get_node_or_null("NightAmbience/WorldEffects/FireflyParticles") as GPUParticles2D
+	_assert_true(fireflies != null, "firefly particle layer exists")
+	if fireflies != null:
+		var material := fireflies.process_material as ParticleProcessMaterial
+		_assert_true(material != null, "firefly particles keep a process material")
+		if material != null:
+			_assert_true(material.scale_min <= 0.04, "firefly particle minimum size stays small")
+			_assert_true(material.scale_max <= 0.07, "firefly particle maximum size stays small")
 
 	world.free()
 

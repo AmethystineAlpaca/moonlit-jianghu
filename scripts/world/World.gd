@@ -8,6 +8,7 @@ const GROUND_DAY_TEXTURE := preload("res://assets/xianxia/land.png")
 const GROUND_NIGHT_TEXTURE := preload("res://assets/xianxia/land_night.png")
 
 @export var enemy_scene: PackedScene
+@export var fire_lion_scene: PackedScene
 @export var fast_enemy_scene: PackedScene
 @export var breakable_scene: PackedScene
 @export var chest_scene: PackedScene
@@ -18,6 +19,7 @@ const GROUND_NIGHT_TEXTURE := preload("res://assets/xianxia/land_night.png")
 @export var minimum_spawn_interval: float = 1.5
 @export var spawn_acceleration_per_minute: float = 1.0
 @export var chest_spawn_interval: float = 120.0
+@export_range(0.0, 1.0, 0.01) var fire_lion_spawn_chance: float = 0.22
 @export var fast_enemy_grace_seconds: float = 20.0
 @export var fast_enemy_base_chance: float = 0.22
 @export var fast_enemy_max_chance: float = 0.42
@@ -37,6 +39,7 @@ const GROUND_NIGHT_TEXTURE := preload("res://assets/xianxia/land_night.png")
 @export var random_tree_max_count: int = 45
 @export var random_tree_spawn_attempts: int = 800
 @export var random_tree_clearance: float = 40.0
+@export var house_tree_clearance_bonus: float = 18.0
 
 var elapsed_time: float = 0.0
 var spawn_timer: float = 0.0
@@ -61,7 +64,6 @@ func _ready() -> void:
 	chest_rng.randomize()
 	_spawn_random_breakables()
 	_spawn_random_trees()
-	_regenerate_grassland()
 	_build_path_grid()
 	spawn_timer = initial_spawn_interval
 	chest_spawn_timer = chest_spawn_interval
@@ -91,8 +93,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		if ambience and ambience.has_method("toggle"):
 			ambience.toggle()
 		var is_night: bool = ambience != null and ambience.visible
-		var ground := get_node_or_null("Ground") as TextureRect
-		if ground != null:
+		var ground := get_node_or_null("Ground")
+		if ground != null and "texture" in ground:
 			ground.texture = GROUND_NIGHT_TEXTURE if is_night else GROUND_DAY_TEXTURE
 		var player := get_node_or_null("Player")
 		if player != null:
@@ -236,6 +238,8 @@ func _find_grid_chest_position(occupied_rects: Array[Rect2]) -> Vector2:
 	return best_position
 
 func _pick_enemy_scene() -> PackedScene:
+	if fire_lion_scene != null and randf() < fire_lion_spawn_chance:
+		return fire_lion_scene
 	if fast_enemy_scene == null or elapsed_time < fast_enemy_grace_seconds:
 		return enemy_scene
 
@@ -283,11 +287,6 @@ func _spawn_random_breakables() -> void:
 		breakables_parent.add_child(breakable)
 		occupied_rects.append(_get_spawn_rect(position, _get_breakable_spawn_size(breakable)))
 
-func _regenerate_grassland() -> void:
-	var grassland := get_node_or_null("Grassland")
-	if grassland != null and grassland.has_method("_generate"):
-		grassland.call("_generate")
-
 func _find_random_breakable_position(occupied_rects: Array[Rect2]) -> Vector2:
 	var half_size := _get_breakable_spawn_size_from_scene()
 	for _attempt in range(random_breakable_spawn_attempts):
@@ -306,8 +305,7 @@ func _get_breakable_spawn_blockers() -> Array[Rect2]:
 		if obstacle.is_in_group("breakables"):
 			blockers.append(_get_spawn_rect(obstacle.global_position, _get_breakable_spawn_size(obstacle)))
 		else:
-			var size := _get_obstacle_size(obstacle) * 0.5 + Vector2.ONE * random_breakable_clearance
-			blockers.append(Rect2(obstacle.global_position - size, size * 2.0))
+			blockers.append(_get_obstacle_blocker_rect(obstacle, random_breakable_clearance))
 
 	var player := get_node_or_null("Player") as Node2D
 	if player != null:
@@ -612,9 +610,49 @@ func _get_tree_spawn_blockers() -> Array[Rect2]:
 func _collect_static_obstacle_rects(node: Node, blockers: Array[Rect2], clearance: float) -> void:
 	if node is StaticBody2D:
 		var obs := node as Node2D
-		var sz := _get_obstacle_size(obs)
-		if sz != Vector2.ZERO:
-			var half := sz * 0.5 + Vector2.ONE * clearance
-			blockers.append(Rect2(obs.global_position - half, half * 2.0))
+		var rect := _get_obstacle_blocker_rect(obs, clearance)
+		if rect.size != Vector2.ZERO:
+			blockers.append(rect)
 	for child in node.get_children():
 		_collect_static_obstacle_rects(child, blockers, clearance)
+
+func _get_obstacle_blocker_rect(obstacle: Node2D, clearance: float) -> Rect2:
+	var rect := Rect2()
+	var has_rect := false
+
+	var size := _get_obstacle_size(obstacle)
+	if size != Vector2.ZERO:
+		var half := size * 0.5
+		rect = Rect2(obstacle.global_position - half, size)
+		has_rect = true
+
+	var visual_rect := _get_obstacle_visual_rect(obstacle)
+	if visual_rect.size != Vector2.ZERO:
+		rect = visual_rect if not has_rect else rect.merge(visual_rect)
+		has_rect = true
+
+	if not has_rect:
+		return Rect2()
+
+	var extra_clearance := clearance + (house_tree_clearance_bonus if _is_house_obstacle(obstacle) else 0.0)
+	var pad := Vector2.ONE * extra_clearance
+	return Rect2(rect.position - pad, rect.size + pad * 2.0)
+
+func _get_obstacle_visual_rect(obstacle: Node2D) -> Rect2:
+	var rect := Rect2()
+	var has_rect := false
+	for node_name in ["Visual", "CanopyVisual"]:
+		var sprite := obstacle.get_node_or_null(node_name) as Sprite2D
+		if sprite == null or sprite.texture == null or not sprite.visible:
+			continue
+		var sprite_size := sprite.texture.get_size() * sprite.scale.abs()
+		var offset := sprite.offset * sprite.scale
+		var sprite_rect := Rect2(sprite.global_position - sprite_size * 0.5 + offset, sprite_size)
+		rect = sprite_rect if not has_rect else rect.merge(sprite_rect)
+		has_rect = true
+	return rect if has_rect else Rect2()
+
+func _is_house_obstacle(obstacle: Node2D) -> bool:
+	if "visual_style" in obstacle:
+		return obstacle.visual_style == "house"
+	return false

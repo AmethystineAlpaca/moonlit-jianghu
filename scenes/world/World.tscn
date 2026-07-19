@@ -1,30 +1,30 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene format=3 uid="uid://1t4pfipop1po"]
 
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://scenes/world/placeholders/HousePlaceholder.tscn" id="2_house"]
-[ext_resource type="PackedScene" path="res://scenes/world/placeholders/TreePlaceholder.tscn" id="3_tree"]
-[ext_resource type="PackedScene" path="res://scenes/world/placeholders/ObstaclePlaceholder.tscn" id="4_obstacle"]
+[ext_resource type="PackedScene" uid="uid://5sxffvxsdjus" path="res://scenes/world/placeholders/ObstaclePlaceholder.tscn" id="4_obstacle"]
 [ext_resource type="PackedScene" path="res://scenes/world/placeholders/BoundaryWall.tscn" id="5_boundary"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/BasicEnemy.tscn" id="6_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/FireLionEnemy.tscn" id="16_fire_lion"]
 [ext_resource type="PackedScene" path="res://ui/Hud.tscn" id="7_hud"]
-[ext_resource type="Script" path="res://scripts/world/World.gd" id="8_world"]
+[ext_resource type="Script" uid="uid://sw05omct5lbb" path="res://scripts/world/World.gd" id="8_world"]
 [ext_resource type="PackedScene" path="res://scenes/world/placeholders/BreakableCrate.tscn" id="9_crate"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/FastEnemy.tscn" id="10_fast_enemy"]
-[ext_resource type="Script" path="res://scripts/world/PixelSurface.gd" id="11_surface"]
 [ext_resource type="PackedScene" path="res://scenes/world/ChestEncounter.tscn" id="12_chest"]
-[ext_resource type="Script" path="res://scripts/world/Grassland.gd" id="13_grassland"]
 [ext_resource type="PackedScene" path="res://scenes/world/placeholders/TreePlaceholder.tscn" id="14_rand_tree"]
 [ext_resource type="Texture2D" uid="uid://cg21628pbbaux" path="res://assets/xianxia/land_night.png" id="15_land"]
 
-[node name="World" type="Node2D"]
+[node name="World" type="Node2D" unique_id=1240481858]
 script = ExtResource("8_world")
 enemy_scene = ExtResource("6_enemy")
+fire_lion_scene = ExtResource("16_fire_lion")
 fast_enemy_scene = ExtResource("10_fast_enemy")
 breakable_scene = ExtResource("9_crate")
 chest_scene = ExtResource("12_chest")
 tree_scene = ExtResource("14_rand_tree")
 
-[node name="Ground" type="TextureRect" parent="."]
+[node name="Ground" type="TextureRect" parent="." unique_id=188958837]
+texture_filter = 1
 offset_left = -720.0
 offset_top = -480.0
 offset_right = 720.0
@@ -32,127 +32,159 @@ offset_bottom = 480.0
 mouse_filter = 2
 texture = ExtResource("15_land")
 stretch_mode = 1
-texture_filter = 1
 metadata/surface_kind = "grassland"
 
+[node name="Buildings" type="Node2D" parent="." unique_id=143304398]
 
-[node name="Grassland" type="Node2D" parent="."]
-script = ExtResource("13_grassland")
+[node name="WestTeaHouse" parent="Buildings" unique_id=895542398 instance=ExtResource("2_house")]
+position = Vector2(304, -65)
+size = Vector2(140, 85)
+collision_size = Vector2(98, 34)
+collision_offset = Vector2(0, -14)
+texture_path = "res://assets/xianxia/houses.png"
+texture_region = Rect2(69, 215, 399, 242)
+visual_scale = Vector2(0.35, 0.35)
 
-[node name="Buildings" type="Node2D" parent="."]
+[node name="NorthWatchHouse" parent="Buildings" unique_id=2108008306 instance=ExtResource("2_house")]
+position = Vector2(44, -235)
+size = Vector2(145, 120)
+collision_size = Vector2(104, 38)
+collision_offset = Vector2(0, -15)
+texture_path = "res://assets/xianxia/houses.png"
+texture_region = Rect2(503, 160, 393, 323)
+visual_scale = Vector2(0.37, 0.37)
 
-[node name="BlueRoofShop" parent="Buildings" instance=ExtResource("2_house")]
-position = Vector2(-310, -220)
-color = Color(0.12, 0.31, 0.82, 1)
+[node name="EastLanternHall" parent="Buildings" unique_id=957783042 instance=ExtResource("2_house")]
+position = Vector2(300, 135)
+size = Vector2(152, 98)
+collision_size = Vector2(108, 36)
+collision_offset = Vector2(0, -14)
+texture_path = "res://assets/xianxia/houses.png"
+texture_region = Rect2(946, 184, 460, 300)
+visual_scale = Vector2(0.33, 0.33)
 
-[node name="RedRoofSmithy" parent="Buildings" instance=ExtResource("2_house")]
-position = Vector2(320, -215)
-color = Color(0.72, 0.14, 0.09, 1)
+[node name="WestTowerHouse" parent="Buildings" unique_id=11441322 instance=ExtResource("2_house")]
+position = Vector2(-464, -37)
+size = Vector2(142, 118)
+collision_size = Vector2(104, 38)
+collision_offset = Vector2(0, -15)
+texture_path = "res://assets/xianxia/houses.png"
+texture_region = Rect2(61, 592, 381, 316)
+visual_scale = Vector2(0.37, 0.37)
 
-[node name="Chapel" parent="Buildings" instance=ExtResource("2_house")]
-position = Vector2(-310, 235)
-size = Vector2(128, 96)
-color = Color(0.18, 0.34, 0.74, 1)
+[node name="SouthCourtyard" parent="Buildings" unique_id=659058414 instance=ExtResource("2_house")]
+position = Vector2(-459, 138)
+size = Vector2(142, 106)
+collision_size = Vector2(106, 36)
+collision_offset = Vector2(0, -14)
+texture_path = "res://assets/xianxia/houses.png"
+texture_region = Rect2(501, 615, 395, 294)
+visual_scale = Vector2(0.36, 0.36)
 
-[node name="Inn" parent="Buildings" instance=ExtResource("2_house")]
-position = Vector2(330, 240)
-color = Color(0.64, 0.32, 0.13, 1)
+[node name="EastManor" parent="Buildings" unique_id=1695204211 instance=ExtResource("2_house")]
+position = Vector2(-218, 328)
+size = Vector2(150, 120)
+collision_size = Vector2(112, 40)
+collision_offset = Vector2(0, -16)
+texture_path = "res://assets/xianxia/houses.png"
+texture_region = Rect2(943, 560, 456, 352)
+visual_scale = Vector2(0.33, 0.33)
 
-[node name="Landmarks" type="Node2D" parent="."]
+[node name="Landmarks" type="Node2D" parent="." unique_id=1273429728]
 
-[node name="Fountain" parent="Landmarks" instance=ExtResource("4_obstacle")]
-position = Vector2(0, 0)
+[node name="Fountain" parent="Landmarks" unique_id=1856597116 instance=ExtResource("4_obstacle")]
+position = Vector2(45, -101)
 size = Vector2(80, 80)
 color = Color(0.22, 0.45, 0.68, 1)
 visual_style = "fountain"
 
-[node name="Well" parent="Landmarks" instance=ExtResource("4_obstacle")]
-position = Vector2(-150, -185)
+[node name="Well" parent="Landmarks" unique_id=312044461 instance=ExtResource("4_obstacle")]
+position = Vector2(-216, -110)
 size = Vector2(54, 54)
 color = Color(0.38, 0.4, 0.37, 1)
 visual_style = "well"
 
-[node name="StonePile" parent="Landmarks" instance=ExtResource("4_obstacle")]
-position = Vector2(-500, 150)
-size = Vector2(96, 96)
+[node name="StonePile" parent="Landmarks" unique_id=2063254632 instance=ExtResource("4_obstacle")]
+position = Vector2(534, -55)
 collision_size = Vector2(72, 32)
 collision_offset = Vector2(0, -16)
-color = Color(0.43, 0.45, 0.43, 1)
-visual_style = "stone"
 visual_scale = Vector2(1.2, 1.2)
 anchor_visual_to_bottom = true
 passable_upper_ratio = 0.67
 
-[node name="WoodPile" parent="Landmarks" instance=ExtResource("4_obstacle")]
-position = Vector2(-500, 330)
+[node name="WoodPile" parent="Landmarks" unique_id=1934063897 instance=ExtResource("4_obstacle")]
+position = Vector2(-466, 283)
 size = Vector2(82, 38)
 color = Color(0.44, 0.25, 0.1, 1)
 visual_style = "wood"
 
-[node name="Breakables" type="Node2D" parent="."]
+[node name="Breakables" type="Node2D" parent="." unique_id=1395521065]
 
-[node name="CrateA" parent="Breakables" instance=ExtResource("9_crate")]
+[node name="CrateA" parent="Breakables" unique_id=795212095 instance=ExtResource("9_crate")]
 position = Vector2(140, 210)
 
-[node name="CrateB" parent="Breakables" instance=ExtResource("9_crate")]
+[node name="CrateB" parent="Breakables" unique_id=1271371632 instance=ExtResource("9_crate")]
 position = Vector2(-130, -95)
 
-[node name="CrateC" parent="Breakables" instance=ExtResource("9_crate")]
+[node name="CrateC" parent="Breakables" unique_id=37002883 instance=ExtResource("9_crate")]
 position = Vector2(445, 115)
 
-[node name="Trees" type="Node2D" parent="."]
+[node name="Trees" type="Node2D" parent="." unique_id=1961047819]
 
-[node name="TreeA" parent="Trees" instance=ExtResource("3_tree")]
-position = Vector2(-520, -365)
+[node name="TreeA" parent="Trees" unique_id=1267551153 instance=ExtResource("14_rand_tree")]
+position = Vector2(-528, -313)
 
-[node name="TreeB" parent="Trees" instance=ExtResource("3_tree")]
-position = Vector2(-430, -370)
+[node name="TreeB" parent="Trees" unique_id=605791953 instance=ExtResource("14_rand_tree")]
+position = Vector2(-402, -240)
 
-[node name="TreeC" parent="Trees" instance=ExtResource("3_tree")]
-position = Vector2(505, -360)
+[node name="TreeC" parent="Trees" unique_id=914383797 instance=ExtResource("14_rand_tree")]
+position = Vector2(513, -231)
 
-[node name="TreeD" parent="Trees" instance=ExtResource("3_tree")]
-position = Vector2(590, -350)
+[node name="TreeD" parent="Trees" unique_id=1437281106 instance=ExtResource("14_rand_tree")]
+position = Vector2(376, -305)
 
-[node name="TreeE" parent="Trees" instance=ExtResource("3_tree")]
-position = Vector2(-610, 10)
+[node name="TreeE" parent="Trees" unique_id=1814202759 instance=ExtResource("14_rand_tree")]
+position = Vector2(105, 352)
 
-[node name="TreeF" parent="Trees" instance=ExtResource("3_tree")]
-position = Vector2(595, 20)
+[node name="TreeF" parent="Trees" unique_id=655410474 instance=ExtResource("14_rand_tree")]
+position = Vector2(96, 246)
 
-[node name="TreeG" parent="Trees" instance=ExtResource("3_tree")]
-position = Vector2(-575, 380)
+[node name="TreeG" parent="Trees" unique_id=122089125 instance=ExtResource("14_rand_tree")]
+position = Vector2(-27, 251)
 
-[node name="TreeH" parent="Trees" instance=ExtResource("3_tree")]
-position = Vector2(570, 380)
+[node name="TreeH" parent="Trees" unique_id=1779344994 instance=ExtResource("14_rand_tree")]
+position = Vector2(38, 314)
 
-[node name="Boundaries" type="Node2D" parent="."]
+[node name="TreeG2" parent="Trees" unique_id=155016698 instance=ExtResource("14_rand_tree")]
+position = Vector2(-33, 341)
 
-[node name="NorthWall" parent="Boundaries" instance=ExtResource("5_boundary")]
+[node name="Boundaries" type="Node2D" parent="." unique_id=526051667]
+
+[node name="NorthWall" parent="Boundaries" unique_id=1424412076 instance=ExtResource("5_boundary")]
 position = Vector2(0, -505)
 size = Vector2(1500, 50)
 color = Color(0.13, 0.24, 0.1, 1)
 
-[node name="SouthWall" parent="Boundaries" instance=ExtResource("5_boundary")]
+[node name="SouthWall" parent="Boundaries" unique_id=1083719634 instance=ExtResource("5_boundary")]
 position = Vector2(0, 505)
 size = Vector2(1500, 50)
 color = Color(0.13, 0.24, 0.1, 1)
 
-[node name="WestWall" parent="Boundaries" instance=ExtResource("5_boundary")]
+[node name="WestWall" parent="Boundaries" unique_id=1268676951 instance=ExtResource("5_boundary")]
 position = Vector2(-745, 0)
 size = Vector2(50, 1040)
 color = Color(0.13, 0.24, 0.1, 1)
 
-[node name="EastWall" parent="Boundaries" instance=ExtResource("5_boundary")]
+[node name="EastWall" parent="Boundaries" unique_id=1779109190 instance=ExtResource("5_boundary")]
 position = Vector2(745, 0)
 size = Vector2(50, 1040)
 color = Color(0.13, 0.24, 0.1, 1)
 
-[node name="Player" parent="." instance=ExtResource("1_player")]
+[node name="Player" parent="." unique_id=117948064 instance=ExtResource("1_player")]
 position = Vector2(0, 150)
 
-[node name="Enemies" type="Node2D" parent="."]
+[node name="Enemies" type="Node2D" parent="." unique_id=296726769]
 
-[node name="Chests" type="Node2D" parent="."]
+[node name="Chests" type="Node2D" parent="." unique_id=883711948]
 
-[node name="Hud" parent="." instance=ExtResource("7_hud")]
+[node name="Hud" parent="." unique_id=645351912 instance=ExtResource("7_hud")]
