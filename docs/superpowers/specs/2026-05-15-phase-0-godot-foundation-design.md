@@ -256,7 +256,7 @@ Manual test in Godot:
 Optional command-line validation, if the Godot executable is available:
 
 ```text
-godot --headless --path /Users/ming/gaame --quit
+godot --headless --path <repo> --quit
 ```
 
 ## Acceptance Criteria

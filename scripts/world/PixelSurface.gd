@@ -163,8 +163,9 @@ static func create_grass_tuft(size: Vector2i, seed_value: int) -> ImageTexture:
 			elif y >= size.y - 2:
 				c = dark
 			image.set_pixel(x, y, c)
-			if y >= size.y - 3 and x + 1 < size.x:
-				image.set_pixel(x + 1, y, dark)
+			# 2px wide below tip for a chunkier, less jagged blade
+			if y > top_y and x + 1 < size.x:
+				image.set_pixel(x + 1, y, dark if c == dark else mid)
 
 	for x in range(maxi(0, center - size.x / 3), mini(size.x, center + size.x / 3 + 1)):
 		image.set_pixel(x, size.y - 1, dark)

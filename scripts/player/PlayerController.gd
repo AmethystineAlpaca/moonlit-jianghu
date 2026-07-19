@@ -65,12 +65,12 @@ const PLAYER_UP_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent
 const PLAYER_LEFT_IDLE_TEXTURE_PATH := "res://assets/xianxia/players_gemini_idle_left.png"
 const PLAYER_LEFT_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent_cropped_original_size/left_run.png")
 const PLAYER_RIGHT_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent_cropped_original_size/right_run.png")
-const PLAYER_FIVE_DIR_RUN_SHEET_PATH := "res://assets/xianxia/players_gemini_aligned_5dir_run.png"
-const RUN_ANIM_FPS: float = 6.0
-const PLAYER_IDLE_SHEET_PATH := "res://assets/xianxia/players_gemini_aligned_idle.png"
-const IDLE_ANIM_FPS: float = 4.0
+const PLAYER_FIVE_DIR_RUN_SHEET_PATH := "res://assets/xianxia/players_gemini-Photoroom.png"
+const RUN_ANIM_FPS: float = 10.0
+const PLAYER_IDLE_SHEET_PATH := "res://assets/xianxia/players_gemini_still-Photoroom.png"
+const IDLE_ANIM_FPS: float = 1.0
 const PLAYER_IDLE_SHEET_COLUMNS := 6
-const PLAYER_IDLE_SHEET_ROWS := 3
+const PLAYER_IDLE_SHEET_ROWS := 5
 const PLAYER_IDLE_ROW_DOWN := 0
 const PLAYER_IDLE_ROW_UP := 1
 const PLAYER_IDLE_ROW_LEFT := 2
@@ -88,6 +88,15 @@ const ATTACK_VARIANT_COUNTER := "counter"
 const ATTACK_VARIANT_BACK_HIT := "back_hit"
 const ATTACK_VARIANT_MOMENTUM := "momentum"
 const ATTACK_VARIANT_IMPACT := "impact"
+const ATTACK_VISUAL_DURATION: float = 0.18
+const PLAYER_ATTACK_SHEET_PATH := "res://assets/xianxia/players_attack.png"
+const PLAYER_ATTACK_SHEET_COLUMNS := 6
+const PLAYER_ATTACK_SHEET_ROWS := 5
+const PLAYER_ATTACK_ROW_DOWN := 0
+const PLAYER_ATTACK_ROW_LEFT := 1
+const PLAYER_ATTACK_ROW_UP := 2
+const PLAYER_ATTACK_ROW_DEATH := 3
+const DEATH_ANIM_FPS: float = 8.0
 
 var sword_visual: Sprite2D
 var sword_mount: Node2D
@@ -133,6 +142,10 @@ var _idle_frames: Dictionary = {}
 var _idle_sheet: Texture2D
 var _idle_anim_timer: float = 0.0
 var _idle_anim_frame: int = 0
+var _attack_sheet: Texture2D
+var _attack_frames: Dictionary = {}
+var _death_anim_timer: float = 0.0
+var _death_anim_frame: int = 0
 
 func _ready() -> void:
 	_idle_sheet = _load_png_texture(PLAYER_IDLE_SHEET_PATH)
@@ -140,6 +153,7 @@ func _ready() -> void:
 	_player_up_idle_texture = _load_png_texture(PLAYER_UP_IDLE_TEXTURE_PATH)
 	_player_left_idle_texture = _load_png_texture(PLAYER_LEFT_IDLE_TEXTURE_PATH)
 	_five_dir_run_sheet = load(PLAYER_FIVE_DIR_RUN_SHEET_PATH) as Texture2D
+	_attack_sheet = load(PLAYER_ATTACK_SHEET_PATH) as Texture2D
 	_setup_xianxia_visuals()
 	_sync_body_scale()
 	current_stamina = max_stamina
@@ -157,6 +171,7 @@ func _ready() -> void:
 	active_skill_slots_changed.emit(active_skill_slots)
 
 func _physics_process(delta: float) -> void:
+	z_index = int(position.y) + 500
 	visual_time += delta
 	if hurt_flash_timer > 0.0:
 		hurt_flash_timer -= delta
@@ -194,6 +209,7 @@ func _physics_process(delta: float) -> void:
 	if is_defeated:
 		velocity = attack_hitback_velocity
 		move_and_slide()
+		_update_death_animation(delta)
 		return
 
 	_update_defense(delta)
@@ -254,7 +270,7 @@ func _try_melee_attack() -> void:
 		return
 
 	melee_timer = melee_cooldown
-	attack_visual_timer = 0.18
+	attack_visual_timer = ATTACK_VISUAL_DURATION
 	_set_stamina(current_stamina - attack_stamina_cost)
 	var world := get_tree().get_first_node_in_group("world")
 	var _is_slam: bool = world != null and world.has_method("has_slam_charge") and world.has_slam_charge()
@@ -413,11 +429,11 @@ func _setup_xianxia_visuals() -> void:
 		sword_visual.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		sword_visual.centered = true
 		sword_visual.rotation = PI
-		sword_visual.z_index = 2
+		sword_visual.z_index = 0
 	if sword_mount != null:
 		sword_mount.position = Vector2(13.0, 1.0)
 		sword_mount.rotation = -0.68
-		sword_mount.z_index = 2
+		sword_mount.z_index = 0
 
 	var blade := sword_mount.get_node_or_null("Blade") as Polygon2D if sword_mount != null else null
 	if blade != null:
@@ -573,6 +589,40 @@ func _slice_idle_sheet_row(row: int, frame_width: int, frame_height: int) -> Arr
 		frames.append(atlas)
 	return frames
 
+func _get_attack_frames_for_direction(direction: Vector2) -> Array[Texture2D]:
+	if _attack_frames.is_empty():
+		_build_attack_frames()
+	var key: String
+	if absf(direction.x) > absf(direction.y):
+		key = "left"
+	elif direction.y > 0.0:
+		key = "down"
+	else:
+		key = "up"
+	return _attack_frames.get(key, [])
+
+func _build_attack_frames() -> void:
+	_attack_frames.clear()
+	if _attack_sheet == null:
+		return
+	var frame_width := int(_attack_sheet.get_width() / PLAYER_ATTACK_SHEET_COLUMNS)
+	var frame_height := int(_attack_sheet.get_height() / PLAYER_ATTACK_SHEET_ROWS)
+	if frame_width <= 0 or frame_height <= 0:
+		return
+	_attack_frames["down"] = _slice_attack_sheet_row(PLAYER_ATTACK_ROW_DOWN, frame_width, frame_height)
+	_attack_frames["up"] = _slice_attack_sheet_row(PLAYER_ATTACK_ROW_UP, frame_width, frame_height)
+	_attack_frames["left"] = _slice_attack_sheet_row(PLAYER_ATTACK_ROW_LEFT, frame_width, frame_height)
+	_attack_frames["death"] = _slice_attack_sheet_row(PLAYER_ATTACK_ROW_DEATH, frame_width, frame_height)
+
+func _slice_attack_sheet_row(row: int, frame_width: int, frame_height: int) -> Array[Texture2D]:
+	var frames: Array[Texture2D] = []
+	for col in range(PLAYER_ATTACK_SHEET_COLUMNS):
+		var atlas := AtlasTexture.new()
+		atlas.atlas = _attack_sheet
+		atlas.region = Rect2(col * frame_width, row * frame_height, frame_width, frame_height)
+		frames.append(atlas)
+	return frames
+
 func _load_png_texture(path: String) -> Texture2D:
 	var resource := load(path) as Texture2D
 	if resource != null:
@@ -632,7 +682,16 @@ func _update_xianxia_animation(_delta: float) -> void:
 	var run_frames: Array = state.get("run_frames", [])
 	var idle_frames: Array = state.get("idle_frames", [])
 	body.flip_h = bool(state.get("flip_h", false))
-	if moving or is_dashing:
+
+	if attack_visual_timer > 0.0:
+		var attack_frames := _get_attack_frames_for_direction(last_facing_direction)
+		if not attack_frames.is_empty():
+			var progress := 1.0 - (attack_visual_timer / ATTACK_VISUAL_DURATION)
+			var frame_idx := mini(int(progress * attack_frames.size()), attack_frames.size() - 1)
+			body.texture = attack_frames[frame_idx]
+			if absf(last_facing_direction.x) > absf(last_facing_direction.y):
+				body.flip_h = last_facing_direction.x < 0
+	elif moving or is_dashing:
 		_run_anim_timer -= _delta
 		if _run_anim_timer <= 0.0:
 			_run_anim_frame = (_run_anim_frame + 1) % maxi(run_frames.size(), 1)
@@ -654,7 +713,14 @@ func _update_xianxia_animation(_delta: float) -> void:
 			body.texture = idle_frames[_idle_anim_frame % idle_frames.size()]
 	_sync_body_scale()
 	var walk_bob := sin(visual_time * 7.0) * 0.7 if moving else sin(visual_time * 3.0) * 0.45
-	body.position = Vector2(0.0, walk_bob)
+	if attack_visual_timer > 0.0 and hurt_pulse_timer <= 0.0:
+		var progress := 1.0 - (attack_visual_timer / ATTACK_VISUAL_DURATION)
+		var arc := sin(progress * PI)
+		body.position = last_facing_direction * arc * 5.0 + Vector2(0.0, walk_bob)
+		var squish := Vector2(1.0 - arc * 0.10, 1.0 + arc * 0.07)
+		body.scale = normal_body_scale * squish
+	else:
+		body.position = Vector2(0.0, walk_bob)
 	if robe_sash_visual != null:
 		robe_sash_visual.position = Vector2(sin(visual_time * 8.0) * (1.2 if moving else 0.35), walk_bob)
 
@@ -812,15 +878,38 @@ func _on_damaged(_amount: int) -> void:
 	damage_ring.modulate.a = 1.0
 	damage_ring_timer = 0.2
 
+func _update_death_animation(delta: float) -> void:
+	var death_frames: Array = _attack_frames.get("death", [])
+	if death_frames.is_empty():
+		if _attack_frames.is_empty():
+			_build_attack_frames()
+		death_frames = _attack_frames.get("death", [])
+	if death_frames.is_empty():
+		return
+	if _death_anim_frame < death_frames.size() - 1:
+		_death_anim_timer += delta
+		if _death_anim_timer >= 1.0 / DEATH_ANIM_FPS:
+			_death_anim_timer = 0.0
+			_death_anim_frame += 1
+	body.texture = death_frames[_death_anim_frame]
+	body.flip_h = false
+	body.position = Vector2.ZERO
+	body.scale = normal_body_scale
+	_sync_body_scale()
+
 func _on_died() -> void:
 	is_defeated = true
 	is_defending = false
 	is_exhausted = false
-	body.modulate = Color(0.45, 0.45, 0.45, 1.0)
+	body.modulate = Color.WHITE
 	body.scale = normal_body_scale
 	guard_ring.visible = false
 	damage_ring.visible = false
 	attack_preview.visible = false
+	_death_anim_frame = 0
+	_death_anim_timer = 0.0
+	if sword_mount != null:
+		sword_mount.visible = false
 
 func apply_incoming_damage(amount: int) -> void:
 	if amount <= 0:

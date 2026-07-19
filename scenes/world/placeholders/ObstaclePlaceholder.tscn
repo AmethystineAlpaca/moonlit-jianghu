@@ -1,16 +1,27 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://5sxffvxsdjus"]
 
-[ext_resource type="Script" path="res://scripts/world/PlaceholderObstacle.gd" id="1_obstacle"]
+[ext_resource type="Script" uid="uid://dse4jiq4ldb8u" path="res://scripts/world/PlaceholderObstacle.gd" id="1_obstacle"]
+[ext_resource type="Texture2D" uid="uid://b2uoyugwpuluo" path="res://assets/xianxia/rock.png" id="2_1y1q2"]
 
-[node name="ObstaclePlaceholder" type="StaticBody2D"]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_kl7jg"]
+radius = 22.0
+height = 64.0
+
+[node name="ObstaclePlaceholder" type="StaticBody2D" unique_id=955792195]
 script = ExtResource("1_obstacle")
-size = Vector2(96, 96)
-collision_size = Vector2(64, 44)
 color = Color(0.43, 0.45, 0.43, 1)
-visual_style = "stone"
+collision_size = Vector2(64, 44)
 
-[node name="Visual" type="Sprite2D" parent="."]
+[node name="Visual" type="Sprite2D" parent="." unique_id=497844647]
+z_index = 500
+z_as_relative = false
+texture_filter = 1
+texture = ExtResource("2_1y1q2")
 
-[node name="CanopyVisual" type="Sprite2D" parent="."]
+[node name="CanopyVisual" type="Sprite2D" parent="." unique_id=1705811480]
+visible = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=236190104]
+position = Vector2(0, 21)
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_kl7jg")

@@ -12,6 +12,7 @@ extends CharacterBody2D
 @export var knockback_decay: float = 650.0
 @export var recoil_duration: float = 0.16
 @export_enum("enemy", "zombie") var faction: String = "enemy"
+@export_enum("skeleton", "fire_lion") var appearance_style: String = "skeleton"
 @export var dead_body_lifetime: float = 10.0
 @export var dead_body_fade_duration: float = 1.0
 @export var stagger_threshold: float = 3.0
@@ -30,20 +31,72 @@ extends CharacterBody2D
 @export var zombie_body_tint: Color = Color(0.58, 1.0, 0.42, 1.0)
 @export var visual_accent_color: Color = Color(0.98, 0.36, 0.24, 1.0)
 @export var destroy_on_death: bool = false
+@export var fire_lion_day_light_energy: float = 0.02
+@export var fire_lion_night_light_energy: float = 0.24
+@export var fire_lion_light_energy_flicker: float = 0.05
+@export var fire_lion_day_light_scale: float = 1.05
+@export var fire_lion_night_light_scale: float = 1.38
+@export var fire_lion_light_scale_flicker: float = 0.08
+@export var fire_lion_light_red_color: Color = Color(1.0, 0.18, 0.02, 1.0)
+@export var fire_lion_light_orange_color: Color = Color(1.0, 0.48, 0.02, 1.0)
+@export var fire_lion_light_yellow_color: Color = Color(1.0, 0.94, 0.10, 1.0)
 
 @onready var health_component: HealthComponent = $HealthComponent
 @onready var body: Sprite2D = $Body
 @onready var facing_marker: Polygon2D = $FacingMarker
 @onready var hp_bar: ProgressBar = $HPBar
+@onready var enemy_accent_light: PointLight2D = get_node_or_null("EnemyAccentLight") as PointLight2D
 var active_warning_node: Node2D = null
 
 const SKELETON_IDLE_TEXTURE := preload("res://assets/xianxia/skeleton_idle.png")
 const SKELETON_CORPSE_TEXTURE := preload("res://assets/xianxia/skeleton_corpse.png")
-const ENEMY_IDLE_TEXTURE := preload("res://assets/xianxia/evil_rogue_enemy_transparent_pack/godot_scaled/enemy_idle.png")
-const ENEMY_LEFT_TEXTURE := preload("res://assets/xianxia/evil_rogue_enemy_transparent_pack/godot_scaled/enemy_left.png")
-const ENEMY_RIGHT_TEXTURE := preload("res://assets/xianxia/evil_rogue_enemy_transparent_pack/godot_scaled/enemy_right.png")
-const ENEMY_UP_TEXTURE := preload("res://assets/xianxia/evil_rogue_enemy_transparent_pack/godot_scaled/enemy_up.png")
-const ENEMY_DOWN_TEXTURE := preload("res://assets/xianxia/evil_rogue_enemy_transparent_pack/godot_scaled/enemy_down.png")
+const ENEMY1_SHEET_PATH := "res://assets/xianxia/enemy1.png"
+const ENEMY1_SHEET_COLUMNS := 6
+const ENEMY1_SHEET_ROWS := 5
+const SKELETON_DISPLAY_SIZE := Vector2(30.0, 32.0)
+const ENEMY1_ROW_DOWN_LEFT := 0
+const ENEMY1_ROW_LEFT := 1
+const ENEMY1_ROW_UP_LEFT := 2
+const ENEMY1_ROW_UP := 3
+const ENEMY1_ROW_DOWN := 4
+const FIRE_LION_SHEET_PATH := "res://assets/xianxia/fire_lion_run_aligned.png"
+const FIRE_LION_SHEET_COLUMNS := 6
+const FIRE_LION_SHEET_ROWS := 5
+const FIRE_LION_DISPLAY_SIZE := Vector2(56.0, 56.0)
+const FIRE_LION_ROW_DOWN_LEFT := 0
+const FIRE_LION_ROW_LEFT := 1
+const FIRE_LION_ROW_UP_LEFT := 2
+const FIRE_LION_ROW_UP := 3
+const FIRE_LION_ROW_DOWN := 4
+const ZOMBIE_SHEET_PATH := "res://assets/xianxia/zombie.png"
+const ZOMBIE_SHEET_COLUMNS := 6
+const ZOMBIE_SHEET_ROWS := 5
+const ZOMBIE_ROW_DOWN_LEFT := 0
+const ZOMBIE_ROW_LEFT := 1
+const ZOMBIE_ROW_UP_LEFT := 2
+const ZOMBIE_ROW_UP := 3
+const ZOMBIE_ROW_DOWN := 4
+const ENEMY_ATTACK_SHEET_PATH := "res://assets/xianxia/enemy_attack.png"
+const ENEMY_ATTACK_SHEET_COLUMNS := 6
+const ENEMY_ATTACK_SHEET_ROWS := 5
+const ENEMY_ATTACK_ROW_DOWN := 0
+const ENEMY_ATTACK_ROW_SIDE := 1
+const ENEMY_ATTACK_ROW_UP := 2
+const ENEMY_ATTACK_VISUAL_DURATION: float = 0.16
+const DIAGONAL_MIN_DEGREES: float = 40.0
+const DIAGONAL_MAX_DEGREES: float = 50.0
+
+var _enemy1_sheet: Texture2D
+var _enemy1_frames: Dictionary = {}
+var _fire_lion_sheet: Texture2D
+var _fire_lion_frames: Dictionary = {}
+var _zombie_sheet: Texture2D
+var _zombie_frames: Dictionary = {}
+var _enemy_attack_sheet: Texture2D
+var _enemy_attack_frames: Dictionary = {}
+var _enemy_attack_anim_timer: float = 0.0
+var _enemy_attack_anim_duration: float = 0.0
+var _fire_lion_light_texture: Texture2D
 
 var soul_accent_visual: Polygon2D
 var bone_weapon_visual: Polygon2D
@@ -73,12 +126,22 @@ var _run_anim_timer: float = 0.0
 var _run_anim_frame: int = 0
 const RUN_ANIM_FPS: float = 7.0
 var attack_snap_timer: float = 0.0
+var _pre_slide_velocity: Vector2 = Vector2.ZERO
+var _fire_lion_light_phase: float = 0.0
+var _night_ambience: CanvasItem
 
 func _ready() -> void:
 	add_to_group("enemies")
+	_enemy1_sheet = load(ENEMY1_SHEET_PATH) as Texture2D
+	_fire_lion_sheet = _load_texture_from_path(FIRE_LION_SHEET_PATH)
+	_zombie_sheet = load(ZOMBIE_SHEET_PATH) as Texture2D
+	_enemy_attack_sheet = load(ENEMY_ATTACK_SHEET_PATH) as Texture2D
+	_fire_lion_light_texture = _build_fire_lion_light_texture()
 	_setup_skeleton_visuals()
 	_assign_faction_groups()
 	_apply_faction_visuals()
+	_fire_lion_light_phase = randf() * TAU
+	_night_ambience = _find_night_ambience()
 	normal_body_scale = body.scale
 	body.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	home_position = global_position
@@ -87,9 +150,14 @@ func _ready() -> void:
 	health_component.damaged.connect(_on_damaged)
 	health_component.died.connect(_on_died)
 	_on_health_changed(health_component.current_health, health_component.max_health)
+	_update_fire_lion_light(0.0)
+
+func _process(delta: float) -> void:
+	visual_time += delta
+	_update_fire_lion_light(delta)
 
 func _physics_process(delta: float) -> void:
-	visual_time += delta
+	z_index = int(position.y) + 500
 	if is_dying:
 		_update_skeleton_animation(delta)
 		_update_death_flight(delta)
@@ -161,6 +229,7 @@ func _physics_process(delta: float) -> void:
 		velocity = knockback_velocity
 		_update_attack_windup(delta)
 
+	_pre_slide_velocity = velocity
 	move_and_slide()
 	_update_skeleton_animation(delta)
 
@@ -199,6 +268,8 @@ func is_attack_target_active() -> bool:
 	return not is_dying
 
 func is_transformable_corpse() -> bool:
+	if appearance_style == "fire_lion":
+		return false
 	return is_dying and not is_queued_for_deletion()
 
 func get_visual_accent_color() -> Color:
@@ -412,6 +483,8 @@ func _update_attack_windup(_delta: float) -> void:
 	if not is_winding_up:
 		is_winding_up = true
 		windup_timer = attack_windup
+		_enemy_attack_anim_duration = attack_windup + ENEMY_ATTACK_VISUAL_DURATION
+		_enemy_attack_anim_timer = _enemy_attack_anim_duration
 		body.scale = normal_body_scale * 1.08
 		facing_marker.color = Color(1.0, 0.35, 0.2, 1.0)
 		if current_target != null and is_instance_valid(current_target) and current_target.is_in_group("player"):
@@ -504,6 +577,8 @@ func _on_died() -> void:
 		return
 
 	is_dying = true
+	if enemy_accent_light != null and appearance_style == "fire_lion":
+		enemy_accent_light.visible = false
 	add_to_group("corpses")
 	remove_from_group("hostile_enemies")
 	remove_from_group("zombies")
@@ -517,10 +592,16 @@ func _on_died() -> void:
 	slammed_bodies.clear()
 	_cancel_windup()
 	hp_bar.visible = false
-	body.texture = SKELETON_CORPSE_TEXTURE
-	body.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	body.modulate = Color(0.62, 0.60, 0.58, 1.0)
-	body.scale = normal_body_scale
+	if appearance_style == "fire_lion":
+		body.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		body.modulate = Color(0.72, 0.68, 0.64, 1.0)
+		body.scale = normal_body_scale
+	else:
+		body.texture = SKELETON_CORPSE_TEXTURE
+		body.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		body.modulate = Color(0.62, 0.60, 0.58, 1.0)
+		body.scale = Vector2.ONE
+		normal_body_scale = Vector2.ONE
 	modulate.a = 1.0
 
 func _build_accent_material() -> CanvasItemMaterial:
@@ -529,7 +610,16 @@ func _build_accent_material() -> CanvasItemMaterial:
 	return mat
 
 func _setup_skeleton_visuals() -> void:
-	body.texture = SKELETON_IDLE_TEXTURE if faction == "zombie" else ENEMY_IDLE_TEXTURE
+	var first_frames := _get_direction_frames("down")
+	if not first_frames.is_empty():
+		body.texture = first_frames[0]
+		var tex_size := first_frames[0].get_size()
+		if tex_size.x > 0.0 and tex_size.y > 0.0:
+			var display_size := _get_display_size()
+			var s := minf(display_size.x / tex_size.x, display_size.y / tex_size.y)
+			body.scale = Vector2(s, s)
+	else:
+		body.texture = SKELETON_IDLE_TEXTURE if faction == "zombie" else null
 	body.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	body.centered = true
 	facing_marker.visible = false
@@ -583,6 +673,75 @@ func _build_skeleton_texture(accent: Color, corrupted: bool) -> Texture2D:
 	_fill_rect(image, Rect2i(14, 16, 4, 2), accent.darkened(0.25))
 	return ImageTexture.create_from_image(image)
 
+func _load_texture_from_path(path: String) -> Texture2D:
+	if ResourceLoader.exists(path):
+		var texture := load(path) as Texture2D
+		if texture != null:
+			return texture
+
+	var image := Image.load_from_file(path)
+	if image == null or image.is_empty():
+		return null
+	var fallback := ImageTexture.create_from_image(image)
+	fallback.take_over_path(path)
+	return fallback
+
+func _find_night_ambience() -> CanvasItem:
+	var world := get_tree().get_first_node_in_group("world")
+	if world == null:
+		return null
+	return world.get_node_or_null("NightAmbience") as CanvasItem
+
+func _is_night_active() -> bool:
+	if _night_ambience == null or not is_instance_valid(_night_ambience):
+		_night_ambience = _find_night_ambience()
+	if _night_ambience == null:
+		return false
+	return _night_ambience.visible
+
+func _update_fire_lion_light(delta: float) -> void:
+	if appearance_style != "fire_lion" or enemy_accent_light == null:
+		return
+	if is_dying:
+		enemy_accent_light.visible = false
+		return
+
+	if delta > 0.0:
+		_fire_lion_light_phase = wrapf(_fire_lion_light_phase + delta * 4.3, 0.0, TAU)
+
+	var is_night := _is_night_active()
+	var base_energy := fire_lion_night_light_energy if is_night else fire_lion_day_light_energy
+	var base_scale := fire_lion_night_light_scale if is_night else fire_lion_day_light_scale
+	var glow_mix := 0.5 + 0.5 * sin(_fire_lion_light_phase)
+	var pulse_mix := 0.5 + 0.5 * sin(_fire_lion_light_phase * 1.83 + 0.9)
+	if _fire_lion_light_texture != null:
+		enemy_accent_light.texture = _fire_lion_light_texture
+	enemy_accent_light.visible = base_energy > 0.001
+	enemy_accent_light.color = _sample_fire_lion_light_color(_fire_lion_light_phase / TAU)
+	enemy_accent_light.energy = maxf(0.0, base_energy + (pulse_mix - 0.5) * 2.0 * fire_lion_light_energy_flicker)
+	enemy_accent_light.texture_scale = maxf(0.1, base_scale + (glow_mix - 0.5) * 2.0 * fire_lion_light_scale_flicker)
+
+func _build_fire_lion_light_texture() -> Texture2D:
+	var size := 256
+	var image := Image.create(size, size, false, Image.FORMAT_RGBA8)
+	var center := Vector2(size * 0.5, size * 0.5)
+	var max_radius := size * 0.5
+	for y in range(size):
+		for x in range(size):
+			var dist := center.distance_to(Vector2(x + 0.5, y + 0.5)) / max_radius
+			var alpha := clampf(exp(-dist * dist * 2.6), 0.0, 1.0)
+			alpha *= clampf(1.0 - smoothstep(0.78, 1.0, dist), 0.0, 1.0)
+			image.set_pixel(x, y, Color(1.0, 1.0, 1.0, alpha))
+	return ImageTexture.create_from_image(image)
+
+func _sample_fire_lion_light_color(phase_ratio: float) -> Color:
+	var t := wrapf(phase_ratio, 0.0, 1.0)
+	if t < 0.33333334:
+		return fire_lion_light_red_color.lerp(fire_lion_light_orange_color, t / 0.33333334)
+	if t < 0.6666667:
+		return fire_lion_light_orange_color.lerp(fire_lion_light_yellow_color, (t - 0.33333334) / 0.33333334)
+	return fire_lion_light_yellow_color.lerp(fire_lion_light_red_color, (t - 0.6666667) / 0.3333333)
+
 func _build_skeleton_corpse_texture(accent: Color) -> Texture2D:
 	var image := Image.create(32, 24, false, Image.FORMAT_RGBA8)
 	image.fill(Color(0, 0, 0, 0))
@@ -598,7 +757,7 @@ func _build_skeleton_corpse_texture(accent: Color) -> Texture2D:
 	return ImageTexture.create_from_image(image)
 
 func _update_skeleton_animation(_delta: float) -> void:
-	var moving := velocity.length() > 8.0
+	var moving := _pre_slide_velocity.length() > 8.0
 	var bob := sin(visual_time * (14.0 if moving else 4.0)) * (1.4 if moving else 0.35)
 	var sway := sin(visual_time * (10.0 if moving else 3.0)) * (0.05 if moving else 0.018)
 	if is_dying:
@@ -616,27 +775,209 @@ func _update_skeleton_animation(_delta: float) -> void:
 	_update_enemy_direction_texture(moving, _delta)
 
 func _update_enemy_direction_texture(moving: bool, delta: float) -> void:
-	if faction == "zombie" or is_dying:
+	if is_dying:
 		return
+
+	var visual_direction := _get_visual_direction_state(facing_direction)
+	var row_key: String = visual_direction.get("row_key", "down")
+	var flip_h: bool = visual_direction.get("flip_h", false)
+
+	body.flip_h = flip_h
+
+	if _enemy_attack_anim_timer > 0.0 and faction != "zombie" and appearance_style != "fire_lion":
+		_enemy_attack_anim_timer -= delta
+		var attack_key: String
+		var attack_flip: bool
+		if absf(facing_direction.x) > absf(facing_direction.y):
+			attack_key = "side"
+			attack_flip = facing_direction.x < 0
+		elif facing_direction.y < 0:
+			attack_key = "up"
+			attack_flip = flip_h
+		else:
+			attack_key = "down"
+			attack_flip = flip_h
+		var attack_frames := _get_enemy_attack_frames(attack_key)
+		if not attack_frames.is_empty():
+			body.flip_h = attack_flip
+			var duration := maxf(_enemy_attack_anim_duration, 0.001)
+			var progress := 1.0 - (_enemy_attack_anim_timer / duration)
+			var frame_idx := mini(int(progress * attack_frames.size()), attack_frames.size() - 1)
+			body.texture = attack_frames[frame_idx]
+			return
+
+	var frames := _get_direction_frames(row_key)
+	if frames.is_empty():
+		return
+
 	if not moving:
-		body.texture = ENEMY_IDLE_TEXTURE
+		body.texture = frames[0]
 		_run_anim_frame = 0
 		_run_anim_timer = 0.0
 		return
+
+	var columns := _get_run_sheet_columns()
 	_run_anim_timer -= delta
 	if _run_anim_timer <= 0.0:
-		_run_anim_frame = (_run_anim_frame + 1) % 2
+		_run_anim_frame = (_run_anim_frame + 1) % columns
 		_run_anim_timer = 1.0 / RUN_ANIM_FPS
-	if _run_anim_frame == 0:
-		body.texture = ENEMY_IDLE_TEXTURE
-		return
-	var abs_x := absf(facing_direction.x)
-	var abs_y := absf(facing_direction.y)
-	if abs_x >= abs_y:
-		body.texture = ENEMY_RIGHT_TEXTURE if facing_direction.x >= 0.0 else ENEMY_LEFT_TEXTURE
-	else:
-		body.texture = ENEMY_DOWN_TEXTURE if facing_direction.y >= 0.0 else ENEMY_UP_TEXTURE
+	body.texture = frames[_run_anim_frame]
 
+func _get_visual_direction_state(direction: Vector2) -> Dictionary:
+	if direction == Vector2.ZERO:
+		return {"row_key": "down", "flip_h": false}
+
+	var d := direction.normalized()
+	var abs_x := absf(d.x)
+	var abs_y := absf(d.y)
+	var angle_from_horizontal := rad_to_deg(atan2(abs_y, abs_x))
+	var use_diagonal := abs_x > 0.001 and abs_y > 0.001 and angle_from_horizontal >= DIAGONAL_MIN_DEGREES and angle_from_horizontal <= DIAGONAL_MAX_DEGREES
+	if use_diagonal:
+		return {
+			"row_key": "up_left" if d.y < 0.0 else "down_left",
+			"flip_h": d.x > 0.0,
+		}
+
+	if abs_x > abs_y:
+		return {
+			"row_key": "left",
+			"flip_h": d.x > 0.0,
+		}
+
+	return {
+		"row_key": "up" if d.y < 0.0 else "down",
+		"flip_h": false,
+	}
+
+func _get_direction_frames(key: String) -> Array[Texture2D]:
+	if faction == "zombie":
+		return _get_zombie_frames(key)
+	if appearance_style == "fire_lion":
+		return _get_fire_lion_frames(key)
+	return _get_enemy1_frames(key)
+
+func _get_display_size() -> Vector2:
+	if appearance_style == "fire_lion":
+		return FIRE_LION_DISPLAY_SIZE
+	return SKELETON_DISPLAY_SIZE
+
+func _get_run_sheet_columns() -> int:
+	if faction == "zombie":
+		return ZOMBIE_SHEET_COLUMNS
+	if appearance_style == "fire_lion":
+		return FIRE_LION_SHEET_COLUMNS
+	return ENEMY1_SHEET_COLUMNS
+
+func _get_enemy1_frames(key: String) -> Array[Texture2D]:
+	if _enemy1_frames.is_empty():
+		_build_enemy1_frames()
+	return _enemy1_frames.get(key, [])
+
+func _get_fire_lion_frames(key: String) -> Array[Texture2D]:
+	if _fire_lion_frames.is_empty():
+		_build_fire_lion_frames()
+	return _fire_lion_frames.get(key, [])
+
+func _build_enemy1_frames() -> void:
+	_enemy1_frames.clear()
+	if _enemy1_sheet == null:
+		return
+	var fw := int(_enemy1_sheet.get_width() / ENEMY1_SHEET_COLUMNS)
+	var fh := int(_enemy1_sheet.get_height() / ENEMY1_SHEET_ROWS)
+	if fw <= 0 or fh <= 0:
+		return
+	_enemy1_frames["down_left"] = _slice_enemy1_row(ENEMY1_ROW_DOWN_LEFT, fw, fh)
+	_enemy1_frames["left"] = _slice_enemy1_row(ENEMY1_ROW_LEFT, fw, fh)
+	_enemy1_frames["up_left"] = _slice_enemy1_row(ENEMY1_ROW_UP_LEFT, fw, fh)
+	_enemy1_frames["up"] = _slice_enemy1_row(ENEMY1_ROW_UP, fw, fh)
+	_enemy1_frames["down"] = _slice_enemy1_row(ENEMY1_ROW_DOWN, fw, fh)
+
+func _build_fire_lion_frames() -> void:
+	_fire_lion_frames.clear()
+	if _fire_lion_sheet == null:
+		return
+	var fw := int(_fire_lion_sheet.get_width() / FIRE_LION_SHEET_COLUMNS)
+	var fh := int(_fire_lion_sheet.get_height() / FIRE_LION_SHEET_ROWS)
+	if fw <= 0 or fh <= 0:
+		return
+	_fire_lion_frames["down_left"] = _slice_fire_lion_row(FIRE_LION_ROW_DOWN_LEFT, fw, fh)
+	_fire_lion_frames["left"] = _slice_fire_lion_row(FIRE_LION_ROW_LEFT, fw, fh)
+	_fire_lion_frames["up_left"] = _slice_fire_lion_row(FIRE_LION_ROW_UP_LEFT, fw, fh)
+	_fire_lion_frames["up"] = _slice_fire_lion_row(FIRE_LION_ROW_UP, fw, fh)
+	_fire_lion_frames["down"] = _slice_fire_lion_row(FIRE_LION_ROW_DOWN, fw, fh)
+
+func _slice_enemy1_row(row: int, fw: int, fh: int) -> Array[Texture2D]:
+	var frames: Array[Texture2D] = []
+	for col in range(ENEMY1_SHEET_COLUMNS):
+		var atlas := AtlasTexture.new()
+		atlas.atlas = _enemy1_sheet
+		atlas.region = Rect2(col * fw, row * fh, fw, fh)
+		frames.append(atlas)
+	return frames
+
+func _slice_fire_lion_row(row: int, fw: int, fh: int) -> Array[Texture2D]:
+	var frames: Array[Texture2D] = []
+	for col in range(FIRE_LION_SHEET_COLUMNS):
+		var atlas := AtlasTexture.new()
+		atlas.atlas = _fire_lion_sheet
+		atlas.region = Rect2(col * fw, row * fh, fw, fh)
+		frames.append(atlas)
+	return frames
+
+func _get_zombie_frames(key: String) -> Array[Texture2D]:
+	if _zombie_frames.is_empty():
+		_build_zombie_frames()
+	return _zombie_frames.get(key, [])
+
+func _build_zombie_frames() -> void:
+	_zombie_frames.clear()
+	if _zombie_sheet == null:
+		return
+	var fw := int(_zombie_sheet.get_width() / ZOMBIE_SHEET_COLUMNS)
+	var fh := int(_zombie_sheet.get_height() / ZOMBIE_SHEET_ROWS)
+	if fw <= 0 or fh <= 0:
+		return
+	_zombie_frames["down_left"] = _slice_zombie_row(ZOMBIE_ROW_DOWN_LEFT, fw, fh)
+	_zombie_frames["left"] = _slice_zombie_row(ZOMBIE_ROW_LEFT, fw, fh)
+	_zombie_frames["up_left"] = _slice_zombie_row(ZOMBIE_ROW_UP_LEFT, fw, fh)
+	_zombie_frames["up"] = _slice_zombie_row(ZOMBIE_ROW_UP, fw, fh)
+	_zombie_frames["down"] = _slice_zombie_row(ZOMBIE_ROW_DOWN, fw, fh)
+
+func _slice_zombie_row(row: int, fw: int, fh: int) -> Array[Texture2D]:
+	var frames: Array[Texture2D] = []
+	for col in range(ZOMBIE_SHEET_COLUMNS):
+		var atlas := AtlasTexture.new()
+		atlas.atlas = _zombie_sheet
+		atlas.region = Rect2(col * fw, row * fh, fw, fh)
+		frames.append(atlas)
+	return frames
+
+
+func _get_enemy_attack_frames(key: String) -> Array[Texture2D]:
+	if _enemy_attack_frames.is_empty():
+		_build_enemy_attack_frames()
+	return _enemy_attack_frames.get(key, [])
+
+func _build_enemy_attack_frames() -> void:
+	_enemy_attack_frames.clear()
+	if _enemy_attack_sheet == null:
+		return
+	var fw := int(_enemy_attack_sheet.get_width() / ENEMY_ATTACK_SHEET_COLUMNS)
+	var fh := int(_enemy_attack_sheet.get_height() / ENEMY_ATTACK_SHEET_ROWS)
+	if fw <= 0 or fh <= 0:
+		return
+	_enemy_attack_frames["down"] = _slice_enemy_attack_row(ENEMY_ATTACK_ROW_DOWN, fw, fh)
+	_enemy_attack_frames["side"] = _slice_enemy_attack_row(ENEMY_ATTACK_ROW_SIDE, fw, fh)
+	_enemy_attack_frames["up"] = _slice_enemy_attack_row(ENEMY_ATTACK_ROW_UP, fw, fh)
+
+func _slice_enemy_attack_row(row: int, fw: int, fh: int) -> Array[Texture2D]:
+	var frames: Array[Texture2D] = []
+	for col in range(ENEMY_ATTACK_SHEET_COLUMNS):
+		var atlas := AtlasTexture.new()
+		atlas.atlas = _enemy_attack_sheet
+		atlas.region = Rect2(col * fw, row * fh, fw, fh)
+		frames.append(atlas)
+	return frames
 
 func _fill_rect(image: Image, rect: Rect2i, fill: Color) -> void:
 	for y in range(rect.position.y, rect.end.y):
@@ -671,6 +1012,8 @@ func settle_dead_body() -> void:
 	corpse_flight_timer = 0.0
 	knockback_velocity = Vector2.ZERO
 	velocity = Vector2.ZERO
+	collision_layer = 0
+	collision_mask = 0
 	var world := get_tree().get_first_node_in_group("world")
 	if world != null and world.has_method("register_navigation_obstacle"):
 		world.register_navigation_obstacle(self)

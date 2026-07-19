@@ -11,8 +11,9 @@ const PIXEL_SURFACE := preload("res://scripts/world/PixelSurface.gd")
 @export var short_variants: int = 4
 @export var tall_variants: int = 1
 @export var back_layer_z: int = 0
-@export var front_layer_z: int = 4
+@export var front_layer_z: int = 0
 @export var obstacle_padding: float = 12.0
+@export var house_obstacle_padding: float = 22.0
 @export var region_padding: float = 4.0
 @export var edge_bleed: float = 20.0
 @export var edge_bleed_density: float = 1.0
@@ -23,7 +24,8 @@ var _front_layer: Node2D
 var _shared_material: ShaderMaterial
 
 func _ready() -> void:
-	_generate()
+	if Engine.is_editor_hint():
+		_generate()
 
 func _generate() -> void:
 	_clear_layers()
@@ -72,17 +74,36 @@ func _populate_region(region: Rect2, textures: Array, exclusions: Array[Rect2], 
 		x += cell_size
 
 func _spawn_tuft(pos: Vector2, tex: Texture2D, tuft_scale: Vector2, rng: RandomNumberGenerator) -> void:
-	var sprite := Sprite2D.new()
-	sprite.texture = tex
-	sprite.material = _shared_material
-	sprite.position = pos
-	sprite.offset = Vector2(0.0, -float(tex.get_height()) * 0.5)
-	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	sprite.scale = tuft_scale
-	if rng.randf() < 0.5:
-		sprite.flip_h = true
-	var parent := _front_layer if rng.randf() < 0.35 else _back_layer
-	parent.add_child(sprite)
+	var h := float(tex.get_height())
+	var w := float(tex.get_width())
+	var flip := rng.randf() < 0.5
+
+	# Full blade — always behind the player.
+	var back := Sprite2D.new()
+	back.texture = tex
+	back.material = _shared_material
+	back.position = pos
+	back.offset = Vector2(0.0, -h * 0.5)
+	back.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	back.scale = tuft_scale
+	back.flip_h = flip
+	_back_layer.add_child(back)
+
+	# Bottom strip only — y-sorted so it appears in front of the player's feet,
+	# but never tall enough to reach the face.
+	const FRONT_PX: int = 5
+	var front := Sprite2D.new()
+	front.texture = tex
+	front.region_enabled = true
+	front.region_rect = Rect2(0.0, h - FRONT_PX, w, FRONT_PX)
+	front.position = pos
+	front.offset = Vector2(0.0, -FRONT_PX * 0.5)
+	front.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	front.scale = tuft_scale
+	front.flip_h = flip
+	front.z_as_relative = false
+	front.z_index = int(pos.y) + 500
+	_front_layer.add_child(front)
 
 func _get_tuft_rect(pos: Vector2, tex: Texture2D, tuft_scale: Vector2) -> Rect2:
 	var scaled_size := Vector2(tex.get_width(), tex.get_height()) * tuft_scale.abs()
@@ -118,23 +139,28 @@ func _ensure_layers() -> void:
 func _clear_layers() -> void:
 	for child in get_children():
 		remove_child(child)
-		child.queue_free()
+		child.free()
 
 func _collect_grassland_regions() -> Array[Rect2]:
 	var rects: Array[Rect2] = []
 	var parent := get_parent()
 	if parent == null:
 		return rects
+	if "map_half_size" in parent:
+		var half = parent.map_half_size
+		if half is Vector2:
+			rects.append(Rect2(-half, half * 2.0))
+			return rects
 	for child in parent.get_children():
-		if not child is TextureRect:
-			continue
 		var kind := ""
 		if "surface_kind" in child:
 			kind = child.surface_kind
 		elif child.has_meta("surface_kind"):
 			kind = child.get_meta("surface_kind")
 		if kind == "grassland":
-			rects.append(_texture_rect_world_rect(child))
+			var rect := _get_surface_world_rect(child)
+			if rect.size != Vector2.ZERO:
+				rects.append(rect)
 	return rects
 
 func _collect_exclusion_rects() -> Array[Rect2]:
@@ -149,8 +175,8 @@ func _collect_exclusion_rects() -> Array[Rect2]:
 func _collect_rect_from(node: Node, rects: Array[Rect2]) -> void:
 	if node == self:
 		return
-	if node is TextureRect:
-		_collect_texture_rect(node as TextureRect, rects)
+	if node is TextureRect or node is Sprite2D:
+		_collect_surface_rect(node, rects)
 		return
 	if node.name in [&"Buildings", &"Landmarks", &"Trees", &"Boundaries", &"Breakables"]:
 		for ch in node.get_children():
@@ -159,19 +185,36 @@ func _collect_rect_from(node: Node, rects: Array[Rect2]) -> void:
 	if node is Node2D:
 		_collect_obstacle_rect(node as Node2D, rects)
 
-func _collect_texture_rect(tr: TextureRect, rects: Array[Rect2]) -> void:
-	if not ("surface_kind" in tr):
+func _collect_surface_rect(node: Node, rects: Array[Rect2]) -> void:
+	if not ("surface_kind" in node):
 		return
-	var kind: String = tr.surface_kind
+	var kind: String = node.surface_kind
 	if kind != "path" and kind != "stone":
 		return
-	var world_rect := _texture_rect_world_rect(tr)
+	var world_rect := _get_surface_world_rect(node)
+	if world_rect.size == Vector2.ZERO:
+		return
 	var pad := Vector2(obstacle_padding, obstacle_padding)
 	rects.append(Rect2(world_rect.position - pad, world_rect.size + pad * 2.0))
+
+func _get_surface_world_rect(node: Node) -> Rect2:
+	if node is TextureRect:
+		return _texture_rect_world_rect(node as TextureRect)
+	if node is Sprite2D:
+		return _sprite_world_rect(node as Sprite2D)
+	return Rect2()
 
 func _texture_rect_world_rect(tr: TextureRect) -> Rect2:
 	var top_left := Vector2(tr.offset_left, tr.offset_top)
 	var size := Vector2(tr.offset_right - tr.offset_left, tr.offset_bottom - tr.offset_top)
+	return Rect2(top_left, size)
+
+func _sprite_world_rect(sprite: Sprite2D) -> Rect2:
+	if sprite.texture == null:
+		return Rect2()
+	var size := sprite.texture.get_size() * sprite.scale.abs()
+	var offset := sprite.offset * sprite.scale
+	var top_left := sprite.global_position - size * 0.5 + offset
 	return Rect2(top_left, size)
 
 func _get_map_bounds() -> Rect2:
@@ -207,18 +250,34 @@ func _get_node_exclusion_rect(n: Node2D) -> Rect2:
 	if not has_rect:
 		return Rect2()
 
-	var pad := Vector2.ONE * obstacle_padding
+	var pad_value := house_obstacle_padding if _is_house_obstacle(n) else obstacle_padding
+	var pad := Vector2.ONE * pad_value
 	return Rect2(rect.position - pad, rect.size + pad * 2.0)
 
 func _get_visual_sprite_rect(n: Node2D) -> Rect2:
-	var sprite := n.get_node_or_null("Visual") as Sprite2D
-	if sprite == null or sprite.texture == null:
-		return Rect2()
+	var rect := Rect2()
+	var has_rect := false
+	for node_name in ["Visual", "CanopyVisual"]:
+		var sprite := n.get_node_or_null(node_name) as Sprite2D
+		if sprite == null or sprite.texture == null or not sprite.visible:
+			continue
+		var sprite_rect := _get_sprite_rect(sprite)
+		if sprite_rect.size == Vector2.ZERO:
+			continue
+		rect = sprite_rect if not has_rect else rect.merge(sprite_rect)
+		has_rect = true
+	return rect if has_rect else Rect2()
 
-	var size := Vector2(sprite.texture.get_width(), sprite.texture.get_height()) * sprite.scale.abs()
+func _get_sprite_rect(sprite: Sprite2D) -> Rect2:
+	var size := sprite.texture.get_size() * sprite.scale.abs()
 	var offset := sprite.offset * sprite.scale
 	var top_left := sprite.global_position - size * 0.5 + offset
 	return Rect2(top_left, size)
+
+func _is_house_obstacle(n: Node2D) -> bool:
+	if "visual_style" in n:
+		return n.visual_style == "house"
+	return false
 
 func _get_node_size(n: Node2D) -> Vector2:
 	if "collision_size" in n:

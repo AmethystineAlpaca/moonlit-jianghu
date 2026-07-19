@@ -22,6 +22,7 @@ func _initialize() -> void:
 	await _test_placeholder_obstacles_use_pixel_sprites()
 	await _test_tree_placeholder_uses_large_passable_tree_texture()
 	await _test_house_placeholder_uses_shrine_texture()
+	await _test_world_uses_curated_house_layout()
 	await _test_breakable_crate_uses_pixel_sprite()
 	await _test_breakable_crate_renders_as_tree()
 	quit(failures)
@@ -105,6 +106,23 @@ func _test_house_placeholder_uses_shrine_texture() -> void:
 		_assert_true(visual.texture.resource_path.ends_with("shrine.png"), "house placeholder uses shrine sprite")
 
 	house.free()
+
+func _test_world_uses_curated_house_layout() -> void:
+	var world := WORLD_SCENE.instantiate()
+	root.add_child(world)
+	await process_frame
+
+	var buildings := world.get_node("Buildings")
+	_assert_equal(buildings.get_child_count(), 6, "world uses the fixed six-house layout")
+	for child in buildings.get_children():
+		var house := child as Node2D
+		var visual := house.get_node("Visual") as Sprite2D
+		_assert_true(visual.texture is AtlasTexture, "%s uses an atlas-cut house texture" % house.name)
+		if visual.texture is AtlasTexture:
+			var atlas := visual.texture as AtlasTexture
+			_assert_true(atlas.atlas.resource_path.ends_with("houses.png"), "%s is sourced from houses.png" % house.name)
+
+	world.free()
 
 func _test_breakable_crate_uses_pixel_sprite() -> void:
 	var crate := CRATE_SCENE.instantiate()

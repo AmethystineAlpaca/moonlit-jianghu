@@ -5,6 +5,7 @@ const SPARKLE_TEXTURE := preload("res://assets/xianxia/pixel_night_assets/sparkl
 const MOONLIGHT_PATCH_TEXTURE := preload("res://assets/xianxia/pixel_night_assets/moonlight_patch.png")
 
 const FIREFLY_LIGHT_COUNT := 9
+const FIREFLY_LIGHT_TEXTURE_SCALE := 10.0
 
 # 3×3 grid offsets in normalized [-1, 1] space
 const GRID: Array = [
@@ -133,8 +134,8 @@ func _configure_fireflies() -> void:
 	material.initial_velocity_min = 0.5
 	material.initial_velocity_max = 1.6
 	material.gravity = Vector3.ZERO
-	material.scale_min = 0.117
-	material.scale_max = 0.20
+	material.scale_min = 0.039
+	material.scale_max = 0.067
 	material.turbulence_enabled = true
 	material.turbulence_noise_strength = 1.4
 	material.turbulence_noise_scale = 2.0
@@ -228,7 +229,7 @@ func _setup_firefly_lights() -> void:
 		var light := PointLight2D.new()
 		light.name = "FireflyLight%d" % (i + 1)
 		light.texture = light_texture
-		light.texture_scale = 10.0
+		light.texture_scale = FIREFLY_LIGHT_TEXTURE_SCALE
 		light.energy = 0.22
 		light.color = FIREFLY_LIGHT_COLORS[i]
 		light.blend_mode = Light2D.BLEND_MODE_ADD

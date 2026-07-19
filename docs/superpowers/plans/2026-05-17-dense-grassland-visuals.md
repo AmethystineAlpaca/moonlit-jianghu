@@ -102,7 +102,7 @@ Expected: FAIL. The grassland surface is currently transparent, tuft coverage is
 
 - [ ] **Step 3: Commit is skipped**
 
-Do not run `git commit`; `/Users/ming/gaame` is not currently a git repository.
+Do not run `git commit`; `<repo>` is not currently a git repository.
 
 ### Task 2: Green Grassland Base Texture
 
@@ -285,7 +285,7 @@ Expected: The game opens. The four grassland corner regions render as green mead
 
 - [ ] **Step 3: Commit is skipped**
 
-Do not run `git commit`; `/Users/ming/gaame` is not currently a git repository.
+Do not run `git commit`; `<repo>` is not currently a git repository.
 
 ## Self-Review
 
@@ -295,4 +295,4 @@ Placeholder scan: no red-flag placeholder instructions remain. Each code edit in
 
 Type consistency: the plan uses existing Godot classes and names: `PixelSurface.gd`, `create_grass_tuft(size: Vector2i, seed_value: int)`, `Grassland.gd`, `cell_size`, `jitter`, `short_tuft_size`, `tall_tuft_size`, `short_variants`, `tall_variants`, `_spawn_tuft()`, `_front_layer`, and `_back_layer`.
 
-Git note: commits are omitted because `/Users/ming/gaame` is not currently a git repository.
+Git note: commits are omitted because `<repo>` is not currently a git repository.

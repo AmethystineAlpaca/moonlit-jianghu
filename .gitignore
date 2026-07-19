@@ -1,7 +1,14 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+.DS_Store
+**/.DS_Store
+__pycache__/
+*.pyc
+/docs/showcase/images/*.png.import
+/scripts/tools/capture_showcase.gd.uid
 
 # Build outputs
 /test/
 /test.zip
+/out/
