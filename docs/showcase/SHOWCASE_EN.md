@@ -1,4 +1,4 @@
-# gaame
+# Moonlit Jianghu
 
 An unfinished Godot 4 top-down action RPG prototype with a retro xianxia mood.
 
@@ -10,8 +10,8 @@ This project is not a finished game. It is a playable snapshot of an experiment:
 
 Release exports can be generated into `out/`:
 
-- `out/gaame-macos.zip`
-- `out/gaame-windows.exe`
+- `out/moonlit-jianghu-macos.zip`
+- `out/moonlit-jianghu-windows.exe`
 
 Build artifacts are intentionally ignored by git. Attach them to a GitHub Release or upload them to a game page instead of committing them directly.
 
@@ -61,12 +61,12 @@ Export macOS:
 
 ```bash
 mkdir -p out
-godot --headless --path . --export-release "macOS" out/gaame-macos.zip
+godot --headless --path . --export-release "macOS" out/moonlit-jianghu-macos.zip
 ```
 
 Export Windows:
 
 ```bash
 mkdir -p out
-godot --headless --path . --export-release "Windows Desktop" out/gaame-windows.exe
+godot --headless --path . --export-release "Windows Desktop" out/moonlit-jianghu-windows.exe
 ```

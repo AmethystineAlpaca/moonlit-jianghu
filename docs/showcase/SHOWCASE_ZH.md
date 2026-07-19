@@ -1,4 +1,4 @@
-# gaame
+# Moonlit Jianghu
 
 一个未完成的 Godot 4 俯视角动作 RPG 原型，方向是复古像素 + 修仙氛围。
 
@@ -10,8 +10,8 @@
 
 导出的文件会放在 `out/`：
 
-- `out/gaame-macos.zip`
-- `out/gaame-windows.exe`
+- `out/moonlit-jianghu-macos.zip`
+- `out/moonlit-jianghu-windows.exe`
 
 构建产物不会提交到 git。更适合把它们放到 GitHub Release，或者上传到 itch.io 这样的游戏页面。
 
@@ -61,12 +61,12 @@ godot --path .
 
 ```bash
 mkdir -p out
-godot --headless --path . --export-release "macOS" out/gaame-macos.zip
+godot --headless --path . --export-release "macOS" out/moonlit-jianghu-macos.zip
 ```
 
 导出 Windows：
 
 ```bash
 mkdir -p out
-godot --headless --path . --export-release "Windows Desktop" out/gaame-windows.exe
+godot --headless --path . --export-release "Windows Desktop" out/moonlit-jianghu-windows.exe
 ```
