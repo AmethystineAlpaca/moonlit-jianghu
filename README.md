@@ -1,5 +1,10 @@
 # Moonlit Jianghu
 
+[![English](https://img.shields.io/badge/Language-English-2f6feb)](README.md)
+[![中文](https://img.shields.io/badge/语言-中文-d73a49)](README.zh.md)
+[![日本語](https://img.shields.io/badge/言語-日本語-6f42c1)](README.ja.md)
+[![Русский](https://img.shields.io/badge/Язык-Русский-22863a)](README.ru.md)
+
 **A tiny East Asian fantasy action RPG prototype made in Godot 4.**
 
 Wander through an Asian historical fantasy village that shifts between bright grassland and cold moonlight, draw a blade against wandering spirits, dash past fire-lit beasts, and test the first pieces of a survival-action combat loop inspired by wuxia, xianxia, Chinese-inspired fantasy, and classic top-down RPGs.
