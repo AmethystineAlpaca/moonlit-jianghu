@@ -1,21 +1,24 @@
 # Moonlit Jianghu
 
-**A tiny moonlit xianxia action RPG prototype made in Godot 4.**
+**A tiny East Asian fantasy action RPG prototype made in Godot 4.**
 
-Wander through a village that shifts between bright grassland and cold moonlight, draw a blade against wandering spirits, dash past fire-lit beasts, and test the first pieces of a survival-action combat loop inspired by wuxia and xianxia fantasy.
+Wander through an Asian historical fantasy village that shifts between bright grassland and cold moonlight, draw a blade against wandering spirits, dash past fire-lit beasts, and test the first pieces of a survival-action combat loop inspired by wuxia, xianxia, Chinese-inspired fantasy, and classic top-down RPGs.
 
 ![Moonlit Jianghu fire lion encounter](docs/showcase/images/02-day-fire-lion-encounter.png)
 
 ## Why This Exists
 
-Moonlit Jianghu is an unfinished but playable snapshot: a preserved prototype of a top-down pixel-art action RPG with day-night switching, melee combat, hostile creatures, inventory UI, and a small handcrafted village map.
+Moonlit Jianghu is an unfinished but playable snapshot: a preserved prototype of a top-down pixel-art action RPG with day-night switching, melee combat, hostile creatures, inventory UI, and a small handcrafted village map. It sits somewhere between Asian fantasy RPG, Godot indie game, wuxia combat sketch, and atmospheric pixel-art experiment.
+
+中文简介：这是一个 Godot 4 制作的俯视角像素动作 RPG 原型，带有亚洲古风、武侠、仙侠、江湖、东方幻想、古风村庄、昼夜切换、近战战斗和独立游戏实验气质。
 
 It is not a polished commercial release. It is a mood piece, a combat sketch, and a visual experiment that reached the point where it deserved to be shown.
 
 ## Highlights
 
 - **Day-night village mood** that can be switched in-game with `P`, moving between bright green grassland and a colder moonlit atmosphere.
-- **Xianxia village scenery** with tiled ground, lantern-lit buildings, trees, rocks, breakables, and drifting magical particles.
+- **Asian historical fantasy scenery** with tiled ground, lantern-lit buildings, trees, rocks, breakables, and drifting magical particles.
+- **Wuxia / xianxia flavor** with a sword-bearing hero, supernatural enemies, cultivation-fantasy mood, and old-world village silhouettes.
 - **Snappy top-down combat** with movement, dash, melee attacks, guard timing, stamina pressure, hit flashes, knockback, and impact feedback.
 - **Enemy encounters** featuring skeletal attackers, zombies, fast enemies, and a blazing fire-lion variant.
 - **Skill bar and inventory overlay** with equipment slots, bag slots, and simple prototype RPG affordances.
@@ -91,7 +94,9 @@ No open-source license has been selected yet. Until a license is added, the code
 
 ## Discovery Keywords
 
-`godot` `godot-4` `pixel-art` `xianxia` `wuxia` `action-rpg` `top-down` `indie-game` `game-prototype` `fantasy-rpg` `sprite-sheet` `ai-art-workflow`
+`godot` `godot-4` `gdscript` `pixel-art` `2d-game` `top-down` `action-rpg` `fantasy-rpg` `indie-game` `game-prototype` `asian-fantasy` `east-asian-fantasy` `chinese-fantasy` `wuxia` `xianxia` `jianghu` `ancient-asia` `jrpg-inspired` `sprite-sheet` `ai-art-workflow`
+
+中文关键词：`Godot 游戏` `Godot 4` `像素游戏` `像素风` `俯视角` `动作 RPG` `独立游戏` `游戏原型` `亚洲古风` `东方幻想` `古风游戏` `武侠` `仙侠` `江湖` `修仙` `中国风` `古风村庄` `昼夜切换` `近战战斗` `素材工作流`
 
 ## Asset Workflow Notes
 
