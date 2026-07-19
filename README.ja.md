@@ -1,9 +1,6 @@
 # Moonlit Jianghu
 
-[![English](https://img.shields.io/badge/Language-English-2f6feb)](README.md)
-[![中文](https://img.shields.io/badge/语言-中文-d73a49)](README.zh.md)
-[![日本語](https://img.shields.io/badge/言語-日本語-6f42c1)](README.ja.md)
-[![Русский](https://img.shields.io/badge/Язык-Русский-22863a)](README.ru.md)
+[English](README.md) | [中文](README.zh.md) | [日本語](README.ja.md) | [Русский](README.ru.md)
 
 **Godot 4 で作られた、東アジア幻想風の見下ろし型ピクセルアート・アクションRPGプロトタイプ。**
 
