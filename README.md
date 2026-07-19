@@ -98,6 +98,14 @@ No open-source license has been selected yet. Until a license is added, the code
 
 中文关键词：`Godot 游戏` `Godot 4` `像素游戏` `像素风` `俯视角` `动作 RPG` `独立游戏` `游戏原型` `亚洲古风` `东方幻想` `古风游戏` `武侠` `仙侠` `江湖` `修仙` `中国风` `古风村庄` `昼夜切换` `近战战斗` `素材工作流`
 
+日本語キーワード：`Godot ゲーム` `ピクセルアート` `ドット絵` `見下ろし型` `アクションRPG` `インディーゲーム` `ゲームプロトタイプ` `アジア幻想` `東洋ファンタジー` `武侠` `仙侠` `昼夜切り替え`
+
+Русские ключевые слова: `Godot игра` `пиксельная графика` `вид сверху` `action RPG` `инди игра` `прототип игры` `азиатское фэнтези` `восточное фэнтези` `уся` `сянься` `смена дня и ночи`
+
+한국어 키워드: `Godot 게임` `픽셀 아트` `탑다운` `액션 RPG` `인디 게임` `게임 프로토타입` `동양 판타지` `무협` `선협` `낮밤 전환`
+
+Palabras clave en español: `juego Godot` `pixel art` `vista cenital` `RPG de acción` `juego indie` `prototipo de juego` `fantasía asiática` `fantasía oriental` `cambio día noche`
+
 ## Asset Workflow Notes
 
 This repo includes small utilities for cleaning generated sprite sheets:
