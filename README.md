@@ -5,29 +5,35 @@
 [![日本語](https://img.shields.io/badge/言語-日本語-6f42c1)](README.ja.md)
 [![Русский](https://img.shields.io/badge/Язык-Русский-22863a)](README.ru.md)
 
-**A tiny East Asian fantasy action RPG prototype made in Godot 4.**
+**A small East Asian fantasy action RPG prototype made in Godot 4.**
 
-Wander through an Asian historical fantasy village that shifts between bright grassland and cold moonlight, draw a blade against wandering spirits, dash past fire-lit beasts, and test the first pieces of a survival-action combat loop inspired by wuxia, xianxia, Chinese-inspired fantasy, and classic top-down RPGs.
+By day, the village is green, quiet, and almost kind. By night, the same paths turn cold blue, lights flicker awake, and things that should have stayed buried begin to move.
 
 ![Moonlit Jianghu fire lion encounter](docs/showcase/images/02-day-fire-lion-encounter.png)
 
-## Why This Exists
+## The Pitch
 
-Moonlit Jianghu is an unfinished but playable snapshot: a preserved prototype of a top-down pixel-art action RPG with day-night switching, melee combat, hostile creatures, inventory UI, and a small handcrafted village map. It sits somewhere between Asian fantasy RPG, Godot indie game, wuxia combat sketch, and atmospheric pixel-art experiment.
+Moonlit Jianghu is a playable top-down pixel-art prototype about a lone sword bearer caught between an ordinary village and a haunted jianghu. It blends wuxia movement, xianxia mood, old-world village scenery, and fast little bursts of action combat.
 
-中文简介：这是一个 Godot 4 制作的俯视角像素动作 RPG 原型，带有亚洲古风、武侠、仙侠、江湖、东方幻想、古风村庄、昼夜切换、近战战斗和独立游戏实验气质。
+This is not a finished game. It is a preserved slice of one: enough to walk, fight, dash, guard, switch day and night, open the inventory, meet hostile creatures, and feel the shape of the world it wanted to become.
 
-It is not a polished commercial release. It is a mood piece, a combat sketch, and a visual experiment that reached the point where it deserved to be shown.
+中文简介：这是一个 Godot 4 制作的俯视角像素动作 RPG 原型，带有亚洲古风、武侠、仙侠、江湖、东方幻想、昼夜切换、近战战斗和独立游戏实验气质。
 
-## Highlights
+## A Little Story
 
-- **Day-night village mood** that can be switched in-game with `P`, moving between bright green grassland and a colder moonlit atmosphere.
-- **Asian historical fantasy scenery** with tiled ground, lantern-lit buildings, trees, rocks, breakables, and drifting magical particles.
-- **Wuxia / xianxia flavor** with a sword-bearing hero, supernatural enemies, cultivation-fantasy mood, and old-world village silhouettes.
-- **Snappy top-down combat** with movement, dash, melee attacks, guard timing, stamina pressure, hit flashes, knockback, and impact feedback.
-- **Enemy encounters** featuring skeletal attackers, zombies, fast enemies, and a blazing fire-lion variant.
-- **Skill bar and inventory overlay** with equipment slots, bag slots, and simple prototype RPG affordances.
-- **AI-assisted pixel-art pipeline** for cleaning, extracting, and aligning generated sprite sheets into Godot-ready transparent assets.
+The village was built on an old road through the jianghu. Travelers once came for tea, shelter, and rumors of immortals in the mountains.
+
+Then the moon changed.
+
+At sunrise, the grass still shines and the houses still look warm. At night, blue fire drifts over the paths, corpses remember how to stand, and a burning lion stalks the edge of the village. The sword bearer has no grand prophecy yet, only a blade, a few unstable skills, and a place that refuses to stay peaceful.
+
+## What You Can Do
+
+- **Switch between day and night** with `P`, changing the village from bright grassland to moonlit danger.
+- **Fight in quick top-down melee** with attacks, guard timing, dash movement, stamina pressure, hit flashes, knockback, and impact feedback.
+- **Face prototype enemies** including skeletal attackers, zombies, fast enemies, and a blazing fire-lion variant.
+- **Explore a compact fantasy village** with tiled paths, lantern-lit buildings, trees, rocks, breakables, particles, and hand-placed landmarks.
+- **Open the inventory overlay** and see the early RPG structure behind the combat prototype.
 
 ![Night fire lion encounter](docs/showcase/images/05-night-fire-lion-encounter.png)
 
@@ -45,15 +51,6 @@ It is not a polished commercial release. It is a mood piece, a combat sketch, an
 | --- |
 | ![Inventory overlay](docs/showcase/images/03-inventory-overlay.png) |
 
-## Play Notes
-
-Local release builds are written to `out/` and are ignored by git. Attach exported builds to a GitHub Release or upload them to a game page rather than committing binaries.
-
-- macOS export: `out/moonlit-jianghu-macos.zip`
-- Windows export: `out/moonlit-jianghu-windows.exe`
-
-Unsigned builds may trigger operating-system security prompts.
-
 ## Controls
 
 - Move: `WASD` or arrow keys
@@ -66,24 +63,15 @@ Unsigned builds may trigger operating-system security prompts.
 - Toggle day/night: `P`
 - Reset scene: `R`
 
-## Showcase Docs
+## Running It
 
-- [English showcase](docs/showcase/SHOWCASE_EN.md)
-- [中文展示文档](docs/showcase/SHOWCASE_ZH.md)
-
-## Build From Source
-
-Requirements:
-
-- Godot `4.6.2`
-
-Run the project:
+This project uses Godot `4.6.2`.
 
 ```bash
 godot --path .
 ```
 
-Export local builds:
+Local release builds can be exported into `out/`, which is ignored by git:
 
 ```bash
 mkdir -p out
@@ -91,24 +79,10 @@ godot --headless --path . --export-release "macOS" out/moonlit-jianghu-macos.zip
 godot --headless --path . --export-release "Windows Desktop" out/moonlit-jianghu-windows.exe
 ```
 
-## Project Status
+Unsigned builds may trigger operating-system security prompts.
 
-This repository is public as an archival prototype. Some tests document older expectations, some systems are intentionally experimental, and not every asset in the tree is used by the current scene.
+## Prototype Status
+
+Moonlit Jianghu is public as an archival prototype and visual showcase. Some tests document older scene expectations, some systems are experimental, and not every asset in the tree is used by the current scene.
 
 No open-source license has been selected yet. Until a license is added, the code and assets are visible for reference but not explicitly granted for reuse.
-
-## Asset Workflow Notes
-
-This repo includes small utilities for cleaning generated sprite sheets:
-
-- [Chroma-key cutout tool](scripts/tools/chroma_key_cutout.py)
-- [White-background run-sheet extractor](scripts/tools/extract_gemini_run_sheet.py)
-
-Example:
-
-```bash
-python3 scripts/tools/chroma_key_cutout.py cutout \
-  --input assets/xianxia/players_gemini_5dir_run_green.png \
-  --output assets/xianxia/players_gemini_5dir_run.png \
-  --despill
-```
