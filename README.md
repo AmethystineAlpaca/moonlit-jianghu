@@ -24,6 +24,30 @@ Then the moon changed.
 
 At sunrise, the grass still shines and the houses still look warm. At night, blue fire drifts over the paths, corpses remember how to stand, and a burning lion stalks the edge of the village. The sword bearer has no grand prophecy yet, only a blade, a few unstable skills, and a place that refuses to stay peaceful.
 
+## Characters & Foes
+
+| The Sword Bearer |
+| --- |
+| ![The Sword Bearer](docs/showcase/images/character-sword-bearer.png) |
+
+**The Sword Bearer** is the prototype hero: a quiet wanderer in pale robes, carrying a blade that looks too bright for a village this cursed. Their story is still unwritten, but the shape is already there: a lone cultivator, a broken road, and a night that keeps testing whether courage is a skill or a habit.
+
+| Bone Wanderer | Ember Runner |
+| --- | --- |
+| ![Bone Wanderer](docs/showcase/images/character-bone-wanderer.png) | ![Ember Runner](docs/showcase/images/character-ember-runner.png) |
+
+**Bone Wanderers** are the old dead of the road, held together by resentment and half-remembered patrol routes. They are slow enough to read, close enough to punish careless attacks, and useful as the first pressure test for the combat loop.
+
+**Ember Runners** are faster, leaner, and meaner. They move like a warning flare through the grass, forcing the player to dash, guard, and reposition instead of standing still and trading blows.
+
+| Ashfire Lion | Green Revenant |
+| --- | --- |
+| ![Ashfire Lion](docs/showcase/images/character-fire-lion.png) | ![Green Revenant](docs/showcase/images/character-green-revenant.png) |
+
+**The Ashfire Lion** is the prototype's signature threat: a burning beast that turns the moonlit road into a danger line. It reads clearly in both day and night, but at night its glow becomes part of the village atmosphere.
+
+**Green Revenants** are bodies pulled back into motion by unstable skill magic. They are not quite enemies and not quite allies in spirit, a hint of the stranger systems this prototype was starting to explore.
+
 ## What You Can Do
 
 - **Switch between day and night** with `P`, changing the village from bright grassland to moonlit danger.

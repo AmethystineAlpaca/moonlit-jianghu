@@ -1,7 +1,10 @@
 extends SceneTree
 
 const MAIN_SCENE := preload("res://scenes/main/Main.tscn")
+const BASIC_ENEMY_SCENE := preload("res://scenes/enemies/BasicEnemy.tscn")
+const FAST_ENEMY_SCENE := preload("res://scenes/enemies/FastEnemy.tscn")
 const FIRE_LION_SCENE := preload("res://scenes/enemies/FireLionEnemy.tscn")
+const ZOMBIE_SCENE := preload("res://scenes/allies/Zombie.tscn")
 const OUTPUT_DIR := "res://docs/showcase/images"
 
 var main: Node
@@ -25,6 +28,7 @@ func _initialize() -> void:
 	await _capture_inventory_scene()
 	await _capture_night_world_scene()
 	await _capture_night_combat_scene()
+	await _capture_character_portraits()
 	quit()
 
 func _settle() -> void:
@@ -40,21 +44,24 @@ func _capture_day_world_overview() -> void:
 func _capture_day_combat_scene() -> void:
 	_set_night(false)
 	player.global_position = Vector2(40, 120)
-	_place_fire_lion(Vector2(115, -8))
+	await _place_fire_lion(Vector2(115, -8))
 	await _settle()
 	_save_viewport("02-day-fire-lion-encounter.png")
 
 func _place_fire_lion(offset: Vector2) -> void:
+	await _place_enemy(FIRE_LION_SCENE, offset)
+
+func _place_enemy(scene: PackedScene, offset: Vector2) -> void:
 	var enemies_parent := world.get_node("Enemies")
 	for child in enemies_parent.get_children():
 		child.queue_free()
 	await process_frame
 
-	var fire_lion := FIRE_LION_SCENE.instantiate() as Node2D
-	fire_lion.global_position = player.global_position + offset
-	enemies_parent.add_child(fire_lion)
-	if fire_lion.has_method("set_survival_mode"):
-		fire_lion.set_survival_mode(false)
+	var enemy := scene.instantiate() as Node2D
+	enemy.global_position = player.global_position + offset
+	enemies_parent.add_child(enemy)
+	if enemy.has_method("set_survival_mode"):
+		enemy.set_survival_mode(false)
 
 func _capture_inventory_scene() -> void:
 	_set_night(false)
@@ -77,9 +84,38 @@ func _capture_night_world_scene() -> void:
 func _capture_night_combat_scene() -> void:
 	_set_night(true)
 	player.global_position = Vector2(40, 120)
-	_place_fire_lion(Vector2(115, -8))
+	await _place_fire_lion(Vector2(115, -8))
 	await _settle()
 	_save_viewport("05-night-fire-lion-encounter.png")
+
+func _capture_character_portraits() -> void:
+	_set_night(false)
+	await _place_enemy(BASIC_ENEMY_SCENE, Vector2(100, -8))
+	await _settle()
+	_save_viewport("character-bone-wanderer.png")
+
+	_set_night(false)
+	await _place_enemy(FAST_ENEMY_SCENE, Vector2(100, -8))
+	await _settle()
+	_save_viewport("character-ember-runner.png")
+
+	_set_night(true)
+	await _place_enemy(FIRE_LION_SCENE, Vector2(115, -8))
+	await _settle()
+	_save_viewport("character-fire-lion.png")
+
+	_set_night(true)
+	await _place_enemy(ZOMBIE_SCENE, Vector2(100, -8))
+	await _settle()
+	_save_viewport("character-green-revenant.png")
+
+	_set_night(false)
+	var enemies_parent := world.get_node("Enemies")
+	for child in enemies_parent.get_children():
+		child.queue_free()
+	player.global_position = Vector2(0, 140)
+	await _settle()
+	_save_viewport("character-sword-bearer.png")
 
 func _set_night(is_night: bool) -> void:
 	var ambience := world.get_node_or_null("NightAmbience")
