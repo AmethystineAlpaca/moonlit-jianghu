@@ -2,35 +2,40 @@
 
 **A tiny moonlit xianxia action RPG prototype made in Godot 4.**
 
-Wander through a haunted village under cold blue light, draw a blade against wandering spirits, dash past fire-lit beasts, and test the first pieces of a survival-action combat loop inspired by wuxia and xianxia fantasy.
+Wander through a village that shifts between bright grassland and cold moonlight, draw a blade against wandering spirits, dash past fire-lit beasts, and test the first pieces of a survival-action combat loop inspired by wuxia and xianxia fantasy.
 
-![Moonlit Jianghu world overview](docs/showcase/images/01-world-overview.png)
+![Moonlit Jianghu fire lion encounter](docs/showcase/images/02-day-fire-lion-encounter.png)
 
 ## Why This Exists
 
-Moonlit Jianghu is an unfinished but playable snapshot: a preserved prototype of a top-down pixel-art action RPG with night ambience, melee combat, hostile creatures, inventory UI, and a small handcrafted village map.
+Moonlit Jianghu is an unfinished but playable snapshot: a preserved prototype of a top-down pixel-art action RPG with day-night switching, melee combat, hostile creatures, inventory UI, and a small handcrafted village map.
 
 It is not a polished commercial release. It is a mood piece, a combat sketch, and a visual experiment that reached the point where it deserved to be shown.
 
 ## Highlights
 
-- **Moonlit xianxia village** with tiled night ground, lantern-lit buildings, trees, rocks, breakables, and drifting magical particles.
+- **Day-night village mood** that can be switched in-game with `P`, moving between bright green grassland and a colder moonlit atmosphere.
+- **Xianxia village scenery** with tiled ground, lantern-lit buildings, trees, rocks, breakables, and drifting magical particles.
 - **Snappy top-down combat** with movement, dash, melee attacks, guard timing, stamina pressure, hit flashes, knockback, and impact feedback.
 - **Enemy encounters** featuring skeletal attackers, zombies, fast enemies, and a blazing fire-lion variant.
 - **Skill bar and inventory overlay** with equipment slots, bag slots, and simple prototype RPG affordances.
 - **AI-assisted pixel-art pipeline** for cleaning, extracting, and aligning generated sprite sheets into Godot-ready transparent assets.
 
-![Fire lion encounter](docs/showcase/images/02-fire-lion-encounter.png)
+![Night fire lion encounter](docs/showcase/images/05-night-fire-lion-encounter.png)
 
 ## Screenshots
 
-| Village | Combat |
+| Day Village | Day Combat |
 | --- | --- |
-| ![Night village](docs/showcase/images/04-night-village.png) | ![Fire lion encounter](docs/showcase/images/02-fire-lion-encounter.png) |
+| ![Day village](docs/showcase/images/01-day-village.png) | ![Day fire lion encounter](docs/showcase/images/02-day-fire-lion-encounter.png) |
 
-| Inventory | Overview |
+| Night Village | Night Combat |
 | --- | --- |
-| ![Inventory overlay](docs/showcase/images/03-inventory-overlay.png) | ![World overview](docs/showcase/images/01-world-overview.png) |
+| ![Night village](docs/showcase/images/04-night-village.png) | ![Night fire lion encounter](docs/showcase/images/05-night-fire-lion-encounter.png) |
+
+| Inventory |
+| --- |
+| ![Inventory overlay](docs/showcase/images/03-inventory-overlay.png) |
 
 ## Play Notes
 
@@ -50,7 +55,7 @@ Unsigned builds may trigger operating-system security prompts.
 - Use selected skill: `Space`
 - Select skills: `1`-`5`
 - Inventory: `M`
-- Toggle night ambience: `P`
+- Toggle day/night: `P`
 - Reset scene: `R`
 
 ## Showcase Docs
