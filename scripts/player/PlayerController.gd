@@ -11,8 +11,8 @@ signal active_skill_slots_changed(active_states: Array)
 @export var acceleration: float = 1200.0
 @export var deceleration: float = 1400.0
 @export var melee_damage: int = 1
-@export var melee_range: float = 38.0
-@export var melee_size: Vector2 = Vector2(54.0, 34.0)
+@export var melee_range: float = 26.0
+@export var melee_size: Vector2 = Vector2(44.0, 34.0)
 @export var melee_cooldown: float = 0.35
 @export var melee_lunge_force: float = 90.0
 @export var melee_knockback_force: float = 420.0
@@ -65,7 +65,7 @@ const PLAYER_UP_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent
 const PLAYER_LEFT_IDLE_TEXTURE_PATH := "res://assets/xianxia/players_gemini_idle_left.png"
 const PLAYER_LEFT_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent_cropped_original_size/left_run.png")
 const PLAYER_RIGHT_RUN_TEXTURE := preload("res://assets/xianxia/players/transparent_cropped_original_size/right_run.png")
-const PLAYER_FIVE_DIR_RUN_SHEET_PATH := "res://assets/xianxia/players_gemini-Photoroom.png"
+const PLAYER_FIVE_DIR_RUN_SHEET_PATH := "res://assets/xianxia/players_gemini_aligned_5dir_run.png"
 const RUN_ANIM_FPS: float = 10.0
 const PLAYER_IDLE_SHEET_PATH := "res://assets/xianxia/players_gemini_still-Photoroom.png"
 const IDLE_ANIM_FPS: float = 1.0
@@ -97,6 +97,17 @@ const PLAYER_ATTACK_ROW_LEFT := 1
 const PLAYER_ATTACK_ROW_UP := 2
 const PLAYER_ATTACK_ROW_DEATH := 3
 const DEATH_ANIM_FPS: float = 8.0
+
+var attack_buffer: float = 0.0
+var attack_pending_timer: float = 0.0
+var attack_animation_duration: float = 0.30
+var weapon_rig: Node2D
+var attack_direction := Vector2.DOWN
+var attack_had_momentum := false
+var weapon_bonus_damage: int = 0
+var invulnerability_timer: float = 0.0
+var combo_step: int = 0
+var combo_timer: float = 0.0
 
 var sword_visual: Sprite2D
 var sword_mount: Node2D
@@ -144,6 +155,7 @@ var _idle_anim_timer: float = 0.0
 var _idle_anim_frame: int = 0
 var _attack_sheet: Texture2D
 var _attack_frames: Dictionary = {}
+var _weapon_attack_frames: Dictionary = {}
 var _death_anim_timer: float = 0.0
 var _death_anim_frame: int = 0
 
@@ -171,8 +183,17 @@ func _ready() -> void:
 	active_skill_slots_changed.emit(active_skill_slots)
 
 func _physics_process(delta: float) -> void:
+	attack_buffer = maxf(0.0, attack_buffer - delta)
+	invulnerability_timer = maxf(0.0, invulnerability_timer - delta)
+	combo_timer = maxf(0.0, combo_timer - delta)
+	if Input.is_action_just_pressed("attack"):
+		attack_buffer = 0.18
 	z_index = int(position.y) + 500
 	visual_time += delta
+	if attack_pending_timer > 0.0 and not is_defeated:
+		attack_pending_timer -= delta
+		if attack_pending_timer <= 0.0:
+			_resolve_melee_attack()
 	if hurt_flash_timer > 0.0:
 		hurt_flash_timer -= delta
 		if hurt_flash_timer <= 0.0:
@@ -231,10 +252,14 @@ func _physics_process(delta: float) -> void:
 	)
 	current_input_direction = input_direction
 
-	if input_direction != Vector2.ZERO:
+	if input_direction != Vector2.ZERO and attack_visual_timer <= 0.0:
 		last_facing_direction = input_direction
 		facing_marker.rotation = last_facing_direction.angle() - PI * 0.5
 
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and attack_visual_timer <= 0.0:
+		var aim := get_global_mouse_position() - global_position
+		if aim.length() > 8.0:
+			last_facing_direction = aim.normalized()
 	_update_sword_feedback(delta)
 
 	if Input.is_action_just_pressed("dash"):
@@ -246,6 +271,11 @@ func _physics_process(delta: float) -> void:
 		dash_timer -= delta
 		velocity = dash_direction * dash_speed + attack_hitback_velocity
 		move_and_slide()
+		_update_xianxia_animation(delta)
+		_afterimage_timer -= delta
+		if _afterimage_timer <= 0.0:
+			_afterimage_timer = _afterimage_interval_dash
+			_spawn_afterimage(0.3)
 		return
 
 	var effective_move_speed := move_speed
@@ -260,7 +290,7 @@ func _physics_process(delta: float) -> void:
 	velocity = velocity.move_toward(target_velocity, rate * delta) + attack_hitback_velocity
 	move_and_slide()
 
-	if Input.is_action_just_pressed("attack"):
+	if attack_buffer > 0.0 or Input.is_action_pressed("attack"):
 		_try_melee_attack()
 
 	_update_xianxia_animation(delta)
@@ -269,9 +299,20 @@ func _try_melee_attack() -> void:
 	if melee_timer > 0.0 or is_defending or is_exhausted or current_stamina < attack_stamina_cost or dash_timer > 0.0:
 		return
 
-	melee_timer = melee_cooldown
-	attack_visual_timer = ATTACK_VISUAL_DURATION
+	attack_buffer = 0.0
+	combo_step = (combo_step % 3) + 1 if combo_timer > 0.0 else 1
+	combo_timer = 0.85
+	melee_timer = melee_cooldown * (1.25 if combo_step == 3 else 0.85)
+	attack_animation_duration = melee_cooldown * 0.85
+	attack_visual_timer = attack_animation_duration
+	attack_pending_timer = attack_animation_duration * 0.48
+	attack_direction = last_facing_direction
+	attack_had_momentum = current_input_direction != Vector2.ZERO and current_input_direction.dot(last_facing_direction) > 0.75
 	_set_stamina(current_stamina - attack_stamina_cost)
+
+func _resolve_melee_attack() -> void:
+	last_facing_direction = attack_direction
+	_spawn_slash_trail(ATTACK_VARIANT_IMPACT if combo_step == 3 else ATTACK_VARIANT_NORMAL)
 	var world := get_tree().get_first_node_in_group("world")
 	var _is_slam: bool = world != null and world.has_method("has_slam_charge") and world.has_slam_charge()
 	var _is_counter: bool = counter_ready_timer > 0.0
@@ -280,8 +321,8 @@ func _try_melee_attack() -> void:
 	velocity += last_facing_direction * melee_lunge_force
 
 	var is_counter_attack := counter_ready_timer > 0.0
-	var has_momentum := current_input_direction != Vector2.ZERO and current_input_direction.dot(last_facing_direction) > 0.75
-	var attack_damage := melee_damage
+	var has_momentum := attack_had_momentum
+	var attack_damage := melee_damage + weapon_bonus_damage + (1 if combo_step == 3 else 0)
 	var attack_knockback := melee_knockback_force
 	var stagger_amount := normal_stagger_amount
 	var is_impact_attack: bool = world != null and world.has_method("has_slam_charge") and world.has_slam_charge()
@@ -323,6 +364,11 @@ func _try_melee_attack() -> void:
 			continue
 		if damaged_enemies.has(collider):
 			continue
+		var ray := PhysicsRayQueryParameters2D.create(global_position, collider.global_position)
+		ray.exclude = [get_rid()]
+		var obstruction := get_world_2d().direct_space_state.intersect_ray(ray)
+		if not obstruction.is_empty() and obstruction.collider != collider and not obstruction.collider.is_in_group("enemies"):
+			continue
 
 		var health := collider.get_node_or_null("HealthComponent") as HealthComponent
 		if health != null and health.has_method("take_damage"):
@@ -354,8 +400,11 @@ func _try_melee_attack() -> void:
 func _handle_skill_input() -> void:
 	for index in range(5):
 		if Input.is_action_just_pressed("select_skill_%s" % [index + 1]):
-			_toggle_skill_slot(index)
+			selected_skill_slot = index
+			skill_caster.try_cast_slot(index)
 			return
+	if Input.is_action_just_pressed("use_selected_skill"):
+		skill_caster.try_cast_slot(selected_skill_slot)
 
 func _toggle_skill_slot(slot_index: int) -> void:
 	if skill_caster == null:
@@ -386,19 +435,39 @@ func _start_sword_swing(strength: float = 1.0) -> void:
 	_update_sword_feedback(sword_swing_duration * 0.08)
 
 func _update_sword_feedback(_delta: float) -> void:
-	if sword == null:
+	if sword_mount == null or weapon_rig == null:
 		return
-
-	var facing_angle := last_facing_direction.angle() - PI * 0.5
-	var swing_offset := sword_rest_offset
-	if sword_swing_timer > 0.0:
-		sword_swing_timer -= _delta
-		var progress := 1.0 - clampf(sword_swing_timer / maxf(sword_swing_duration, 0.001), 0.0, 1.0)
-		var eased := sin(progress * PI)
-		swing_offset += eased * sword_swing_arc * sword_swing_strength
-		if sword_swing_timer <= 0.0:
-			sword_swing_timer = 0.0
-	sword.rotation = facing_angle + swing_offset
+	var attacking := attack_visual_timer > 0.0
+	weapon_rig.sheathed = not attacking
+	weapon_rig.weapon_id = equipped_weapon_id
+	if attacking:
+		var progress := 1.0 - clampf(attack_visual_timer / attack_animation_duration, 0.0, 1.0)
+		var swing: float
+		if progress < 0.42:
+			swing = lerpf(-1.1, -1.5, progress / 0.42)
+		elif progress < 0.65:
+			swing = lerpf(-1.5, 1.2, (progress - 0.42) / 0.23)
+		else:
+			swing = lerpf(1.2, 0.45, (progress - 0.65) / 0.35)
+		if combo_step == 2: swing = -swing
+		# Hand sockets authored against the aligned six-frame body atlas.
+		var sockets := [Vector2(7,5),Vector2(-4,4),Vector2(-8,-5),Vector2(2,7),Vector2(10,0),Vector2(7,5)]
+		if absf(attack_direction.x) > absf(attack_direction.y):
+			sockets = [Vector2(-6,6),Vector2(-8,4),Vector2(4,-2),Vector2(-13,2),Vector2(-9,9),Vector2(-6,6)]
+			if attack_direction.x > 0:
+				for i in range(sockets.size()): sockets[i].x *= -1
+		elif attack_direction.y < 0:
+			sockets = [Vector2(8,-6),Vector2(8,-12),Vector2(9,-8),Vector2(9,-4),Vector2(7,0),Vector2(8,-6)]
+		var hand: Vector2 = sockets[mini(int(progress * 6),5)]
+		sword_mount.rotation = attack_direction.angle() + swing
+		# The grip sits six pixels behind the blade origin.
+		sword_mount.position = body.position + hand + Vector2(6,0).rotated(sword_mount.rotation)
+		sword_mount.z_index = 2 if attack_direction.y >= 0 else -1
+	else:
+		sword_mount.position = body.position + Vector2(3, -4)
+		sword_mount.rotation = 1.1
+		sword_mount.z_index = -1
+	sword_mount.modulate = Color.WHITE
 
 func _setup_xianxia_visuals() -> void:
 	body.texture = _player_down_idle_texture
@@ -452,10 +521,37 @@ func _setup_xianxia_visuals() -> void:
 		add_child(robe_sash_visual)
 		move_child(robe_sash_visual, body.get_index() + 1)
 	robe_sash_visual.visible = false
+	if weapon_rig == null:
+		weapon_rig = Node2D.new()
+		weapon_rig.set_script(preload("res://scripts/player/WeaponRig.gd"))
+		sword_mount.add_child(weapon_rig)
+	if sword_visual != null: sword_visual.visible = false
 	_refresh_equipped_weapon_visual()
 
 func set_equipped_weapon(item_id: String) -> void:
 	equipped_weapon_id = item_id
+	match item_id:
+		"heavy_saber":
+			melee_cooldown = 0.55
+			attack_stamina_cost = 2.8
+			weapon_bonus_damage = 2
+			melee_knockback_force = 550.0
+			melee_range = 30.0
+			melee_size = Vector2(54, 46)
+		"jade_sword":
+			melee_cooldown = 0.26
+			attack_stamina_cost = 1.4
+			weapon_bonus_damage = 0
+			melee_knockback_force = 250.0
+			melee_range = 28.0
+			melee_size = Vector2(46, 26)
+		_:
+			melee_cooldown = 0.35
+			attack_stamina_cost = 2.0
+			weapon_bonus_damage = 0
+			melee_knockback_force = 420.0
+			melee_range = 26.0
+			melee_size = Vector2(44, 34)
 	_refresh_equipped_weapon_visual()
 
 func _refresh_equipped_weapon_visual() -> void:
@@ -590,8 +686,16 @@ func _slice_idle_sheet_row(row: int, frame_width: int, frame_height: int) -> Arr
 	return frames
 
 func _get_attack_frames_for_direction(direction: Vector2) -> Array[Texture2D]:
-	if _attack_frames.is_empty():
-		_build_attack_frames()
+	if _weapon_attack_frames.is_empty():
+		var sheet := load("res://assets/art_v2/player_attack_aligned.png") as Texture2D
+		for row in range(3):
+			var frames: Array[Texture2D] = []
+			for col in range(6):
+				var atlas := AtlasTexture.new()
+				atlas.atlas = sheet
+				atlas.region = Rect2(col * 160, row * 224, 160, 224)
+				frames.append(atlas)
+			_weapon_attack_frames[["down", "left", "up"][row]] = frames
 	var key: String
 	if absf(direction.x) > absf(direction.y):
 		key = "left"
@@ -599,7 +703,7 @@ func _get_attack_frames_for_direction(direction: Vector2) -> Array[Texture2D]:
 		key = "down"
 	else:
 		key = "up"
-	return _attack_frames.get(key, [])
+	return _weapon_attack_frames.get(key, [])
 
 func _build_attack_frames() -> void:
 	_attack_frames.clear()
@@ -686,11 +790,11 @@ func _update_xianxia_animation(_delta: float) -> void:
 	if attack_visual_timer > 0.0:
 		var attack_frames := _get_attack_frames_for_direction(last_facing_direction)
 		if not attack_frames.is_empty():
-			var progress := 1.0 - (attack_visual_timer / ATTACK_VISUAL_DURATION)
-			var frame_idx := mini(int(progress * attack_frames.size()), attack_frames.size() - 1)
+			var progress := 1.0 - (attack_visual_timer / attack_animation_duration)
+			var frame_idx := mini(int(progress * 6), 5)
 			body.texture = attack_frames[frame_idx]
 			if absf(last_facing_direction.x) > absf(last_facing_direction.y):
-				body.flip_h = last_facing_direction.x < 0
+				body.flip_h = last_facing_direction.x > 0
 	elif moving or is_dashing:
 		_run_anim_timer -= _delta
 		if _run_anim_timer <= 0.0:
@@ -714,7 +818,7 @@ func _update_xianxia_animation(_delta: float) -> void:
 	_sync_body_scale()
 	var walk_bob := sin(visual_time * 7.0) * 0.7 if moving else sin(visual_time * 3.0) * 0.45
 	if attack_visual_timer > 0.0 and hurt_pulse_timer <= 0.0:
-		var progress := 1.0 - (attack_visual_timer / ATTACK_VISUAL_DURATION)
+		var progress := 1.0 - (attack_visual_timer / attack_animation_duration)
 		var arc := sin(progress * PI)
 		body.position = last_facing_direction * arc * 5.0 + Vector2(0.0, walk_bob)
 		var squish := Vector2(1.0 - arc * 0.10, 1.0 + arc * 0.07)
@@ -724,19 +828,8 @@ func _update_xianxia_animation(_delta: float) -> void:
 	if robe_sash_visual != null:
 		robe_sash_visual.position = Vector2(sin(visual_time * 8.0) * (1.2 if moving else 0.35), walk_bob)
 
-	if dash_timer > 0.0:
-		body.rotation = dash_direction.angle() * 0.03
-		sword_mount.position = last_facing_direction * 17.0 + Vector2(0.0, walk_bob)
-		sword_mount.modulate = Color(0.72, 0.94, 1.0, 0.86)
-		return
-
 	body.rotation = 0.0
-	if attack_visual_timer > 0.0:
-		sword_mount.position = last_facing_direction * 20.0 + Vector2(0.0, walk_bob)
-		sword_mount.modulate = Color(0.9, 0.98, 1.0, 1.0)
-	else:
-		sword_mount.position = Vector2(13.0, 1.0 + walk_bob * 0.45)
-		sword_mount.modulate = Color.WHITE
+	_update_sword_feedback(0.0)
 
 
 func _spawn_afterimage(alpha: float) -> void:
@@ -747,7 +840,7 @@ func _spawn_afterimage(alpha: float) -> void:
 	ghost.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	ghost.modulate = Color(0.55, 0.88, 1.0, alpha)
 	ghost.z_index = body.z_index - 1
-	ghost.global_position = body.global_position
+	ghost.position = get_parent().to_local(body.global_position) if get_parent() is Node2D else body.global_position
 	ghost.global_rotation = body.global_rotation
 	get_parent().call_deferred("add_child", ghost)
 	var fade_time := 0.12 if dash_timer <= 0.0 else 0.08
@@ -771,7 +864,8 @@ func _sync_body_scale() -> void:
 		var uniform_scale := minf(PLAYER_DISPLAY_SIZE.x / tex_size.x, PLAYER_DISPLAY_SIZE.y / tex_size.y)
 		_body_base_scale = Vector2.ONE * uniform_scale
 	normal_body_scale = _body_base_scale
-	body.scale = normal_body_scale
+	var pulse := clampf(hurt_pulse_timer / maxf(hurt_flash_duration, 0.001), 0.0, 1.0)
+	body.scale = normal_body_scale * lerpf(1.0, hurt_pulse_scale, pulse)
 
 func _fill_rect(image: Image, rect: Rect2i, fill: Color) -> void:
 	for y in range(rect.position.y, rect.end.y):
@@ -851,7 +945,7 @@ func _spawn_slash_trail(variant: String) -> void:
 	if effect_host == null:
 		return
 	effect_host.add_child(trail)
-	trail.global_position = global_position + last_facing_direction * melee_range
+	trail.global_position = global_position
 	if trail.has_method("setup"):
 		trail.setup(last_facing_direction, variant, melee_range)
 
@@ -864,9 +958,11 @@ func _get_effect_host() -> Node:
 	return get_parent()
 
 func _apply_hit_pause() -> void:
-	get_tree().paused = true
-	await get_tree().create_timer(hit_pause_duration, true, false, true).timeout
-	get_tree().paused = false
+	# Brief local recovery avoids racing the pause menu or inventory.
+	melee_timer += hit_pause_duration
+	var polish := get_tree().get_first_node_in_group("game_feel")
+	if polish != null:
+		polish.impact(2.5)
 
 func _on_damaged(_amount: int) -> void:
 	body.modulate = Color(1.0, 0.18, 0.12, 1.0)
@@ -912,7 +1008,7 @@ func _on_died() -> void:
 		sword_mount.visible = false
 
 func apply_incoming_damage(amount: int) -> void:
-	if amount <= 0:
+	if amount <= 0 or is_defeated or dash_timer > 0.0 or invulnerability_timer > 0.0:
 		return
 
 	var final_damage := amount
@@ -923,9 +1019,12 @@ func apply_incoming_damage(amount: int) -> void:
 			block_ring_timer = 0.18
 
 	if final_damage > 0:
+		invulnerability_timer = 0.5
 		health_component.take_damage(final_damage)
 
 func apply_attack_hitback(direction: Vector2, force: float) -> void:
+	if dash_timer > 0.0:
+		return
 	if direction == Vector2.ZERO or force <= 0.0:
 		return
 	attack_hitback_velocity = direction.normalized() * force
@@ -991,6 +1090,9 @@ func _ensure_default_transform_skill() -> void:
 		skill_caster.skills[0] = TRANSFORM_SKILL
 	if skill_caster.skills[1] == null:
 		skill_caster.skills[1] = DIVINE_LIGHT_SKILL
+	for index in range(3):
+		if skill_caster.skills[index + 2] == null:
+			skill_caster.skills[index + 2] = load("res://resources/skills/%s.tres" % [ ["MoonCleave", "JadeTempest", "Renewal"][index] ])
 
 func _on_skill_slots_changed(slot_names: Array[String]) -> void:
 	skill_slots_changed.emit(slot_names)
@@ -1032,6 +1134,8 @@ func _try_dash(input_direction: Vector2) -> void:
 	is_defending = false
 	_refresh_body_feedback()
 	_set_stamina(current_stamina - dash_stamina_cost)
+	attack_pending_timer = 0.0
+	attack_visual_timer = 0.0
 	dash_timer = dash_duration
 	dash_cooldown_timer = dash_cooldown
 	combat_message_requested.emit("Dash")

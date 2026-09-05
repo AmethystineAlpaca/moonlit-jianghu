@@ -136,7 +136,9 @@ func _test_impact_hit_consumes_once_and_emits_one_message() -> void:
 	scene.add_child(enemy)
 	player.global_position = Vector2.ZERO
 	enemy.global_position = Vector2(32.0, 0.0)
-	await process_frame
+	enemy.set_physics_process(false)
+	await physics_frame
+	await physics_frame
 
 	captured_messages.clear()
 	player.connect("combat_message_requested", Callable(self, "_capture_combat_message"))

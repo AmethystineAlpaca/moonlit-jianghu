@@ -9,8 +9,8 @@ collision_size = Vector2(24, 24)
 collision_offset = Vector2(0, -12)
 color = Color(0.42, 0.45, 0.42, 1)
 visual_style = "tree"
-texture_path = "res://assets/xianxia/tree.png"
-visual_scale = Vector2(1.71429, 1.71429)
+texture_path = "res://assets/art_v2/tree_jade.png"
+visual_scale = Vector2(1, 1)
 anchor_visual_to_bottom = true
 passable_upper_ratio = 0.67
 

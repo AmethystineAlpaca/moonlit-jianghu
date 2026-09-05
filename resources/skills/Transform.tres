@@ -6,8 +6,8 @@
 [resource]
 script = ExtResource("1_definition")
 display_name = "Transform"
-stamina_cost = 0.0
-cooldown = 0.4
+stamina_cost = 2.0
+cooldown = 6.0
 cast_range = 64.0
 targeting_mode = 0
 effect_scene = ExtResource("2_effect")

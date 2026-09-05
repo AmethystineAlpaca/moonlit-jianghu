@@ -24,7 +24,7 @@ func _test_player_hit_feedback_is_obvious() -> void:
 	var body := player.get_node("Body") as Sprite2D
 	var damage_ring := player.get_node("DamageRing") as Polygon2D
 	_assert_true(body.modulate.r > body.modulate.g, "player body flashes red on damage")
-	_assert_true(body.scale.x > 1.0, "player body visibly pulses larger on damage")
+	_assert_true(body.scale.x > player.normal_body_scale.x, "player body visibly pulses larger on damage")
 	_assert_true(damage_ring.visible, "player damage ring appears on damage")
 
 	player.free()

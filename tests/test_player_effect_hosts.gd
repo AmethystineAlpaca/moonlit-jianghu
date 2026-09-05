@@ -17,6 +17,9 @@ func _test_player_attack_effects_work_without_current_scene() -> void:
 	await process_frame
 
 	player.call("_try_melee_attack")
+	for i in range(20):
+		await physics_frame
+		if root.find_child("SlashTrail", true, false) != null: break
 	_assert_true(root.find_child("SlashTrail", true, false) != null, "player attack spawns slash trail without current_scene")
 	await process_frame
 	player.free()

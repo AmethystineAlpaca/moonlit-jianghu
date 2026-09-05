@@ -15,8 +15,8 @@ func _test_world_adds_limited_random_breakables() -> void:
 	await process_frame
 
 	var breakables := _get_breakables(world)
-	_assert_true(breakables.size() >= 53, "world adds many more random breakables")
-	_assert_true(breakables.size() <= 103, "world keeps random breakables under the expanded cap")
+	_assert_true(breakables.size() >= 27, "world adds a controlled number of random breakables")
+	_assert_true(breakables.size() <= 37, "world keeps random breakables under the readable village cap")
 
 	world.free()
 
@@ -37,7 +37,7 @@ func _test_random_breakables_do_not_overlap_obstacles_or_each_other() -> void:
 			if obstacle == breakable:
 				continue
 			var obstacle_rect := _get_world_rect(world, obstacle, Vector2(12.0, 12.0))
-			_assert_true(not breakable_rect.intersects(obstacle_rect), "random breakables avoid static obstacles")
+			_assert_true(not breakable_rect.intersects(obstacle_rect), "random breakables avoid static obstacles: %s / %s" % [breakable.name, obstacle.name])
 
 	world.free()
 

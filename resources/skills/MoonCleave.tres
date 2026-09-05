@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="SkillDefinition" load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/skills/SkillDefinition.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/skills/MoonCleave.tscn" id="2"]
+[resource]
+script = ExtResource("1")
+display_name = "Moon Cleave"
+stamina_cost = 2.0
+cooldown = 3.0
+cast_range = 140.0
+effect_scene = ExtResource("2")

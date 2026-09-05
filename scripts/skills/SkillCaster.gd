@@ -90,7 +90,6 @@ func try_cast_slot(slot_index: int) -> bool:
 	if skill.effect_scene == null:
 		return _fail("Skill Missing Effect")
 
-	_pay_cost(skill.stamina_cost)
 	cooldowns[slot_index] = skill.cooldown
 
 	var effect := skill.effect_scene.instantiate() as Node
@@ -110,6 +109,7 @@ func try_cast_slot(slot_index: int) -> bool:
 				failure_message = effect_failure
 			return _fail(failure_message)
 
+	_pay_cost(skill.stamina_cost)
 	skill_cast_started.emit(skill.display_name)
 	return true
 

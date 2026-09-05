@@ -16,7 +16,7 @@ func _initialize() -> void:
 	var body := enemy.get_node("Body") as Sprite2D
 	var hp_bar := enemy.get_node("HPBar") as ProgressBar
 	_assert_true(body.modulate.r > body.modulate.g, "enemy flashes with a warm hit color on damage")
-	_assert_true(body.scale.x > 1.0, "enemy body pulses larger on damage")
+	_assert_true(body.scale.x > enemy.normal_body_scale.x, "enemy body pulses larger on damage")
 	_assert_true(hp_bar.modulate.a > 0.95, "enemy HP bar remains readable during hit feedback")
 
 	enemy.free()

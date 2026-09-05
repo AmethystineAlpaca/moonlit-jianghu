@@ -4,8 +4,8 @@ signal combat_message_requested(message: String)
 
 const NIGHT_AMBIENCE_SCENE := preload("res://scenes/world/NightAmbienceController.tscn")
 const AMBIENT_MAGIC_SCENE := preload("res://scenes/world/AmbientMagicController.tscn")
-const GROUND_DAY_TEXTURE := preload("res://assets/xianxia/land.png")
-const GROUND_NIGHT_TEXTURE := preload("res://assets/xianxia/land_night.png")
+const GROUND_DAY_TEXTURE := preload("res://assets/art_v2/terrain_qinglan.png")
+const GROUND_NIGHT_TEXTURE := preload("res://assets/art_v2/terrain_qinglan.png")
 
 @export var enemy_scene: PackedScene
 @export var fire_lion_scene: PackedScene
@@ -27,16 +27,16 @@ const GROUND_NIGHT_TEXTURE := preload("res://assets/xianxia/land_night.png")
 @export var spawn_area_half_size: Vector2 = Vector2(640, 400)
 @export var navigation_cell_size: float = 32.0
 @export var navigation_obstacle_padding: float = 18.0
-@export var random_breakable_min_count: int = 50
-@export var random_breakable_max_count: int = 100
+@export var random_breakable_min_count: int = 24
+@export var random_breakable_max_count: int = 34
 @export var random_breakable_spawn_attempts: int = 800
 @export var random_breakable_clearance: float = 18.0
 @export var player_spawn_clearance: float = 120.0
 @export var chest_spawn_attempts: int = 1200
 @export var chest_spawn_clearance: float = 22.0
 @export var tree_scene: PackedScene
-@export var random_tree_min_count: int = 35
-@export var random_tree_max_count: int = 45
+@export var random_tree_min_count: int = 24
+@export var random_tree_max_count: int = 32
 @export var random_tree_spawn_attempts: int = 800
 @export var random_tree_clearance: float = 40.0
 @export var house_tree_clearance_bonus: float = 18.0
@@ -71,8 +71,16 @@ func _ready() -> void:
 	_ensure_night_ambience()
 	_ensure_ambient_magic()
 	_add_obstacle_shadows()
+	if has_node("Player") and has_node("Hud"):
+		var feel := Node2D.new()
+		feel.name = "GameFeel"
+		feel.set_script(preload("res://scripts/polish/GameFeel.gd"))
+		add_child(feel)
 
 func _process(delta: float) -> void:
+	var player := get_node_or_null("Player")
+	if player != null and player.is_defeated:
+		return
 	elapsed_time += delta
 	spawn_timer -= delta
 
@@ -301,6 +309,9 @@ func _find_random_breakable_position(occupied_rects: Array[Rect2]) -> Vector2:
 
 func _get_breakable_spawn_blockers() -> Array[Rect2]:
 	var blockers: Array[Rect2] = []
+	# Keep the village crossroads open for movement and readable fights.
+	blockers.append(Rect2(to_global(Vector2(-44, -400)), Vector2(88, 800)))
+	blockers.append(Rect2(to_global(Vector2(-640, -38)), Vector2(1280, 76)))
 	for obstacle in _collect_navigation_obstacles():
 		if obstacle.is_in_group("breakables"):
 			blockers.append(_get_spawn_rect(obstacle.global_position, _get_breakable_spawn_size(obstacle)))
@@ -568,6 +579,8 @@ func _spawn_random_trees() -> void:
 		if _is_spawn_rect_clear(rect, occupied_rects):
 			var tree := tree_scene.instantiate() as Node2D
 			tree.name = "RandomTree%s" % [spawned + 1]
+			if spawned % 5 == 0:
+				tree.texture_path = "res://assets/art_v2/tree_ginkgo.png"
 			tree.global_position = position
 			trees_parent.add_child(tree)
 			occupied_rects.append(_get_spawn_rect(position, tree_half))

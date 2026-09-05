@@ -15,7 +15,7 @@ const GRID: Array = [
 ]
 
 @export var world_half_size: Vector2 = Vector2(680.0, 440.0)
-@export var night_modulate_color: Color = Color(0.06, 0.08, 0.14)
+@export var night_modulate_color: Color = Color(0.18, 0.24, 0.34)
 @export var vignette_color: Color = Color(0.02, 0.05, 0.10, 0.0)
 @export var firefly_amount: int = 88
 @export var sparkle_amount: int = 30
@@ -212,15 +212,9 @@ func _rebuild_moonlight_patches() -> void:
 		moonlight_patches.add_child(patch)
 
 const FIREFLY_LIGHT_COLORS: Array = [
-	Color(1.0,  0.15, 0.05),  # 纯红
-	Color(0.10, 0.25, 1.0 ),  # 纯蓝
-	Color(1.0,  0.75, 0.05),  # 纯琥珀
-	Color(0.65, 0.05, 1.0 ),  # 纯紫
-	Color(0.05, 0.85, 1.0 ),  # 纯青
-	Color(1.0,  0.40, 0.05),  # 纯橙
-	Color(0.20, 0.10, 1.0 ),  # 深蓝
-	Color(1.0,  0.10, 0.50),  # 玫红
-	Color(0.05, 1.0,  0.55),  # 翠绿
+ Color("8aafd4"), Color("96bbdb"), Color("eac58f"),
+ Color("a4c5df"), Color("b0d4d4"), Color("e6be83"),
+ Color("8aafd4"), Color("dfbe91"), Color("97c6ba"),
 ]
 
 func _setup_firefly_lights() -> void:

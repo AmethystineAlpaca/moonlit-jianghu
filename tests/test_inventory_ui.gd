@@ -18,8 +18,8 @@ func _test_inventory_opens_with_default_equipped_sword() -> void:
 	var hud := world.get_node("Hud")
 	var weapon_button := hud.get_node("InventoryOverlay/Window/Margin/Layout/Columns/EquipmentPanel/EquipmentContent/WeaponButton") as Button
 	var armor_button := hud.get_node("InventoryOverlay/Window/Margin/Layout/Columns/EquipmentPanel/EquipmentContent/ArmorButton") as Button
-	_assert_true(weapon_button.text.contains("Iron Sword"), "inventory starts with the sword equipped")
-	_assert_true(armor_button.text.contains("Empty"), "armor slot starts empty")
+	_assert_true(weapon_button.text.contains("青锋剑"), "inventory starts with the sword equipped")
+	_assert_true(armor_button.text.contains("空位"), "armor slot starts empty")
 
 	world.free()
 
@@ -60,19 +60,19 @@ func _test_inventory_moves_items_between_bag_and_equipment() -> void:
 
 	weapon_button.emit_signal("pressed")
 	await process_frame
-	_assert_true(weapon_button.text.contains("Empty"), "weapon slot can move the sword back into the bag")
+	_assert_true(weapon_button.text.contains("空位"), "weapon slot can move the sword back into the bag")
 	_assert_true(sword.visible == false, "player sword hides when weapon slot is empty")
 
 	bag_slot_1.emit_signal("pressed")
 	await process_frame
-	_assert_true(armor_button.text.contains("Spirit Armor"), "bag armor equips into the armor slot")
+	_assert_true(armor_button.text.contains("灵纹衣"), "bag armor equips into the armor slot")
 
-	var bag_slot_with_sword := _find_bag_slot_by_text(hud, "Iron Sword")
+	var bag_slot_with_sword := _find_bag_slot_by_text(hud, "青锋剑")
 	_assert_true(bag_slot_with_sword != null, "sword appears in the bag after unequipping")
 	if bag_slot_with_sword != null:
 		bag_slot_with_sword.emit_signal("pressed")
 		await process_frame
-		_assert_true(weapon_button.text.contains("Iron Sword"), "bag sword re-equips into the weapon slot")
+		_assert_true(weapon_button.text.contains("青锋剑"), "bag sword re-equips into the weapon slot")
 		_assert_true(sword.visible, "player sword reappears when weapon is equipped")
 
 	world.free()

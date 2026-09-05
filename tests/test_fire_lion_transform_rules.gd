@@ -36,7 +36,7 @@ func _test_fire_lion_corpse_is_not_transformable() -> void:
 	var effect := transform_scene.instantiate()
 	root.add_child(effect)
 	var cast_ok: bool = effect.activate(_make_context(player))
-	_assert_true(cast_ok, "transform cast still succeeds without targeting fire lion corpse")
+	_assert_true(not cast_ok, "transform fails when only a forbidden fire lion corpse is nearby")
 	_assert_equal(get_nodes_in_group("zombies").size(), 0, "fire lion corpse does not create a zombie")
 	_assert_true(is_instance_valid(corpse), "fire lion corpse remains after transform cast")
 

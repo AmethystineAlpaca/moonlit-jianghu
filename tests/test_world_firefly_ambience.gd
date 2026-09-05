@@ -125,7 +125,7 @@ func _test_world_keeps_glow_environment_under_night_ambience() -> void:
 	_assert_true(world_env != null, "NightEnvironment exists")
 	if world_env != null and world_env.environment != null:
 		_assert_true(world_env.environment.glow_enabled, "night environment enables glow")
-		_assert_true(world_env.environment.glow_intensity >= 0.35, "night glow intensity is meaningful")
+		_assert_true(world_env.environment.glow_intensity > 0.0 and world_env.environment.glow_intensity <= 0.35, "night glow is present without washing out pixel edges")
 
 	world.free()
 

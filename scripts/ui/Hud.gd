@@ -57,8 +57,8 @@ var bag_items: Array[String] = [
 	"spirit_armor",
 	"jade_talisman",
 	"healing_pill",
-	"",
-	"",
+	"heavy_saber",
+	"jade_sword",
 	"",
 ]
 var item_definitions := {}
@@ -129,6 +129,8 @@ func _ready() -> void:
 	_sync_player_equipment_visuals()
 
 func _unhandled_input(event: InputEvent) -> void:
+	if get_meta("journey_modal", false):
+		return
 	if event.is_action_pressed("toggle_inventory"):
 		_toggle_inventory()
 		get_viewport().set_input_as_handled()
@@ -260,22 +262,32 @@ func _build_skill_icon_textures() -> void:
 func _build_item_definitions() -> void:
 	item_definitions = {
 		"iron_sword": {
-			"name": "Iron Sword",
+			"name": "青锋剑",
+			"slot": "weapon",
+			"icon": WEAPON_ICON_TEXTURE,
+		},
+		"heavy_saber": {
+			"name": "玄铁重刃",
+			"slot": "weapon",
+			"icon": WEAPON_ICON_TEXTURE,
+		},
+		"jade_sword": {
+			"name": "流萤灵剑",
 			"slot": "weapon",
 			"icon": WEAPON_ICON_TEXTURE,
 		},
 		"spirit_armor": {
-			"name": "Spirit Armor",
+			"name": "灵纹衣",
 			"slot": "armor",
 			"icon": ARMOR_ICON_TEXTURE,
 		},
 		"jade_talisman": {
-			"name": "Jade Talisman",
+			"name": "玉佩",
 			"slot": "",
 			"icon": TALISMAN_ICON_TEXTURE,
 		},
 		"healing_pill": {
-			"name": "Healing Pill",
+			"name": "回春丹",
 			"slot": "",
 			"icon": TALISMAN_ICON_TEXTURE,
 		},
@@ -341,8 +353,8 @@ func _move_equipment_to_bag(slot_name: String) -> void:
 func _refresh_inventory_ui() -> void:
 	if inventory_overlay != null:
 		inventory_overlay.visible = inventory_open
-	_update_equipment_button(weapon_button, "weapon", "Weapon")
-	_update_equipment_button(armor_button, "armor", "Armor")
+	_update_equipment_button(weapon_button, "weapon", "兵刃")
+	_update_equipment_button(armor_button, "armor", "衣甲")
 	for index in range(bag_buttons.size()):
 		_update_bag_button(bag_buttons[index], index)
 
@@ -352,8 +364,9 @@ func _update_equipment_button(button: Button, slot_name: String, slot_label: Str
 	var item_id := String(equipped_items.get(slot_name, ""))
 	button.icon = _get_item_icon(item_id)
 	button.expand_icon = true
-	button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	button.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	button.text = "%s\n%s" % [slot_label, _get_item_name(item_id)]
+	_refresh_item_glyph(button, item_id)
 
 func _update_bag_button(button: Button, index: int) -> void:
 	if button == null or index < 0 or index >= bag_items.size():
@@ -361,8 +374,9 @@ func _update_bag_button(button: Button, index: int) -> void:
 	var item_id := bag_items[index]
 	button.icon = _get_item_icon(item_id)
 	button.expand_icon = true
-	button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	button.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	button.text = _get_item_name(item_id)
+	_refresh_item_glyph(button, item_id)
 
 func _toggle_inventory() -> void:
 	if inventory_open:
@@ -376,7 +390,7 @@ func _open_inventory() -> void:
 	get_tree().paused = true
 	_refresh_inventory_ui()
 	_update_pause_label()
-	_show_inventory_status("Click equipment or bag slots to move items.")
+	_show_inventory_status("点击物品穿戴或卸下；三种兵刃拥有不同节奏与威力。")
 
 func _close_inventory() -> void:
 	inventory_open = false
@@ -397,7 +411,7 @@ func _find_first_empty_bag_slot() -> int:
 
 func _get_item_name(item_id: String) -> String:
 	if item_id == "":
-		return "Empty"
+		return "空位"
 	if item_definitions.has(item_id):
 		return String(item_definitions[item_id].get("name", item_id))
 	return item_id.capitalize()
@@ -535,3 +549,20 @@ func _make_selected_slot_style() -> StyleBoxFlat:
 	style.content_margin_right = 8.0
 	style.content_margin_bottom = 6.0
 	return style
+
+func _refresh_item_glyph(button: Button, item_id: String) -> void:
+	button.icon = null
+	var glyph := button.get_node_or_null("ItemGlyph")
+	if glyph == null:
+		glyph = Control.new()
+		glyph.name = "ItemGlyph"
+		glyph.set_script(preload("res://scripts/interface/ItemGlyph.gd"))
+		button.add_child(glyph)
+	glyph.item_id = item_id
+	button.add_theme_font_size_override("font_size", 14)
+	button.alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	button.tooltip_text = {
+		"iron_sword": "青锋：均衡的三段连击，末段加强击退。",
+		"heavy_saber": "玄铁：挥击较慢、体力消耗较高，伤害 +2，重击破阵。",
+		"jade_sword": "流萤：出手更快、体力消耗较低，适合游走追击。",
+	}.get(item_id, _get_item_name(item_id))

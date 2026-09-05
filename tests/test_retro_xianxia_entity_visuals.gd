@@ -255,10 +255,11 @@ func _test_player_attack_animation_moves_sword() -> void:
 
 	player.last_facing_direction = Vector2.RIGHT
 	player.sword_swing_timer = 0.0
+	player.attack_visual_timer = 0.0
 	player._update_sword_feedback(0.0)
 	var right_rest_rotation := sword.rotation
-	var expected_right_rest: float = Vector2.RIGHT.angle() - PI * 0.5 + player.sword_rest_offset
-	_assert_true(absf(right_rest_rotation - expected_right_rest) < 0.01, "player sword rests along facing direction")
+	var expected_right_rest: float = 1.1
+	_assert_true(absf(right_rest_rotation - expected_right_rest) < 0.01, "player sword rests sheathed on the body")
 
 	player.free()
 

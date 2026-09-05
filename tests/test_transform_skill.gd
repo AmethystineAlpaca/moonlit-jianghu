@@ -69,7 +69,7 @@ func _initialize() -> void:
 	effect = transform_scene.instantiate()
 	root.add_child(effect)
 	cast_ok = effect.activate(_make_context(player))
-	_assert_true(cast_ok, "resurrection always succeeds even when no corpse is in radius")
+	_assert_false(cast_ok, "resurrection fails clearly when no corpse is in radius")
 	_assert_true(is_instance_valid(missed_corpse), "corpse outside resurrection radius remains a corpse")
 	_assert_equal(get_nodes_in_group("zombies").size(), 0, "corpse outside radius is not resurrected")
 

@@ -28,11 +28,11 @@ const HOUSE_CANOPY_Z_OFFSET := 28
 
 const DEFAULT_TEXTURE_BY_STYLE := {
 	"house": "res://assets/xianxia/shrine.png",
-	"tree": "res://assets/xianxia/tree.png",
-	"stone": "res://assets/xianxia/rock.png",
-	"well": "res://assets/xianxia/rock.png",
-	"wood": "res://assets/xianxia/rock.png",
-	"fountain": "res://assets/xianxia/rock.png",
+	"tree": "res://assets/art_v2/tree_jade.png",
+	"stone": "res://assets/art_v2/rocks_moss.png",
+	"well": "res://assets/art_v2/rocks_moss.png",
+	"wood": "res://assets/art_v2/rocks_moss.png",
+	"fountain": "res://assets/art_v2/rocks_moss.png",
 }
 
 func _ready() -> void:

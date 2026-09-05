@@ -1,9 +1,9 @@
 extends Node2D
 
 @export var orbit_radius: float = 32.0
-@export var orbit_speed_rad: float = 40.0
+@export var orbit_speed_rad: float = 5.0
 @export var damage: int = 1
-@export var lifetime: float = 1.5
+@export var lifetime: float = 3.0
 @export var hit_dwell: float = 0.6
 @export var hit_check_radius: float = 11.0
 
@@ -14,6 +14,14 @@ var _is_primary: bool = false
 var _query_shape: CircleShape2D
 
 func _ready() -> void:
+	for node_name in ["OuterGlow", "MidGlow", "Core", "Highlight"]:
+		get_node(node_name).visible = false
+	var blade := Node2D.new()
+	blade.set_script(preload("res://scripts/player/WeaponRig.gd"))
+	blade.weapon_id = "jade_sword"
+	blade.sheathed = false
+	blade.scale = Vector2.ONE * 0.5
+	add_child(blade)
 	_query_shape = CircleShape2D.new()
 	_query_shape.radius = hit_check_radius
 	tree_exiting.connect(_on_tree_exiting)
@@ -53,6 +61,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	global_position = _orbit_position()
+	rotation = (global_position - caster.global_position).angle() + PI * 0.5
 
 	for id in _hit_cooldowns.keys():
 		_hit_cooldowns[id] -= delta

@@ -2,7 +2,7 @@ extends StaticBody2D
 
 @onready var visual: Sprite2D = $Visual
 
-const BREAKABLE_TREE_TEXTURE := preload("res://assets/xianxia/breakable_tree.png")
+const BREAKABLE_TREE_TEXTURE := preload("res://assets/art_v2/supply_crate.png")
 const TREE_SWAY_SHADER := preload("res://resources/shaders/grass_wind.gdshader")
 
 var is_broken: bool = false
@@ -12,13 +12,8 @@ func _ready() -> void:
 	add_to_group("breakables")
 	visual.texture = BREAKABLE_TREE_TEXTURE
 	visual.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	var mat := ShaderMaterial.new()
-	mat.shader = TREE_SWAY_SHADER
-	mat.set_shader_parameter("wind_strength", 1.0)
-	mat.set_shader_parameter("wind_speed", 0.7)
-	mat.set_shader_parameter("wind_frequency", 0.5)
-	mat.set_shader_parameter("wind_dir", Vector2(1.0, 0.0))
-	visual.material = mat
+	visual.material = null
+	visual.position = Vector2(0, -8)
 
 func _process(delta: float) -> void:
 	if not is_broken:

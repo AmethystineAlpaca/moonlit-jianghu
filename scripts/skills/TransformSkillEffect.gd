@@ -4,14 +4,20 @@ extends Node2D
 @export var aura_scene: PackedScene
 @export var puff_scene: PackedScene
 @export var resurrection_radius: float = 96.0
+var last_failure := ""
 
 func activate(context: Dictionary) -> bool:
 	var origin: Vector2 = context.get("origin", global_position)
 	var caster = context.get("caster")
 
+	var corpses := _find_corpses_in_radius(origin, resurrection_radius)
+	if corpses.is_empty():
+		last_failure = "附近没有可唤醒的灵体"
+		queue_free()
+		return false
 	_spawn_aura(origin)
 
-	for corpse in _find_corpses_in_radius(origin, resurrection_radius):
+	for corpse in corpses:
 		_spawn_puff(corpse.global_position)
 		var zombie := _create_zombie_from_corpse(corpse)
 		if zombie == null:
