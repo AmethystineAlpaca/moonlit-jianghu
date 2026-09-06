@@ -1,109 +1,99 @@
-# Moonlit Jianghu
+# Stillwater · 雨歇
 
 [English](README.md) | [中文](README.zh.md) | [日本語](README.ja.md) | [Русский](README.ru.md)
 
-**A small East Asian fantasy action RPG prototype made in Godot 4.**
+**The current 3D wuxia action chapter of Moonlit Jianghu, built with Godot 4.6.2.**
 
-By day, the village is green, quiet, and almost kind. By night, the same paths turn cold blue, lights flicker awake, and things that should have stayed buried begin to move.
+A rain-washed mountain courtyard, three sealed lanterns, and a final duel with Wuxiang. Choose a blade, read the opponent’s preparation, and turn movement, deflection and collisions into openings.
 
-![Moonlit Jianghu fire lion encounter](docs/showcase/images/02-day-fire-lion-encounter.png)
+![Stillwater — current 3D title](docs/showcase/v3/01-title.png)
 
-## The Pitch
+[![Watch current combat](docs/showcase/v3/combat-preview.gif)](docs/showcase/v3/combat-readability.mp4)
 
-Moonlit Jianghu is a playable top-down pixel-art prototype about a lone sword bearer caught between an ordinary village and a haunted jianghu. It blends wuxia movement, xianxia mood, old-world village scenery, and fast little bursts of action combat.
+[Watch the combat video (MP4)](docs/showcase/v3/combat-readability.mp4). Captured in the native engine with scripted controls; the preview shows attack preparation, damage feedback and defense. It is not a performance benchmark or a human playtest.
 
-This is not a finished game. It is a preserved slice of one: enough to walk, fight, dash, guard, switch day and night, open the inventory, meet hostile creatures, and feel the shape of the world it wanted to become.
+## Current 3D version
 
-中文简介：这是一个 Godot 4 制作的俯视角像素动作 RPG 原型，带有亚洲古风、武侠、仙侠、江湖、东方幻想、昼夜切换、近战战斗和独立游戏实验气质。
+- A real-time 3D courtyard with weathered stone, water, maple trees, rain, shadows and ambient occlusion.
+- Rigged character animation and three weapons: balanced straight sword, interrupting heavy blade, and a fast spirit blade with a third-hit projectile.
+- Dash leaves a temporary echo; **Q** returns through enemies along the recall path. No tether connects the echo to the player.
+- **E** shoves enemies into walls or each other and reflects projectiles. Timed guards also deflect projectiles; posture breaks enable an **F** follow-up.
+- Enemy preparation uses raised weapons and a brief pre-strike glint. Ordinary attacks have directional hit areas; actual boss area attacks retain area boundaries.
+- Short movement braking, dash recovery, input buffering, guard reactions and local damage-direction feedback. Hit pause does not suspend movement input.
+- Three seals, melee and ranged encounters, hazards, two growth choices, and a two-phase final boss. Title, guide, pause/settings and victory/defeat screens are included.
+- Combat Foley replaces the continuous background-music loop.
 
-## A Little Story
+![Current 3D combat feedback](docs/showcase/v3/06-damage.png)
 
-The village was built on an old road through the jianghu. Travelers once came for tea, shelter, and rumors of immortals in the mountains.
+## Run the 3D game
 
-Then the moon changed.
-
-At sunrise, the grass still shines and the houses still look warm. At night, blue fire drifts over the paths, corpses remember how to stand, and a burning lion stalks the edge of the village. The sword bearer has no grand prophecy yet, only a blade, a few unstable skills, and a place that refuses to stay peaceful.
-
-## Characters & Foes
-
-| The Sword Bearer |
-| --- |
-| ![The Sword Bearer](docs/showcase/images/character-sword-bearer.png) |
-
-**The Sword Bearer** is the prototype hero: a quiet wanderer in pale robes, carrying a blade that looks too bright for a village this cursed. Their story is still unwritten, but the shape is already there: a lone cultivator, a broken road, and a night that keeps testing whether courage is a skill or a habit.
-
-| Bone Wanderer | Ember Runner |
-| --- | --- |
-| ![Bone Wanderer](docs/showcase/images/character-bone-wanderer.png) | ![Ember Runner](docs/showcase/images/character-ember-runner.png) |
-
-**Bone Wanderers** are the old dead of the road, held together by resentment and half-remembered patrol routes. They are slow enough to read, close enough to punish careless attacks, and useful as the first pressure test for the combat loop.
-
-**Ember Runners** are faster, leaner, and meaner. They move like a warning flare through the grass, forcing the player to dash, guard, and reposition instead of standing still and trading blows.
-
-| Ashfire Lion | Green Revenant |
-| --- | --- |
-| ![Ashfire Lion](docs/showcase/images/character-fire-lion.png) | ![Green Revenant](docs/showcase/images/character-green-revenant.png) |
-
-**The Ashfire Lion** is the prototype's signature threat: a burning beast that turns the moonlit road into a danger line. It reads clearly in both day and night, but at night its glow becomes part of the village atmosphere.
-
-**Green Revenants** are bodies pulled back into motion by unstable skill magic. They are not quite enemies and not quite allies in spirit, a hint of the stranger systems this prototype was starting to explore.
-
-## What You Can Do
-
-- **Switch between day and night** with `P`, changing the village from bright grassland to moonlit danger.
-- **Fight in quick top-down melee** with attacks, guard timing, dash movement, stamina pressure, hit flashes, knockback, and impact feedback.
-- **Face prototype enemies** including skeletal attackers, zombies, fast enemies, and a blazing fire-lion variant.
-- **Explore a compact fantasy village** with tiled paths, lantern-lit buildings, trees, rocks, breakables, particles, and hand-placed landmarks.
-- **Open the inventory overlay** and see the early RPG structure behind the combat prototype.
-
-![Night fire lion encounter](docs/showcase/images/05-night-fire-lion-encounter.png)
-
-## Screenshots
-
-| Day Village | Day Combat |
-| --- | --- |
-| ![Day village](docs/showcase/images/01-day-village.png) | ![Day fire lion encounter](docs/showcase/images/02-day-fire-lion-encounter.png) |
-
-| Night Village | Night Combat |
-| --- | --- |
-| ![Night village](docs/showcase/images/04-night-village.png) | ![Night fire lion encounter](docs/showcase/images/05-night-fire-lion-encounter.png) |
-
-| Inventory |
-| --- |
-| ![Inventory overlay](docs/showcase/images/03-inventory-overlay.png) |
-
-## Controls
-
-- Move: `WASD` or arrow keys
-- Attack: `J` or left mouse button
-- Guard: `K`
-- Dash: `L`
-- Use selected skill: `Space`
-- Select skills: `1`-`5`
-- Inventory: `M`
-- Toggle day/night: `P`
-- Reset scene: `R`
-
-## Running It
-
-This project uses Godot `4.6.2`.
+Install **Godot 4.6.2**, clone this repository, then run from its root:
 
 ```bash
+godot --headless --editor --path . --import --quit
 godot --path .
 ```
 
-Local release builds can be exported into `out/`, which is ignored by git:
+The default scene is `scenes/rebirth/Stillwater.tscn`. To select it explicitly:
 
 ```bash
-mkdir -p out
-godot --headless --path . --export-release "macOS" out/moonlit-jianghu-macos.zip
-godot --headless --path . --export-release "Windows Desktop" out/moonlit-jianghu-windows.exe
+godot --path . res://scenes/rebirth/Stillwater.tscn
 ```
 
-Unsigned builds may trigger operating-system security prompts.
+You can also import `project.godot` in the Godot editor and press **F6** on that scene, or **F5** for the default game. Both versions have Chinese in-game UI; the README translations do not imply localized game menus.
 
-## Prototype Status
+### 3D controls
 
-Moonlit Jianghu is public as an archival prototype and visual showcase. Some tests document older scene expectations, some systems are experimental, and not every asset in the tree is used by the current scene.
+| Action | Keyboard / mouse |
+| --- | --- |
+| Move | WASD / arrows |
+| Attack | Left mouse / J; hold for combos |
+| Guard / timed deflection | Right mouse / K |
+| Dash, leave echo | Shift / Space / L |
+| Recall slash / shove | Q / E |
+| Heal with limited wine | R |
+| Activate seal / posture follow-up | F |
+| Switch straight / heavy / spirit blade | 1 / 2 / 3 |
+| Pause / fullscreen | Esc / F11 |
 
-No open-source license has been selected yet. Until a license is added, the code and assets are visible for reference but not explicitly granted for reuse.
+Controller mappings are implemented; physical-controller validation is still pending.
+
+## Build, verify and contribute
+
+See [Development & builds](docs/DEVELOPMENT.md) for export commands, architecture, tests and capture tools. The default Git branch is `master`.
+
+- `python3 scripts/tools/run_tests.py`: **32/32** scripts passed on 2026-09-06, including movement stopping, animation motion, recall, collision damage, directional avoidance and feedback.
+- Local exports: `output/releases/Stillwater-macOS.zip` and `output/releases/Stillwater-Windows.zip`. They are ignored by Git; this README does not advertise a published release download.
+- macOS startup was checked on Apple M4 / Metal. Windows was cross-exported, not tested on Windows hardware. No Apple notarization has been performed.
+- This is a single-map chapter. Bespoke character art, broader content, sustained human playtesting and cross-hardware validation remain open work.
+
+[Current design and implementation](docs/STILLWATER.md) · [Documentation index](docs/README.md) · [Asset credits](docs/THIRD_PARTY_ASSETS.md)
+
+No repository-wide reuse license has been selected. Third-party components retain their own licenses, including CC0 KayKit characters and OFL Noto fonts.
+
+---
+
+## Previous 2D version · Qinglan Night
+
+The earlier 2D wuxia village remains in the repository as a separately launchable version. It uses sprite characters, day/night village scenery, melee combos, three weapon styles, five spells, inventory, growth choices and the Mountain Guardian encounter. It is not the default scene and does not contain the new 3D recall, posture or directional-feedback systems.
+
+![Previous 2D title](docs/showcase/v2/01-title.png)
+
+![Previous 2D boss encounter](docs/showcase/v2/10-mountain-guardian.png)
+
+### Run the 2D version
+
+After the same import step:
+
+```bash
+# Previous 2D title and journey
+godot --path . res://scenes/interface/TitleScreen.tscn
+# Direct entry to the 2D world
+godot --path . res://scenes/main/Main.tscn
+```
+
+In the editor, open the desired scene and press **F6**. **F5** continues to launch the 3D default; there is no need to modify `project.godot`.
+
+2D controls: WASD/arrows move, J/left mouse attack, K guard, Shift/L dash, 1–5 cast spells, Space repeat the selected spell, M inventory, Esc pause. These differ from the 3D bindings. The shared sound autoload now leaves continuous music disabled in both versions.
+
+[2D implementation archive](docs/POLISH.md) · [2D art archive](docs/ART_V2.md) · [Original design archive](docs/archive/2d-game-plan.md)

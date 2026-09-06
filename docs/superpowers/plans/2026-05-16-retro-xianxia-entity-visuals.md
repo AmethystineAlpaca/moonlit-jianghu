@@ -1,3 +1,5 @@
+> **历史归档 / Legacy 2D reference.** 本文描述旧二维版本的设计、实验或素材流程，不代表当前 3D 功能与待办状态。[当前版本说明](../../STILLWATER.md)。
+
 # Retro Xianxia Entity Visuals Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.

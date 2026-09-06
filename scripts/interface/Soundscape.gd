@@ -1,24 +1,17 @@
 extends Node
 var music: AudioStreamPlayer
+var stopping := false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	if DisplayServer.get_name() == "headless":
 		return
 	get_tree().auto_accept_quit = false
-	music = AudioStreamPlayer.new()
-	var stream := load("res://assets/audio/qinglan_night.wav") as AudioStreamWAV
-	stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
-	stream.loop_begin = 0
-	stream.loop_end = 22050 * 24
-	music.stream = stream
-	music.volume_db = -17.0
-	add_child(music)
-	music.tree_exiting.connect(_stop_music)
+	# No continuous music bed: the courtyard leaves space for combat Foley.
 	var settings := ConfigFile.new()
 	settings.load("user://settings.cfg")
 	AudioServer.set_bus_mute(0, not bool(settings.get_value("audio", "sound", true)))
-	music.play()
+
 
 func _stop_music() -> void:
 	if is_instance_valid(music):
@@ -30,8 +23,19 @@ func _notification(what: int) -> void:
 		shutdown()
 
 func shutdown() -> void:
-	_stop_music()
+	if stopping: return
+	stopping = true
+	var scene := get_tree().current_scene
+	if is_instance_valid(scene) and scene.has_method("prepare_shutdown"): scene.prepare_shutdown()
+	get_tree().paused = true
+	_stop_audio_tree(get_tree().root)
 	# Let the audio server release the playback on its next mix before teardown.
 	await get_tree().process_frame
 	await get_tree().create_timer(0.08, true).timeout
 	get_tree().quit()
+
+func _stop_audio_tree(node: Node) -> void:
+	if node is AudioStreamPlayer or node is AudioStreamPlayer3D or node is AudioStreamPlayer2D:
+		node.stop()
+		node.stream = null
+	for child in node.get_children(): _stop_audio_tree(child)

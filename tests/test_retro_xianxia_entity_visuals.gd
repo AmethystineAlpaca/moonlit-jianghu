@@ -250,7 +250,9 @@ func _test_player_attack_animation_moves_sword() -> void:
 
 	var before_rotation := sword.rotation
 	player.call("_try_melee_attack")
-	await process_frame
+	# Sword pose updates on physics ticks, which need not coincide with a render frame.
+	await physics_frame
+	await physics_frame
 	_assert_true(absf(sword.rotation - before_rotation) > 0.05, "player attack animation swings sword")
 
 	player.last_facing_direction = Vector2.RIGHT

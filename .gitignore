@@ -16,3 +16,6 @@ __pycache__/
 # Local captures, release bundles and working files
 /output/
 /tmp/
+
+/docs/showcase/v2/*.png.import
+/docs/showcase/v3/*.png.import

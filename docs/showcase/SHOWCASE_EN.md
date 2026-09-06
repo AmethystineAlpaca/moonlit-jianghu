@@ -1,74 +1,19 @@
-# Moonlit Jianghu
+# Stillwater · Current 3D showcase
 
-An unfinished Godot 4 top-down action RPG prototype with a retro xianxia mood.
+![3D title](v3/01-title.png)
 
-This project is not a finished game. It is a playable snapshot of an experiment: movement, melee combat, enemy behavior, a small village map, day-night switching, simple inventory UI, and a collection of AI-assisted pixel-art asset experiments.
+[![Combat preview](v3/combat-preview.gif)](v3/combat-readability.mp4)
 
-![Day fire lion encounter](images/02-day-fire-lion-encounter.png)
+[Watch MP4](v3/combat-readability.mp4). Native rendering with scripted controls, showing weapon preparation, damage direction and defense; not a performance benchmark.
 
-## Download Builds
+Three weapons, dash echoes and recall cuts, shove collisions, projectile reflection and posture follow-ups across three seals and the final Wuxiang encounter.
 
-Release exports can be generated into `out/`:
+[Current features and both launch paths](../../README.md) · [Development and exports](../DEVELOPMENT.md)
 
-- `out/moonlit-jianghu-macos.zip`
-- `out/moonlit-jianghu-windows.exe`
+## Retained 2D version
 
-Build artifacts are intentionally ignored by git. Attach them to a GitHub Release or upload them to a game page instead of committing them directly.
+![2D title](v2/01-title.png)
 
-The macOS build is unsigned, so macOS may ask players to right-click and choose Open. The Windows executable is also unsigned, so Windows Defender may show a warning.
+![2D boss](v2/10-mountain-guardian.png)
 
-## What Is In This Prototype
-
-- Top-down player movement with dash, melee attacks, blocking, stamina, and combat feedback.
-- Enemy encounters including skeleton-style enemies, fast enemies, zombies, and a fire-lion variant.
-- A small curated village map with houses, trees, breakable objects, landmarks, and boundary walls.
-- Switchable day and night ambience with bright grassland, darker ground art, lights, firefly-like particles, and mood effects.
-- A lightweight inventory overlay with equipment and bag slots.
-
-![Day village](images/01-day-village.png)
-
-## Controls
-
-- Move: `WASD` or arrow keys
-- Attack: `J` or left mouse button
-- Defend: `K`
-- Dash: `L`
-- Use selected skill: `Space`
-- Select skills: `1`-`5`
-- Inventory: `M`
-- Toggle day/night: `P`
-- Reset scene: `R`
-
-![Inventory overlay](images/03-inventory-overlay.png)
-
-## Project Status
-
-This is a stopping point, not a production release. Some tests still describe older scene expectations, some visual systems are experimental, and the asset folder contains both active and unused exploratory files.
-
-The most honest way to view it is as a preserved prototype: a record of the game direction, the visual experiments, and the combat feel that made it far enough to be shared.
-
-![Night village](images/04-night-village.png)
-
-![Night fire lion encounter](images/05-night-fire-lion-encounter.png)
-
-## Building Locally
-
-This project uses Godot `4.6.2`.
-
-```bash
-godot --path .
-```
-
-Export macOS:
-
-```bash
-mkdir -p out
-godot --headless --path . --export-release "macOS" out/moonlit-jianghu-macos.zip
-```
-
-Export Windows:
-
-```bash
-mkdir -p out
-godot --headless --path . --export-release "Windows Desktop" out/moonlit-jianghu-windows.exe
-```
+Run the previous village from the repository root with `godot --path . res://scenes/interface/TitleScreen.tscn`. It retains its own spells, inventory and growth systems, and is not the default entry.
