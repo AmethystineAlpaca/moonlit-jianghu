@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Questions and ideas / 问答与建议
+    url: https://github.com/AmethystineAlpaca/moonlit-jianghu/discussions
+    about: Ask about the game, discuss mechanics, or suggest a direction. / 交流玩法、提出方向或询问游戏问题。
+  - name: Preview downloads / 试玩下载
+    url: https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1
+    about: Build files, platform notes and known limitations. / 构建文件、平台说明与已知限制。

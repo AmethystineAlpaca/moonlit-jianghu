@@ -11,7 +11,7 @@ func _physics_process(delta: float) -> void:
 	if not world.encounter:
 		queue_free()
 		return
-	if world.mode != "play": return
+	if world.mode != "play" or world.director.cinematic_left > 0: return
 	timer -= delta
 	core.scale = Vector3.ONE * clampf(1-timer/1.25,0.1,1)
 	if timer <= 0:

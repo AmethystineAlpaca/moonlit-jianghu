@@ -1,0 +1,51 @@
+name: Playtest feedback / 试玩反馈
+description: Tell us how combat, movement and readability felt. / 告诉我们操作、战斗和读招的感受。
+title: "[Playtest] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A single encounter is enough. English and Chinese are welcome. Concrete moments help more than an overall score; skipped questions are fine.
+        不用通关，打一场即可。欢迎中文或英文，比起打分，我们更想知道哪个具体时刻出了问题。
+  - type: input
+    id: build
+    attributes:
+      label: Build played / 试玩版本
+      placeholder: "v0.3.0-preview.1 or a commit hash; current 3D or previous 2D"
+    validations:
+      required: true
+  - type: textarea
+    id: setup
+    attributes:
+      label: Setup and progress / 设备与进度
+      description: OS, hardware if known, input device, approximate time played and encounter reached.
+      placeholder: "Windows 11, GPU ..., keyboard/mouse, about 5 minutes, first seal"
+    validations:
+      required: true
+  - type: textarea
+    id: moment
+    attributes:
+      label: One moment that stood out / 一个最有印象的时刻
+      description: What were you trying to do, what happened, and what did you expect? Positive and negative examples both help.
+    validations:
+      required: true
+  - type: textarea
+    id: readability
+    attributes:
+      label: Enemy attacks and damage feedback / 读招与受击反馈
+      description: Could you anticipate attacks and tell when you were hit, guarded or broke posture? Include a moment when the feedback was unclear.
+  - type: textarea
+    id: control
+    attributes:
+      label: Movement, attacks and skills / 移动、攻击与技能
+      description: How did stopping, changing direction and attacking feel? Did dash → recall or shove → collision give you a useful choice?
+  - type: textarea
+    id: next-change
+    attributes:
+      label: The first thing you would change / 最希望先改的一件事
+      description: Explain the player problem. A proposed solution is optional.
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Optional clip or screenshot / 可选录像或截图
+      description: Drag a file here or link a clip with the relevant timestamp.

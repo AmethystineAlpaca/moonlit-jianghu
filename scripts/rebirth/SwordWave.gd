@@ -11,7 +11,7 @@ func _ready() -> void:
 		var a := lerpf(-1.2,1.2,float(i)/14)
 		F.box(self,Vector3(sin(a)*0.9,0,-cos(a)*0.4),Vector3(0.13,0.055,0.08),mat)
 func _physics_process(delta: float) -> void:
-	if world.mode != "play": return
+	if world.mode != "play" or world.director.cinematic_left > 0: return
 	lifetime -= delta
 	var next := position+direction*delta*15
 	var query := PhysicsRayQueryParameters3D.create(position,next,1)

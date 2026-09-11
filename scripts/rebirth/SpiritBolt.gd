@@ -11,7 +11,7 @@ func _ready() -> void:
 	F.box(self,Vector3.ZERO,Vector3(0.045,0.045,0.55),F.material(Color("efac79"),0.1,0.4,2))
 	F.sphere(self,Vector3(0,0,-0.2),0.06,F.material(Color("ffd7a7"),0,0.4,2))
 func _physics_process(delta: float) -> void:
-	if world.mode != "play": return
+	if world.mode != "play" or world.director.cinematic_left > 0: return
 	lifetime -= delta
 	var next := position+direction*delta*(14.0 if reflected else 7.5)
 	var query := PhysicsRayQueryParameters3D.create(position,next,1)
@@ -31,6 +31,7 @@ func _physics_process(delta: float) -> void:
 	if Vector2(world.player.position.x-position.x,world.player.position.z-position.z).length() < 0.65:
 		if world.player.guarding and world.player.guard_time < 0.22 and world.player.facing.dot(-direction)>0.2:
 			reflect()
+			world.combat_event("parry",world.player,source)
 			return
 		if is_instance_valid(source): world.player.hurt(1.5,source)
 		queue_free()

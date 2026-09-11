@@ -1,0 +1,63 @@
+name: Bug report / 问题反馈
+description: Report a crash, control problem, rendering issue, or reproducible bug. / 反馈可复现的问题。
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        English or Chinese is welcome. Please search existing issues first. A short, specific report is enough; unknown hardware details can be marked "unknown".
+        欢迎中文或英文。请先搜索已有问题；不清楚的硬件信息可以写“不清楚”。
+  - type: dropdown
+    id: game-version
+    attributes:
+      label: Game version / 游戏版本
+      options:
+        - Current 3D — Stillwater / 雨歇
+        - Previous 2D — Qinglan Night / 青岚夜
+    validations:
+      required: true
+  - type: input
+    id: build
+    attributes:
+      label: Release tag or commit / 发布版本或提交
+      placeholder: "v0.3.0-preview.1, or a commit hash; say if running a locally modified build"
+    validations:
+      required: true
+  - type: textarea
+    id: system
+    attributes:
+      label: System and input / 系统与输入设备
+      description: OS and version, CPU/GPU if known, keyboard/mouse or controller. If running source, include the Godot version and renderer.
+      placeholder: "macOS / Windows / Linux version; CPU/GPU; keyboard + mouse; downloaded build or Godot version"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce / 复现步骤
+      description: Include the scene, encounter, weapon and key sequence when relevant. Say how often it happens.
+      placeholder: |
+        1. Start the 3D chapter and choose ...
+        2. During the ... encounter, press ...
+        3. The problem happens ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior / 预期表现
+      placeholder: "What did you expect the game to do?"
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior / 实际表现
+      placeholder: "What happened instead? If input felt delayed, describe the action and moment."
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Clip, screenshot or relevant log / 录像、截图或相关日志
+      description: Optional. Drag a file here, link a clip with its timestamp, or paste the relevant error. Remove personal information from logs.

@@ -12,6 +12,14 @@ A rain-washed mountain courtyard, three sealed lanterns, and a final duel with W
 
 [Watch the combat video (MP4)](docs/showcase/v3/combat-readability.mp4). Captured in the native engine with scripted controls; the preview shows attack preparation, damage feedback and defense. It is not a performance benchmark or a human playtest.
 
+## Sword-intent update · 2026-09-11
+
+Successful combat builds sword intent. Press **V** at full intent to release an expanding sword cut, reflect projectiles, and gain six seconds of stronger attacks and faster stamina recovery. Six upgrades across two three-card choices support different builds: blade damage, resilience, echo recall, stamina, execution healing, and wine.
+
+Completed seals are checkpoints for the current run. Defeat can resume from the last checkpoint with earned upgrades; quitting does not save a run. Three difficulty settings, rewarded last-moment dodges, a stronger two-phase boss, and post-execution posture recovery make defense and counterplay matter. The hero now wears ink and jade robes with a moving scarf; wet stone, maple drift, floating seal armatures, readable Chinese fonts, ability medallions, and a mastery scorecard complete the presentation. New original stingers preserve the absence of looping music.
+
+![Sword-intent update, rendered in Godot](docs/showcase/v4/02-stillness-cut.png)
+
 ## Current 3D version
 
 - A real-time 3D courtyard with weathered stone, water, maple trees, rain, shadows and ambient occlusion.
@@ -62,8 +70,8 @@ Controller mappings are implemented; physical-controller validation is still pen
 
 See [Development & builds](docs/DEVELOPMENT.md) for export commands, architecture, tests and capture tools. The default Git branch is `master`.
 
-- `python3 scripts/tools/run_tests.py`: **32/32** scripts passed on 2026-09-06, including movement stopping, animation motion, recall, collision damage, directional avoidance and feedback.
-- Local exports: `output/releases/Stillwater-macOS.zip` and `output/releases/Stillwater-Windows.zip`. They are ignored by Git; this README does not advertise a published release download.
+- `python3 scripts/tools/run_tests.py`: **36/36** scripts passed on 2026-09-11, including movement stopping, animation motion, recall, collision damage, directional avoidance and feedback.
+- Local exports: `output/releases/Stillwater-mastery-macOS.zip` and `output/releases/Stillwater-mastery-Windows.zip`. They are ignored by Git; this README does not advertise a published release download.
 - macOS startup was checked on Apple M4 / Metal. Windows was cross-exported, not tested on Windows hardware. No Apple notarization has been performed.
 - This is a single-map chapter. Bespoke character art, broader content, sustained human playtesting and cross-hardware validation remain open work.
 

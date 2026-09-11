@@ -1,5 +1,9 @@
 extends RefCounted
 
+const WEATHERED_SHADER := preload("res://scripts/rebirth/shaders/Weathered.gdshader")
+const WATER_SHADER := preload("res://scripts/rebirth/shaders/Lake.gdshader")
+const FOLIAGE_SHADER := preload("res://scripts/rebirth/shaders/Foliage.gdshader")
+
 static func material(color: Color, metal := 0.0, roughness := 0.8, emission := 0.0) -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()
 	m.albedo_color = color
@@ -69,21 +73,60 @@ static func ring(parent: Node3D, pos: Vector3, radius: float, width: float, mat:
 	return instance(parent, mesh, pos, mat)
 
 static func weathered(color: Color, scale_value := 3.0) -> ShaderMaterial:
-	var shader := Shader.new()
-	shader.code = """shader_type spatial;
-uniform vec4 tint:source_color;
-uniform float grain=3.0;
-varying vec3 wp;
-float hash(vec3 p){p=fract(p*0.3183099+vec3(0.1,0.2,0.3));p*=17.0;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
-float noise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(mix(hash(i),hash(i+vec3(1,0,0)),f.x),mix(hash(i+vec3(0,1,0)),hash(i+vec3(1,1,0)),f.x),f.y),mix(mix(hash(i+vec3(0,0,1)),hash(i+vec3(1,0,1)),f.x),mix(hash(i+vec3(0,1,1)),hash(i+vec3(1,1,1)),f.x),f.y),f.z);}
-void vertex(){wp=(MODEL_MATRIX*vec4(VERTEX,1.0)).xyz;}
-void fragment(){float n=noise(wp*grain);float fine=noise(wp*grain*12.0);float moss=smoothstep(0.58,0.8,noise(wp*0.8));ALBEDO=tint.rgb*(0.78+n*0.35+fine*0.14);ALBEDO=mix(ALBEDO,vec3(0.14,0.21,0.15),moss*0.3);ROUGHNESS=0.62+fine*0.25;METALLIC=0.08;NORMAL_MAP=vec3(0.5+(fine-0.5)*0.14,0.5+(n-0.5)*0.12,1.0);}
-"""
 	var mat := ShaderMaterial.new()
-	mat.shader = shader
+	mat.shader = WEATHERED_SHADER
 	mat.set_shader_parameter("tint",color)
 	mat.set_shader_parameter("grain",scale_value)
 	return mat
+
+static func water() -> ShaderMaterial:
+	var mat := ShaderMaterial.new()
+	mat.shader = WATER_SHADER
+	return mat
+
+static func foliage(color: Color, wind_strength := 0.1) -> ShaderMaterial:
+	var mat := ShaderMaterial.new()
+	mat.shader = FOLIAGE_SHADER
+	mat.set_shader_parameter("tint", color)
+	mat.set_shader_parameter("wind_strength", wind_strength)
+	return mat
+
+static func crystal_mesh() -> ArrayMesh:
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var waist := [Vector3(0.13, 0, 0), Vector3(0, 0, 0.13), Vector3(-0.13, 0, 0), Vector3(0, 0, -0.13)]
+	for i in range(4):
+		var a: Vector3 = waist[i]
+		var b: Vector3 = waist[(i + 1) % 4]
+		for v in [Vector3(0, 0.43, 0), b, a, Vector3(0, -0.23, 0), a, b]:
+			surface.add_vertex(v)
+	surface.generate_normals()
+	return surface.commit()
+
+static func mountain_mesh(seed_value: int) -> ArrayMesh:
+	var random := RandomNumberGenerator.new()
+	random.seed = seed_value
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var lower: Array[Vector3] = []
+	var shoulder: Array[Vector3] = []
+	var crown: Array[Vector3] = []
+	for i in range(7):
+		var angle := i * TAU / 7.0
+		lower.append(Vector3(cos(angle) * random.randf_range(0.8, 1.2), 0, sin(angle) * random.randf_range(0.8, 1.2)))
+		shoulder.append(Vector3(cos(angle) * 0.64, random.randf_range(0.4, 0.6), sin(angle) * 0.61))
+		crown.append(Vector3(cos(angle) * 0.22 + 0.14, random.randf_range(0.8, 0.98), sin(angle) * 0.25 - 0.08))
+	for i in range(7):
+		var next := (i + 1) % 7
+		for ring_pair in [[lower, shoulder], [shoulder, crown]]:
+			var a: Vector3 = ring_pair[0][i]
+			var b: Vector3 = ring_pair[0][next]
+			var c: Vector3 = ring_pair[1][i]
+			var d: Vector3 = ring_pair[1][next]
+			for v in [a, c, b, b, c, d]: surface.add_vertex(v)
+		for v in [crown[i], Vector3(0.12, 1.09, -0.04), crown[next]]: surface.add_vertex(v)
+	surface.generate_normals()
+	return surface.commit()
 
 static func paver_mesh() -> ArrayMesh:
 	var s := SurfaceTool.new()

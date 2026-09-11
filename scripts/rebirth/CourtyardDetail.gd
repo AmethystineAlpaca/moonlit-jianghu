@@ -4,6 +4,7 @@ static func build(world: Node3D) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 733
 	var grass := MultiMeshInstance3D.new()
+	grass.name = "WindGrass"
 	var blades := MultiMesh.new()
 	blades.transform_format = MultiMesh.TRANSFORM_3D
 	blades.use_colors = true
@@ -12,10 +13,10 @@ static func build(world: Node3D) -> void:
 	blades.mesh = mesh
 	blades.instance_count = 2200
 	grass.multimesh = blades
-	var mat := F.material(Color("496a51"))
-	mat.vertex_color_use_as_albedo = true
-	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	var mat := ShaderMaterial.new()
+	mat.shader = preload("res://scripts/rebirth/shaders/Grass.gdshader")
 	grass.material_override = mat
+	grass.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	world.add_child(grass)
 	var beds := [Vector3(-13,0,8),Vector3(13,0,7),Vector3(-15,0,-13),Vector3(14,0,-14),Vector3(-8,0,-18)]
 	for p in beds:
@@ -60,6 +61,19 @@ static func build(world: Node3D) -> void:
 	for p in [Vector3(-9,0,5),Vector3(9,0,4)]:
 		F.box(world,p+Vector3(0,0.58,0),Vector3(2,0.16,0.55),world.wood,true)
 		for side in [-1,1]: F.box(world,p+Vector3(side*0.7,0.26,0),Vector3(0.17,0.5,0.4),world.edge)
+	# A few carefully placed bronze accents lead the eye toward the mountain hall.
+	for side in [-1, 1]:
+		var brazier := Vector3(side * 5.8, 0, -15.6)
+		F.cylinder(world, brazier + Vector3(0, 0.2, 0), 0.55, 0.4, world.edge, 0.43, 8)
+		F.cylinder(world, brazier + Vector3(0, 0.7, 0), 0.31, 0.6, world.gold, 0.45, 8)
+		F.ring(world, brazier + Vector3(0, 1.03, 0), 0.44, 0.035, world.gold)
+		F.cylinder(world, brazier + Vector3(0, 1.015, 0), 0.38, 0.015, world.dark, -1, 12)
+		for i in range(3):
+			F.cylinder(world, brazier + Vector3((i-1)*0.12, 1.2, 0), 0.014, 0.4, world.wood, -1, 5)
+			F.sphere(world, brazier + Vector3((i-1)*0.12, 1.41, 0), 0.023, F.material(Color("dba578"), 0, 0.8, 1.5))
+	var atmosphere := preload("res://scripts/rebirth/CourtyardAtmosphere.gd").new()
+	atmosphere.world = world
+	world.add_child(atmosphere)
 
 static func banner(world: Node3D, p: Vector3) -> void:
 	F.cylinder(world,p+Vector3(0,2.0,0),0.065,4.0,world.wood,-1,8)

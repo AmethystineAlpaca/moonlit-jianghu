@@ -19,3 +19,5 @@ __pycache__/
 
 /docs/showcase/v2/*.png.import
 /docs/showcase/v3/*.png.import
+
+/docs/showcase/v4/*.png.import

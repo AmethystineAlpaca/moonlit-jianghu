@@ -2,15 +2,27 @@
 
 [English](README.md) | [中文](README.zh.md) | [日本語](README.ja.md) | [Русский](README.ru.md)
 
-**Moonlit Jianghu 当前的 3D 武侠动作篇章，使用 Godot 4.6.2。**
+**Moonlit Jianghu 的 3D 武侠动作篇章 · 剑意更新，使用 Godot 4.6.2。**
 
 雨后的青岚山门，三盏石灯仍未熄灭。选择兵刃，读懂敌人的蓄势，借闪避、见切与碰撞制造机会，解开封印后向无相问剑。
 
-![当前 3D 标题](docs/showcase/v3/01-title.png)
+![剑意更新 · 实机标题](docs/showcase/v4/01-title.png)
 
 [![当前战斗动态预览](docs/showcase/v3/combat-preview.gif)](docs/showcase/v3/combat-readability.mp4)
 
 [观看完整战斗视频（MP4）](docs/showcase/v3/combat-readability.mp4)。视频使用原生引擎渲染、脚本操控，展示读招、受击与防守；不是真人试玩录像或性能基准。
+
+## 剑意更新 · 2026-09-11
+
+进攻、见切、极限闪避、命中回锋与追斩积累剑意；积满后按 **V 万籁一斩**，剑环沿途斩敌、反弹飞弹，随后获得 6 秒伤害与回气提升。每次对决都有积累与爆发。
+
+- 六种成长分布于两次三选一：强化兵刃、提高气血、精进回锋、加快回气、追斩回血、补充温酒。
+- 已解封印成为本局检查点；失败后保留成长、恢复气血再战，不必重复整段旅程。退出游戏后不保留本局检查点。
+- 听雨 / 问剑 / 无相三档难度；极限闪避奖励反击，首领出招具备抗打断，追斩后架势归零，避免无限处决。
+- 墨青剑客与动态披巾、湿石与雨圈、飘枫、悬浮灯阵；技能图标、剑意条、剑评结算和可读中文字体全面更新。
+- 原创短音效用于石灯、首领、绝技与胜利；保留无持续循环配乐的设计。
+
+![万籁一斩 · 原生引擎画面](docs/showcase/v4/02-stillness-cut.png)
 
 ## 当前 3D 版本
 
@@ -52,6 +64,7 @@ godot --path . res://scenes/rebirth/Stillwater.tscn
 | 闪避并留影 | Shift / 空格 / L |
 | 回锋 / 破阵 | Q / E |
 | 使用限量温酒治疗 | R |
+| 万籁一斩（满剑意） | V |
 | 点亮石灯 / 破势追斩 | F |
 | 切换直剑 / 重刃 / 灵剑 | 1 / 2 / 3 |
 | 暂停 / 全屏 | Esc / F11 |
@@ -62,8 +75,8 @@ godot --path . res://scenes/rebirth/Stillwater.tscn
 
 [开发与构建说明](docs/DEVELOPMENT.md) 包含导出命令、架构、测试和录像工具。Git 默认分支为 `master`。
 
-- `python3 scripts/tools/run_tests.py`：2026-09-06 验证 **32/32** 通过，包含动作实际运动、松手制动、回锋、撞墙、侧移避击和伤害反馈。
-- 本地导出包为 `output/releases/Stillwater-macOS.zip`、`output/releases/Stillwater-Windows.zip`。构建产物不纳入 Git，当前没有在此提供公开发行包下载。
+- `python3 scripts/tools/run_tests.py`：2026-09-11 验证 **36/36** 通过，包含动作实际运动、松手制动、回锋、撞墙、侧移避击和伤害反馈。
+- 本地导出包为 `output/releases/Stillwater-mastery-macOS.zip`、`output/releases/Stillwater-mastery-Windows.zip`。构建产物不纳入 Git，当前没有在此提供公开发行包下载。
 - macOS 已在 Apple M4 / Metal 下验证启动；Windows 仅交叉导出，未完成 Windows 实机验证；尚未进行 Apple 公证。
 - 当前内容为单地图篇章，专属角色美术、更多内容、长期真人试玩与跨硬件验证仍待完善。
 

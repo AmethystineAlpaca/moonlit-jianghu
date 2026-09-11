@@ -22,7 +22,7 @@ func _ready() -> void:
 		mesh.surface_end()
 		F.instance(self,mesh,Vector3.ZERO,mat)
 func _process(delta: float) -> void:
-	if world.mode != "play": return
+	if world.mode != "play" or world.director.cinematic_left > 0: return
 	elapsed += delta
 	for bolt in get_tree().get_nodes_in_group("hostile_projectile"):
 		if bolt.position.distance_to(position+Vector3.UP*0.6) < 2.0: bolt.reflect()

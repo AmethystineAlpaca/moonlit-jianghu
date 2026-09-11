@@ -29,7 +29,7 @@ func style(node: Node) -> void:
 		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	for child in node.get_children(): style(child)
 func _process(delta: float) -> void:
-	if world.mode != "play": return
+	if world.mode != "play" or world.director.cinematic_left > 0: return
 	life -= delta
 	cloth.albedo_color.a = minf(0.16,life*0.12)
 	if life <= 0: queue_free()
