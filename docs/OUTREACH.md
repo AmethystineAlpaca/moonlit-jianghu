@@ -18,7 +18,7 @@ I'm the maintainer of Moonlit Jianghu, and I'm sharing a playable preview of its
 
 The interaction I'm testing is movement that creates a follow-up. Dashing leaves a temporary echo; Q recalls along that path and cuts through opponents. E shoves an enemy into another enemy or a wall. Timed guards can reflect projectiles, and breaking posture opens an F follow-up. There are three blades with different attack rhythms.
 
-Some of the most useful changes came from negative feedback. Players couldn't tell when an expanding warning circle would finish, so ordinary enemies now communicate their attacks through a raised weapon, a short hold and a pre-strike glint. I also revised input buffering, stopping motion and damage-direction feedback. I want to find out whether these changes read clearly to someone who hasn't watched the project develop.
+Some of the most useful changes came from early feedback: an expanding warning circle did not communicate when the attack would land. Ordinary enemies now communicate their attacks through a raised weapon, a short hold and a pre-strike glint. I also revised input buffering, stopping motion and damage-direction feedback. I want to find out whether these changes read clearly to someone who hasn't watched the project develop.
 
 On the Godot side, this is a Godot 4.6.2 / GDScript project with skeletal animations, hand-bone weapon attachments, directional hit checks and collision-driven follow-ups. The source includes regression checks for animation movement, input-to-damage timing, recall paths and directional avoidance. The characters use KayKit's CC0 Adventurers models with runtime palette, proportion and animation-timing changes; they are not custom sculpts.
 
@@ -80,8 +80,8 @@ https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview
 
 | Destination | Status | Next useful action |
 | --- | --- | --- |
-| GitHub release | Publication handled separately; verify the tag page and attachments | Link the tested build, controls, platform notes and feedback form. |
-| GitHub Discussions | Available for project conversation | Keep one release/playtest thread with specific questions and respond to reports. |
+| GitHub release | [Published 2026-09-11 UTC](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1); four attachments verified | Collect platform feedback and download counts. |
+| GitHub Discussions | [Playtest announcement #1](https://github.com/AmethystineAlpaca/moonlit-jianghu/discussions/1), published 2026-09-11 UTC | Respond to concrete reports in the existing thread. |
 | Godot Forum / In Development | Draft only; no account available | Publish through the maintainer's account when available, after checking category rules. |
 | Other social channels | Copy prepared; no publication recorded here | Use an existing maintainer account and a relevant audience, with a native clip. |
 

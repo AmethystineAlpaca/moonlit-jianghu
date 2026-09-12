@@ -30,7 +30,7 @@ WASD / 方向键移动，左键 / J 出剑，右键 / K 格挡，Shift / 空格�
 
 `play_stillwater.gd` 自动控制移动、攻击、技能、闪避与追斩，不修改生命值、不跳过敌人。本轮原生 Metal 自动操控跑完三处封印和首领，击败 19 名敌人；其结果仅为回归检查，不代表真人平衡结论。`capture_duel_3d.gd` 是脚本操控的首领演示，原生渲染视频位于 `output/rebirth/Stillwater-combat.mp4`；固定帧率录制不是性能基准。
 
-构建位于 `output/releases`。macOS 在当前机器启动验证；Windows 为交叉导出，未完成 Windows 实机测试。尚未公证或公开发布。
+构建位于 `output/releases`。macOS 在当前机器启动验证；Windows 为交叉导出，未完成 Windows 实机测试。尚未公证。[公开试玩版 v0.3.0-preview.1](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1) 对应 `0a4f686`，从干净源码单独构建，2026-09-11 再次通过该版本的 32 项验证；下方剑意更新不包含在这个下载包中。
 
 ## 设计参考和边界
 

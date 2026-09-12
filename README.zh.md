@@ -2,6 +2,14 @@
 
 [English](README.md) | [中文](README.zh.md) | [日本語](README.ja.md) | [Русский](README.ru.md)
 
+**[Windows 下载](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.3.0-preview.1/Stillwater-Windows.zip) · [macOS 下载](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.3.0-preview.1/Stillwater-macOS.zip) · [版本说明](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1)**
+
+完整解压后启动，无需安装 Godot。**下载版本：v0.3.0-preview.1 / `0a4f686`。** 游戏界面为中文；macOS 尚未公证，Windows 待实机验证。此包早于下方的剑意更新：V、检查点与难度选择在新版源码中，尚未包含在本次下载。[下载版对应的源码与操作说明](https://github.com/AmethystineAlpaca/moonlit-jianghu/tree/v0.3.0-preview.1)。
+
+[试玩交流](https://github.com/AmethystineAlpaca/moonlit-jianghu/discussions/1) · [报告问题](https://github.com/AmethystineAlpaca/moonlit-jianghu/issues/new/choose) · [参与贡献](CONTRIBUTING.md) · [媒体与截图资料](docs/PRESS_KIT.md)
+
+喜欢这个项目，可以点 Star 收藏；使用 Watch → Custom → Releases 订阅新版本。具体的操作与读招反馈尤其有帮助。
+
 **Moonlit Jianghu 的 3D 武侠动作篇章 · 剑意更新，使用 Godot 4.6.2。**
 
 雨后的青岚山门，三盏石灯仍未熄灭。选择兵刃，读懂敌人的蓄势，借闪避、见切与碰撞制造机会，解开封印后向无相问剑。
@@ -76,7 +84,7 @@ godot --path . res://scenes/rebirth/Stillwater.tscn
 [开发与构建说明](docs/DEVELOPMENT.md) 包含导出命令、架构、测试和录像工具。Git 默认分支为 `master`。
 
 - `python3 scripts/tools/run_tests.py`：2026-09-11 验证 **36/36** 通过，包含动作实际运动、松手制动、回锋、撞墙、侧移避击和伤害反馈。
-- 本地导出包为 `output/releases/Stillwater-mastery-macOS.zip`、`output/releases/Stillwater-mastery-Windows.zip`。构建产物不纳入 Git，当前没有在此提供公开发行包下载。
+- 剑意更新的本地导出包为 `output/releases/Stillwater-mastery-macOS.zip`、`output/releases/Stillwater-mastery-Windows.zip`，不纳入 Git。[公开试玩包](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1) 是较早的 `0a4f686` 快照，2026-09-11 再次通过该版本的 32 项脚本验证。
 - macOS 已在 Apple M4 / Metal 下验证启动；Windows 仅交叉导出，未完成 Windows 实机验证；尚未进行 Apple 公证。
 - 当前内容为单地图篇章，专属角色美术、更多内容、长期真人试玩与跨硬件验证仍待完善。
 

@@ -2,6 +2,14 @@
 
 [English](README.md) | [中文](README.zh.md) | [日本語](README.ja.md) | [Русский](README.ru.md)
 
+**[Download for Windows](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.3.0-preview.1/Stillwater-Windows.zip) · [Download for macOS](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.3.0-preview.1/Stillwater-macOS.zip) · [Release notes](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1)**
+
+Extract the full ZIP and launch — no Godot editor required. **Download version: v0.3.0-preview.1 / `0a4f686`.** Chinese in-game UI; macOS is not notarized, and Windows awaits hardware testing. This preview predates the sword-intent update below: V, checkpoints and difficulty selection are available in newer source, not this download. [Source and controls for the downloaded build](https://github.com/AmethystineAlpaca/moonlit-jianghu/tree/v0.3.0-preview.1).
+
+[Playtest discussion](https://github.com/AmethystineAlpaca/moonlit-jianghu/discussions/1) · [Report a bug](https://github.com/AmethystineAlpaca/moonlit-jianghu/issues/new/choose) · [Contribute](CONTRIBUTING.md) · [Press & media](docs/PRESS_KIT.md)
+
+Star to keep the project in your collection; use Watch → Custom → Releases for new build notifications.
+
 **The current 3D wuxia action chapter of Moonlit Jianghu, built with Godot 4.6.2.**
 
 A rain-washed mountain courtyard, three sealed lanterns, and a final duel with Wuxiang. Choose a blade, read the opponent’s preparation, and turn movement, deflection and collisions into openings.
@@ -71,7 +79,7 @@ Controller mappings are implemented; physical-controller validation is still pen
 See [Development & builds](docs/DEVELOPMENT.md) for export commands, architecture, tests and capture tools. The default Git branch is `master`.
 
 - `python3 scripts/tools/run_tests.py`: **36/36** scripts passed on 2026-09-11, including movement stopping, animation motion, recall, collision damage, directional avoidance and feedback.
-- Local exports: `output/releases/Stillwater-mastery-macOS.zip` and `output/releases/Stillwater-mastery-Windows.zip`. They are ignored by Git; this README does not advertise a published release download.
+- Local sword-intent exports: `output/releases/Stillwater-mastery-macOS.zip` and `output/releases/Stillwater-mastery-Windows.zip`; ignored by Git. The separate [public preview](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1) is the earlier `0a4f686` snapshot, whose 32-script suite was verified again on 2026-09-11.
 - macOS startup was checked on Apple M4 / Metal. Windows was cross-exported, not tested on Windows hardware. No Apple notarization has been performed.
 - This is a single-map chapter. Bespoke character art, broader content, sustained human playtesting and cross-hardware validation remain open work.
 

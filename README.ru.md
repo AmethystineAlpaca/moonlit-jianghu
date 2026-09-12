@@ -2,6 +2,12 @@
 
 [English](README.md) | [中文](README.zh.md) | [日本語](README.ja.md) | [Русский](README.ru.md)
 
+**[Скачать для Windows](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.3.0-preview.1/Stillwater-Windows.zip) · [Скачать для macOS](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.3.0-preview.1/Stillwater-macOS.zip) · [Описание выпуска](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1)**
+
+Распакуйте весь ZIP и запустите игру — редактор Godot не нужен. Публичная сборка: **v0.3.0-preview.1 / `0a4f686`**, интерфейс на китайском. Приложение macOS не нотарифицировано; Windows ещё требует проверки на устройстве. Приём на V, контрольные точки и выбор сложности из новых исходников в этот архив не входят. [Исходники и управление для этой сборки](https://github.com/AmethystineAlpaca/moonlit-jianghu/tree/v0.3.0-preview.1).
+
+[Отзывы об игре](https://github.com/AmethystineAlpaca/moonlit-jianghu/discussions/1) · [Сообщить об ошибке](https://github.com/AmethystineAlpaca/moonlit-jianghu/issues/new/choose) · [Участие в проекте](CONTRIBUTING.md) · [Материалы для публикаций](docs/PRESS_KIT.md)
+
 **Текущая 3D-глава Moonlit Jianghu: экшен в духе уся на Godot 4.6.2.**
 
 Двор горного храма после дождя, три печати и финальная дуэль с Усяном.

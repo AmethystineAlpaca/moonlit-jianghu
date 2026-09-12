@@ -74,7 +74,11 @@ godot --headless --path . --export-release "Windows Desktop" output/releases/Sti
 
 Archive the **whole Windows output folder**, including `Stillwater.pck` if the preset produces a separate PCK, as `output/releases/Stillwater-Windows.zip`. Extract the macOS archive and run `Moonlit Jianghu.app`. Exports use the current 3D default. To produce a dedicated 2D export, use a separate checkout and change its main scene to `scenes/interface/TitleScreen.tscn`; do not change the repository default merely to play the old scene.
 
-macOS startup was checked on Apple M4 / Metal. Windows was cross-exported without Windows hardware validation; physical controllers are not yet validated. Builds are not Apple-notarized and no public game release is advertised here.
+macOS startup was checked on Apple M4 / Metal. Windows was cross-exported without Windows hardware validation; physical controllers are not yet validated. Builds are not Apple-notarized.
+
+[Public preview v0.3.0-preview.1](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1) contains desktop ZIPs, a native-engine video and SHA-256 checksums. It was exported from a clean archive of `0a4f6862533b29a813ab5698ac44cf112d4d59c6`; its 32-script suite and macOS startup were checked again on 2026-09-11. Use that tag's source to reproduce the release. Later sword-intent changes in `master` are not included in these downloads.
+
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for playtest reporting and [PRESS_KIT.md](PRESS_KIT.md) for version-specific descriptions and captures.
 
 ## Repository and history
 

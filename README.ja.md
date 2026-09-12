@@ -2,6 +2,12 @@
 
 [English](README.md) | [中文](README.zh.md) | [日本語](README.ja.md) | [Русский](README.ru.md)
 
+**[Windows 版](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.3.0-preview.1/Stillwater-Windows.zip) · [macOS 版](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.3.0-preview.1/Stillwater-macOS.zip) · [リリース情報](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1)**
+
+ZIP 全体を展開して起動できます。Godot エディターは不要です。公開プレビューは **v0.3.0-preview.1 / `0a4f686`**、ゲーム内 UI は中国語です。macOS は未公証、Windows は実機検証待ちです。新しいソースにある V 技、チェックポイント、難易度選択はこのダウンロードには含まれません。[このビルドのソースと操作方法](https://github.com/AmethystineAlpaca/moonlit-jianghu/tree/v0.3.0-preview.1)。
+
+[プレイ感想](https://github.com/AmethystineAlpaca/moonlit-jianghu/discussions/1) · [不具合報告](https://github.com/AmethystineAlpaca/moonlit-jianghu/issues/new/choose) · [貢献ガイド](CONTRIBUTING.md) · [画像・紹介資料](docs/PRESS_KIT.md)
+
 **Godot 4.6.2 製、Moonlit Jianghu の現在の 3D 武侠アクション。**
 
 雨上がりの山門で三つの封印を解き、最後の剣士・無相に挑みます。

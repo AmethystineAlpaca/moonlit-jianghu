@@ -10,6 +10,9 @@
 - [当前设计与后续工作](../documents/game_plan.md)
 - [素材来源与许可](THIRD_PARTY_ASSETS.md)
 - [中文展示页](showcase/SHOWCASE_ZH.md) / [English showcase](showcase/SHOWCASE_EN.md)
+- [公开试玩下载与版本说明](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1)
+- [试玩交流](https://github.com/AmethystineAlpaca/moonlit-jianghu/discussions/1) / [反馈与贡献指南](../CONTRIBUTING.md)
+- [媒体资料与截图](PRESS_KIT.md) / [社区发布草稿与记录](OUTREACH.md)
 
 ## 历史 2D 资料
 
