@@ -5,6 +5,7 @@ import hashlib
 import json
 import shutil
 import subprocess
+import sys
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -16,7 +17,7 @@ NOTICES = ("LICENSE", "LICENSE_SCOPE.md", "THIRD_PARTY_NOTICES.md")
 
 
 def run_engine(godot, stage, log, *args, check_errors=True):
-    result = subprocess.run([godot, "--headless", "--path", str(stage), *args],
+    result = subprocess.run([*godot, "--headless", "--path", str(stage), *args],
                             capture_output=True, text=True, timeout=600)
     output = result.stdout + result.stderr
     log.write_text(output)
@@ -54,10 +55,18 @@ def main():
     if args.prepare_only:
         print(stage)
         return
-    godot = shutil.which("godot")
-    if not godot:
+    executable = shutil.which("godot")
+    if not executable:
         raise RuntimeError("Godot 4.6.2 must be on PATH")
-    version = subprocess.check_output([godot, "--version"], text=True).strip()
+    godot = [executable]
+    if sys.platform == "darwin":
+        silicon = subprocess.run(["/usr/sbin/sysctl", "-n", "hw.optional.arm64"],
+                                 capture_output=True, text=True)
+        if silicon.returncode == 0 and silicon.stdout.strip() == "1":
+            # Python itself may be running under Rosetta. Import models with
+            # the native engine to avoid translated importer crashes.
+            godot = ["/usr/bin/arch", "-arm64", executable]
+    version = subprocess.check_output([*godot, "--version"], text=True).strip()
     if not version.startswith("4.6.2.stable"):
         raise RuntimeError(f"Expected Godot 4.6.2.stable, found {version}")
     # A fresh import can report the not-yet-imported project font. The second
