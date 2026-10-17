@@ -1,6 +1,6 @@
 # Stillwater community launch drafts
 
-Prepared 2026-09-11 for **v0.3.0-preview.1**. These are **unpublished drafts** written in the project maintainer's voice. They are ready for the maintainer's own account once the release and its attached files are public. No Godot Forum account is currently available; no account has been registered and no forum post has been submitted as part of this preparation.
+Prepared 2026-09-11 for **v0.3.0-preview.1**. These are **unpublished drafts** written in the project maintainer's voice. These historical drafts are archived and should not be posted unchanged. Current downloads and license scope are in the root README and LICENSE_SCOPE.md. No Godot Forum account is currently available; no account has been registered and no forum post has been submitted as part of this preparation.
 
 Use [PRESS_KIT.md](PRESS_KIT.md) for media, facts, credits and preview limitations. Keep public claims tied to the released build rather than uncommitted development work.
 
@@ -26,7 +26,7 @@ On the Godot side, this is a Godot 4.6.2 / GDScript project with skeletal animat
 
 **Source and controls:** https://github.com/AmethystineAlpaca/moonlit-jianghu
 
-This is a single-map development preview with Chinese in-game UI; the README has English controls. macOS startup has been checked on Apple M4 / Metal. The Windows build is cross-exported and still needs Windows hardware feedback. Controller mappings exist but haven't been validated on a physical controller. The source is public; no repository-wide reuse license has been chosen.
+This is a single-map development preview with Chinese in-game UI; the README has English controls. macOS startup has been checked on Apple M4 / Metal. The Windows build is cross-exported and still needs Windows hardware feedback. Controller mappings exist but haven't been validated on a physical controller. Project code is MIT; separate asset licenses and excluded legacy artwork are documented in LICENSE_SCOPE.md.
 
 If you try one encounter, I'd particularly like to know:
 
@@ -52,7 +52,7 @@ A specific moment, your hardware and a short clip if available would help more t
 
 **源码与操作说明：** https://github.com/AmethystineAlpaca/moonlit-jianghu
 
-目前是单地图开发试玩版，游戏界面为中文。macOS 已在 Apple M4 / Metal 上检查启动；Windows 是交叉导出，尚待 Windows 实机反馈。手柄有映射，实体手柄还没有验证。源码公开可查看，仓库尚未选定统一的复用许可。
+目前是单地图开发试玩版，游戏界面为中文。macOS 已在 Apple M4 / Metal 上检查启动；Windows 是交叉导出，尚待 Windows 实机反馈。手柄有映射，实体手柄还没有验证。项目代码采用 MIT；第三方素材与旧版图库的例外见 LICENSE_SCOPE.md。
 
 如果愿意打一场，我最想知道三件事：不用地圈计时，能不能预判敌人出手；移动能不能停在预期位置，挨打时是否清楚；回锋和碰撞有没有让你想主动使用的价值。欢迎直接回帖，或者填写[试玩反馈](https://github.com/AmethystineAlpaca/moonlit-jianghu/issues/new?template=playtest-feedback.yml)。能描述一个具体时刻、附上设备信息，就已经很有帮助。
 

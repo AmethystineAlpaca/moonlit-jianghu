@@ -2,9 +2,9 @@
 
 [English](README.md) | [中文](README.zh.md) | [日本語](README.ja.md) | [Русский](README.ru.md)
 
-**[Скачать для Windows](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.3.0-preview.1/Stillwater-Windows.zip) · [Скачать для macOS](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.3.0-preview.1/Stillwater-macOS.zip) · [Описание выпуска](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1)**
+**[Скачать для Windows](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.4.1-preview.1/Stillwater-Windows.zip) · [Скачать для macOS](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.4.1-preview.1/Stillwater-macOS.zip) · [Описание выпуска](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.4.1-preview.1)**
 
-Распакуйте весь ZIP и запустите игру — редактор Godot не нужен. Публичная сборка: **v0.3.0-preview.1 / `0a4f686`**, интерфейс на китайском. Приложение macOS не нотарифицировано; Windows ещё требует проверки на устройстве. Приём на V, контрольные точки и выбор сложности из новых исходников в этот архив не входят. [Исходники и управление для этой сборки](https://github.com/AmethystineAlpaca/moonlit-jianghu/tree/v0.3.0-preview.1).
+Распакуйте весь ZIP и запустите игру — редактор Godot не нужен. Версия: **v0.4.1-preview.1**. Сборка содержит только текущую 3D-игру, включая приём на V, контрольные точки и выбор сложности, а также MIT-лицензию кода и сторонние лицензии. Интерфейс на китайском; macOS не нотарифицирована, Windows требует проверки на устройстве. [Исходники версии](https://github.com/AmethystineAlpaca/moonlit-jianghu/tree/v0.4.1-preview.1).
 
 [Отзывы об игре](https://github.com/AmethystineAlpaca/moonlit-jianghu/discussions/1) · [Сообщить об ошибке](https://github.com/AmethystineAlpaca/moonlit-jianghu/issues/new/choose) · [Участие в проекте](CONTRIBUTING.md) · [Материалы для публикаций](docs/PRESS_KIT.md)
 
@@ -69,4 +69,4 @@ godot --path . res://scenes/main/Main.tscn
 
 [Архив реализации 2D](docs/POLISH.md) · [Архив графики 2D](docs/ART_V2.md)
 
-Общая лицензия на повторное использование репозитория не выбрана. Для сторонних ресурсов действуют отдельные лицензии: CC0 для KayKit и OFL для Noto. Основная ветка Git — `master`.
+Код проекта доступен по лицензии **MIT**; см. [область действия и исключения](LICENSE_SCOPE.md) и [сторонние лицензии](THIRD_PARTY_NOTICES.md). KayKit сохраняет CC0, шрифты Noto — OFL. Изображения старой 2D-версии, созданные ИИ, и демонстрационные медиа исключены из MIT; новые настольные сборки содержат только ресурсы текущей 3D-версии. Основная ветка Git — `master`.

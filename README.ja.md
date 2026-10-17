@@ -2,9 +2,9 @@
 
 [English](README.md) | [中文](README.zh.md) | [日本語](README.ja.md) | [Русский](README.ru.md)
 
-**[Windows 版](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.3.0-preview.1/Stillwater-Windows.zip) · [macOS 版](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.3.0-preview.1/Stillwater-macOS.zip) · [リリース情報](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1)**
+**[Windows 版](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.4.1-preview.1/Stillwater-Windows.zip) · [macOS 版](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.4.1-preview.1/Stillwater-macOS.zip) · [リリース情報](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.4.1-preview.1)**
 
-ZIP 全体を展開して起動できます。Godot エディターは不要です。公開プレビューは **v0.3.0-preview.1 / `0a4f686`**、ゲーム内 UI は中国語です。macOS は未公証、Windows は実機検証待ちです。新しいソースにある V 技、チェックポイント、難易度選択はこのダウンロードには含まれません。[このビルドのソースと操作方法](https://github.com/AmethystineAlpaca/moonlit-jianghu/tree/v0.3.0-preview.1)。
+ZIP 全体を展開して起動できます。Godot エディターは不要です。公開プレビューは **v0.4.1-preview.1**。V 技、チェックポイント、難易度選択を含む 3D 専用パッケージで、MIT コードライセンスと第三者のライセンス文書を同梱しています。UI は中国語、macOS は未公証、Windows は実機検証待ちです。[対応するソース](https://github.com/AmethystineAlpaca/moonlit-jianghu/tree/v0.4.1-preview.1)。
 
 [プレイ感想](https://github.com/AmethystineAlpaca/moonlit-jianghu/discussions/1) · [不具合報告](https://github.com/AmethystineAlpaca/moonlit-jianghu/issues/new/choose) · [貢献ガイド](CONTRIBUTING.md) · [画像・紹介資料](docs/PRESS_KIT.md)
 
@@ -69,4 +69,4 @@ godot --path . res://scenes/main/Main.tscn
 
 [2D 実装記録](docs/POLISH.md) · [2D 美術記録](docs/ART_V2.md)
 
-リポジトリ全体の再利用ライセンスは未指定です。KayKit の CC0、Noto の OFL など、第三者素材のライセンスは個別に適用されます。既定の Git ブランチは `master` です。
+プロジェクトのコードは **MIT ライセンス**です。[適用範囲と除外](LICENSE_SCOPE.md)、[第三者ライセンス](THIRD_PARTY_NOTICES.md)をご確認ください。KayKit は CC0、Noto は OFL を維持します。旧 2D 版の AI 生成画像と紹介メディアは MIT の対象外で、新しいデスクトップ配布物には現在の 3D 版に必要なリソースのみを含みます。既定の Git ブランチは `master` です。

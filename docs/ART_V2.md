@@ -17,3 +17,11 @@
 字体：Google Fonts 的 Noto Serif SC 和 Noto Sans SC，SIL Open Font License，许可文本位于 `assets/fonts/OFL-Serif.txt`、`OFL-Sans.txt`。
 
 音乐：`scripts/tools/compose_qinglan.py` 合成的 24 秒五声音阶循环，输出 `assets/audio/qinglan_night.wav`，未使用第三方采样。兵刃和技能符号以 Godot 绘图代码实现。
+
+## 旧版玩家动作表来源梳理 · 2026-10-17
+
+维护者确认旧版角色图片为 AI 生成素材，主要使用 Gemini 和 GPT Image。原始跑步、待机动作表分别保留在 `assets/unused/players_gemini.png` 和 `assets/unused/players_gemini_still.png`。这一说明记录维护者提供的来源信息，不代表已逐张核实具体模型、账户套餐或输入参考图。
+
+当前 2D 玩家使用本地脚本派生的 `assets/xianxia/players_gemini_aligned_5dir_run.png`（`extract_gemini_run_sheet.py`）和 `assets/xianxia/players_gemini_aligned_idle.png`（`extract_gemini_idle_sheet.py`）。待机表为 3 行 × 6 列，依次为正面、背面和左侧，右侧通过镜像显示。
+
+由于尚未确认 Photoroom 处理时适用的账户和条款，已从当前工作树移除 `players_gemini-Photoroom.png`、`players_gemini_still-Photoroom.png` 及对应导入描述；保留原始生成图片和上述本地派生版本。历史提交及旧发布包不受此清理影响。代码的 MIT 许可及旧版图库的排除范围见 [LICENSE_SCOPE.md](../LICENSE_SCOPE.md)；第三方素材已有许可保持不变。

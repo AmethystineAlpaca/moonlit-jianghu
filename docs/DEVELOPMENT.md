@@ -64,22 +64,35 @@ Committed public media is in `docs/showcase/v3`. Raw videos and local exports re
 
 ## Export desktop builds
 
-Install the matching Godot 4.6.2 export templates. The presets are `macOS` and `Windows Desktop`.
+Install Godot 4.6.2 and its matching export templates. For distribution, use the
+release packager from a clean, committed checkout:
 
 ```bash
-mkdir -p output/releases/Stillwater-Windows
-godot --headless --path . --export-release "macOS" output/releases/Stillwater-macOS.zip
-godot --headless --path . --export-release "Windows Desktop" output/releases/Stillwater-Windows/Stillwater.exe
+python3 scripts/tools/package_release.py --revision "$(git rev-parse HEAD)"
 ```
 
-Archive the **whole Windows output folder**, including `Stillwater.pck` if the preset produces a separate PCK, as `output/releases/Stillwater-Windows.zip`. Extract the macOS archive and run `Moonlit Jianghu.app`. Exports use the current 3D default. To produce a dedicated 2D export, use a separate checkout and change its main scene to `scenes/interface/TitleScreen.tscn`; do not change the repository default merely to play the old scene.
+The packager creates `output/releases/v0.4.1-preview.1/`. It uses an explicit
+allowlist to stage only current 3D code, KayKit characters, Noto fonts and
+procedural combat audio. Legacy 2D artwork, old scenes, showcase media and
+scratch files never enter the staging project. Both desktop ZIPs include
+`LICENSE`, `LICENSE_SCOPE.md`, `THIRD_PARTY_NOTICES.md`, the complete `licenses/`
+directory, and a file-hash/source-commit manifest. Do not publish direct editor
+exports of the full repository as equivalent to these curated release packages.
 
-macOS startup was checked on Apple M4 / Metal. Windows was cross-exported without Windows hardware validation; physical controllers are not yet validated. Builds are not Apple-notarized.
+The script checks Godot's version, import/export errors, ZIP integrity and
+required notice files, and creates `SHA256SUMS.txt`. It refuses to overwrite an
+existing release directory. Native macOS startup and the packed resource
+inventory must also be checked before publishing. Windows is cross-exported;
+Windows hardware testing and Apple notarization are not implied.
 
-[Public preview v0.3.0-preview.1](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1) contains desktop ZIPs, a native-engine video and SHA-256 checksums. It was exported from a clean archive of `0a4f6862533b29a813ab5698ac44cf112d4d59c6`; its 32-script suite and macOS startup were checked again on 2026-09-11. Use that tag's source to reproduce the release. Later sword-intent changes in `master` are not included in these downloads.
+The [current preview](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.4.1-preview.1)
+contains the sword-intent update and the licensing cleanup. The historical
+[v0.3.0 preview](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1)
+predates the new MIT notice and has different assets; use the newer source tag
+and archives for downstream reuse.
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for playtest reporting and [PRESS_KIT.md](PRESS_KIT.md) for version-specific descriptions and captures.
 
 ## Repository and history
 
-The current work is committed directly to `master`. See [documentation index](README.md) for current documents and dated 2D archives. Preserve original image/model sources and licenses; follow [AGENTS.md](../AGENTS.md) for sprite extraction. See [asset credits](THIRD_PARTY_ASSETS.md) for component-specific rights; no repository-wide reuse license has been chosen.
+The current work is committed directly to `master`. See [documentation index](README.md) for current documents and dated 2D archives. Preserve original image/model sources and licenses; follow [AGENTS.md](../AGENTS.md) for sprite extraction. Project code is MIT under the [license scope](../LICENSE_SCOPE.md); [third-party notices](../THIRD_PARTY_NOTICES.md) preserve component-specific rights. Legacy AI artwork and showcase media are excluded from the MIT grant.

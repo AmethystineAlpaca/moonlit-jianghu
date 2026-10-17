@@ -4,7 +4,7 @@ Stillwater is the current 3D wuxia action chapter of Moonlit Jianghu, built with
 
 ## Start with a short playtest
 
-Get the [public preview](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1), or follow the [source launch instructions](README.md#run-the-3d-game). The game UI is currently Chinese; the README includes an English controls table.
+Get the [public preview](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.4.1-preview.1), or follow the [source launch instructions](README.md#run-the-3d-game). The game UI is currently Chinese; the README includes an English controls table.
 
 Try one seal encounter, then tell us:
 
@@ -40,7 +40,7 @@ Keep changes focused. Link the issue or discussion that provides context, and id
 
 Preserve original source images, models and their licenses. Follow [AGENTS.md](AGENTS.md) for sprite extraction and [third-party asset credits](docs/THIRD_PARTY_ASSETS.md) for component details. Include the source and license for any proposed external asset; do not label a third-party model as original project artwork.
 
-The repository is publicly viewable, but **no repository-wide reuse license has been selected**. Third-party assets keep their own licenses, including KayKit's CC0 characters and OFL Noto fonts. This contribution guide does not introduce a new license or change those rights. Raise licensing questions with the maintainer in Discussions before planning downstream reuse.
+Project-owned code and documentation are licensed under MIT within the [documented scope](LICENSE_SCOPE.md). By submitting a contribution to MIT-covered files, you agree to offer that contribution under MIT and confirm that you have the necessary rights. Do not submit third-party or AI-derived material without identifying its provenance and any applicable restrictions. Third-party assets retain their own licenses; legacy AI artwork and showcase media are excluded from the MIT grant. See [third-party notices](THIRD_PARTY_NOTICES.md).
 
 ## Follow development
 

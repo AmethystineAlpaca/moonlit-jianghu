@@ -2,9 +2,9 @@
 
 [English](README.md) | [中文](README.zh.md) | [日本語](README.ja.md) | [Русский](README.ru.md)
 
-**[Download for Windows](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.3.0-preview.1/Stillwater-Windows.zip) · [Download for macOS](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.3.0-preview.1/Stillwater-macOS.zip) · [Release notes](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1)**
+**[Download for Windows](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.4.1-preview.1/Stillwater-Windows.zip) · [Download for macOS](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.4.1-preview.1/Stillwater-macOS.zip) · [Release notes](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.4.1-preview.1)**
 
-Extract the full ZIP and launch — no Godot editor required. **Download version: v0.3.0-preview.1 / `0a4f686`.** Chinese in-game UI; macOS is not notarized, and Windows awaits hardware testing. This preview predates the sword-intent update below: V, checkpoints and difficulty selection are available in newer source, not this download. [Source and controls for the downloaded build](https://github.com/AmethystineAlpaca/moonlit-jianghu/tree/v0.3.0-preview.1).
+Extract the full ZIP and launch — no Godot editor required. **Download version: v0.4.1-preview.1.** This 3D-only preview includes sword intent (V), checkpoints and difficulty selection, with MIT-covered code and bundled third-party notices. Chinese in-game UI; macOS is not notarized, and Windows awaits hardware testing. [Source for this build](https://github.com/AmethystineAlpaca/moonlit-jianghu/tree/v0.4.1-preview.1).
 
 [Playtest discussion](https://github.com/AmethystineAlpaca/moonlit-jianghu/discussions/1) · [Report a bug](https://github.com/AmethystineAlpaca/moonlit-jianghu/issues/new/choose) · [Contribute](CONTRIBUTING.md) · [Press & media](docs/PRESS_KIT.md)
 
@@ -78,14 +78,14 @@ Controller mappings are implemented; physical-controller validation is still pen
 
 See [Development & builds](docs/DEVELOPMENT.md) for export commands, architecture, tests and capture tools. The default Git branch is `master`.
 
-- `python3 scripts/tools/run_tests.py`: **36/36** scripts passed on 2026-09-11, including movement stopping, animation motion, recall, collision damage, directional avoidance and feedback.
-- Local sword-intent exports: `output/releases/Stillwater-mastery-macOS.zip` and `output/releases/Stillwater-mastery-Windows.zip`; ignored by Git. The separate [public preview](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1) is the earlier `0a4f686` snapshot, whose 32-script suite was verified again on 2026-09-11.
+- `python3 scripts/tools/run_tests.py`: **36/36** scripts passed on 2026-10-17, including movement stopping, animation motion, recall, collision damage, directional avoidance and feedback.
+- [Current desktop preview](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.4.1-preview.1): built with `scripts/tools/package_release.py`; includes readable license files and a source/asset manifest. The earlier v0.3.0 preview remains historical and predates the MIT notice.
 - macOS startup was checked on Apple M4 / Metal. Windows was cross-exported, not tested on Windows hardware. No Apple notarization has been performed.
 - This is a single-map chapter. Bespoke character art, broader content, sustained human playtesting and cross-hardware validation remain open work.
 
 [Current design and implementation](docs/STILLWATER.md) · [Documentation index](docs/README.md) · [Asset credits](docs/THIRD_PARTY_ASSETS.md)
 
-No repository-wide reuse license has been selected. Third-party components retain their own licenses, including CC0 KayKit characters and OFL Noto fonts.
+Project code is available under the **MIT License**. See [license scope](LICENSE_SCOPE.md) for covered files and exclusions, and [third-party notices](THIRD_PARTY_NOTICES.md) for KayKit CC0, Noto OFL and Godot licenses. Legacy AI-generated 2D artwork and showcase media are excluded from the MIT grant; the new desktop packages contain only the current 3D resource set.
 
 ---
 

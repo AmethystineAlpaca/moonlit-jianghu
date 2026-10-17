@@ -2,9 +2,9 @@
 
 [English](README.md) | [中文](README.zh.md) | [日本語](README.ja.md) | [Русский](README.ru.md)
 
-**[Windows 下载](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.3.0-preview.1/Stillwater-Windows.zip) · [macOS 下载](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.3.0-preview.1/Stillwater-macOS.zip) · [版本说明](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1)**
+**[Windows 下载](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.4.1-preview.1/Stillwater-Windows.zip) · [macOS 下载](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/download/v0.4.1-preview.1/Stillwater-macOS.zip) · [版本说明](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.4.1-preview.1)**
 
-完整解压后启动，无需安装 Godot。**下载版本：v0.3.0-preview.1 / `0a4f686`。** 游戏界面为中文；macOS 尚未公证，Windows 待实机验证。此包早于下方的剑意更新：V、检查点与难度选择在新版源码中，尚未包含在本次下载。[下载版对应的源码与操作说明](https://github.com/AmethystineAlpaca/moonlit-jianghu/tree/v0.3.0-preview.1)。
+完整解压后启动，无需安装 Godot。**下载版本：v0.4.1-preview.1。** 包含 V 剑意、检查点与难度选择，仅打包当前 3D 资源，附带 MIT 代码许可和第三方声明。游戏界面为中文；macOS 尚未公证，Windows 待实机验证。[此版本对应源码](https://github.com/AmethystineAlpaca/moonlit-jianghu/tree/v0.4.1-preview.1)。
 
 [试玩交流](https://github.com/AmethystineAlpaca/moonlit-jianghu/discussions/1) · [报告问题](https://github.com/AmethystineAlpaca/moonlit-jianghu/issues/new/choose) · [参与贡献](CONTRIBUTING.md) · [媒体与截图资料](docs/PRESS_KIT.md)
 
@@ -84,13 +84,13 @@ godot --path . res://scenes/rebirth/Stillwater.tscn
 [开发与构建说明](docs/DEVELOPMENT.md) 包含导出命令、架构、测试和录像工具。Git 默认分支为 `master`。
 
 - `python3 scripts/tools/run_tests.py`：2026-09-11 验证 **36/36** 通过，包含动作实际运动、松手制动、回锋、撞墙、侧移避击和伤害反馈。
-- 剑意更新的本地导出包为 `output/releases/Stillwater-mastery-macOS.zip`、`output/releases/Stillwater-mastery-Windows.zip`，不纳入 Git。[公开试玩包](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.3.0-preview.1) 是较早的 `0a4f686` 快照，2026-09-11 再次通过该版本的 32 项脚本验证。
+- [当前桌面试玩版](https://github.com/AmethystineAlpaca/moonlit-jianghu/releases/tag/v0.4.1-preview.1) 由 `scripts/tools/package_release.py` 构建，包含完整许可文件和源码/资源清单。旧 v0.3.0 版本保留为历史版本，不适用新的许可范围说明。
 - macOS 已在 Apple M4 / Metal 下验证启动；Windows 仅交叉导出，未完成 Windows 实机验证；尚未进行 Apple 公证。
 - 当前内容为单地图篇章，专属角色美术、更多内容、长期真人试玩与跨硬件验证仍待完善。
 
 [当前设计与实现](docs/STILLWATER.md) · [文档索引](docs/README.md) · [素材与许可](docs/THIRD_PARTY_ASSETS.md)
 
-仓库尚未指定整体复用许可。第三方素材遵循各自许可，包括 CC0 的 KayKit 角色与 OFL 的 Noto 字体。
+项目自有代码采用 **MIT 许可证**，允许商用、修改和再发行。适用文件与例外见[许可范围](LICENSE_SCOPE.md)，Godot、KayKit CC0 与 Noto OFL 声明见[第三方许可](THIRD_PARTY_NOTICES.md)。旧版 AI 生成的 2D 图库和展示媒体不在 MIT 授权范围内；新的桌面发布包仅包含当前 3D 所需资源。
 
 ---
 
